@@ -1,115 +1,45 @@
-/// <reference types="vitest" />
+
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+// ESM Shim for __dirname
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  base: '/',
-  resolve: {
-    alias: {
-      '@': '/src',
-    },
-  },
-  test: {
-    globals: true,
-    environment: 'jsdom',
-    setupFiles: './src/test/setup.ts',
-    include: ['**/*.test.{ts,tsx}'],
-  },
-  plugins: [
-    react(),
-    VitePWA({
-      registerType: 'prompt', // TITANIUM: User controls updates (Safe Mode)
-      manifestFilename: 'manifest.webmanifest',
-      includeAssets: ['favicon.png', 'mobile-assets/icon.png', 'pwa-v11-192.png', 'pwa-v11-512.png', 'apple-icon-v11.png'],
-      manifest: {
-        name: 'ACTIVA MUSICOTERAPIA',
-        short_name: 'ACTIVA',
-        description: 'Plataforma clínica especializada en Musicoterapia y Neuro-rehabilitación.',
-        theme_color: '#EC008C',
-        background_color: '#f8fafc',
-        display: 'standalone',
-        orientation: 'portrait',
-        categories: ['medical', 'productivity', 'health'],
-        lang: 'es',
-        start_url: '/',
-        id: '/',
-        icons: [
-          {
-            src: 'pwa-v11-192.png',
-            sizes: '192x192',
-            type: 'image/png',
-            purpose: 'any maskable'
-          },
-          {
-            src: 'pwa-v11-512.png',
-            sizes: '512x512',
-            type: 'image/png',
-            purpose: 'any maskable'
-          }
-        ],
-        screenshots: [
-          {
-            src: "screenshot-clinic-1.jpg",
-            sizes: "1290x2796",
-            type: "image/jpeg",
-            form_factor: "narrow",
-            label: "Gestión de Pacientes"
-          },
-          {
-            src: "screenshot-clinic-2.jpg",
-            sizes: "1290x2796",
-            type: "image/jpeg",
-            form_factor: "narrow",
-            label: "Agenda Global"
-          },
-          {
-            src: "screenshot-clinic-3.jpg",
-            sizes: "1290x2796",
-            type: "image/jpeg",
-            form_factor: "narrow",
-            label: "Facturación"
-          },
-          {
-            src: "screenshot-clinic-4.jpg",
-            sizes: "1290x2796",
-            type: "image/jpeg",
-            form_factor: "narrow",
-            label: "Dashboard"
-          }
-        ],
-        shortcuts: [
-          {
-            name: "Nuevo Paciente",
-            url: "/patients?action=new",
-            icons: [{ src: "pwa-v11-192.png", sizes: "192x192" }]
-          },
-          {
-            name: "Agenda",
-            url: "/calendar",
-            icons: [{ src: "pwa-v11-192.png", sizes: "192x192" }]
-          }
-        ]
-      },
-      workbox: {
-        cleanupOutdatedCaches: true,
-        skipWaiting: true,
-        clientsClaim: true,
-      }
-    }),
-  ],
-  build: {
-    chunkSizeWarningLimit: 1000,
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          vendor: ['react', 'react-dom', 'react-router-dom'],
-          charts: ['recharts'],
-          firebase: ['firebase/app', 'firebase/auth', 'firebase/firestore']
-        }
-      }
+    plugins: [
+        react(),
+        VitePWA({
+            registerType: 'autoUpdate',
+            includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg'],
+            manifest: {
+                name: 'Activa CRM',
+                short_name: 'Activa',
+                description: 'Sovereign Clinical Operating System',
+                theme_color: '#ffffff',
+                icons: [
+                    {
+                        src: 'pwa-192x192.png',
+                        sizes: '192x192',
+                        type: 'image/png'
+                    },
+                    {
+                        src: 'pwa-512x512.png',
+                        sizes: '512x512',
+                        type: 'image/png'
+                    }
+                ]
+            }
+        })
+    ],
+    resolve: {
+        alias: {
+            '@': path.resolve(__dirname, './src'),
+        },
+        dedupe: ['react', 'react-dom']
     }
-  },
 });
-

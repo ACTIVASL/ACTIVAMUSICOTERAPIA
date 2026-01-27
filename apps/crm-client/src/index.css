@@ -84,7 +84,7 @@
 
   /* UI KIT: INPUTS (Titanium Standard) */
   .input-pro {
-    @apply w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-800 shadow-sm transition-all;
+    @apply w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-lg text-slate-800 shadow-sm transition-all;
     @apply focus:border-pink-500 focus:ring-4 focus:ring-pink-500/10 focus:outline-none;
     @apply placeholder:text-slate-400;
   }
@@ -184,6 +184,15 @@
       transform: scale(1.05);
       opacity: 0.9;
     }
+  }
+
+  /* iOS Human Interface Guidelines: Min 44x44pt target size */
+  .touch-target {
+    min-width: 44px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 }
 

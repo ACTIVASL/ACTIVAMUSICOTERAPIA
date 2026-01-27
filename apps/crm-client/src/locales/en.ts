@@ -34,6 +34,31 @@ export const en: typeof es = {
             },
             user: {
                 verified: "VERIFIED"
+            },
+            billing: {
+                title: "Invoicing",
+                subtitle: "Financial management, revenue and collection control.",
+                kpis: {
+                    revenue_year: "Revenue (Year)",
+                    pending: "Pending",
+                    month: "This Month"
+                },
+                filters: {
+                    search_placeholder: "Search by client or number...",
+                    all: "All",
+                    draft: "Draft",
+                    pending: "Pending",
+                    paid: "Paid"
+                },
+                actions: {
+                    new_invoice: "New Invoice",
+                    charge: "Charge",
+                    pdf: "PDF",
+                    download_pdf: "Invoice",
+                    delete: "Delete",
+                    mark_paid: "Paid"
+                },
+                empty: "No invoices found."
             }
         }
     }

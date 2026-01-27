@@ -1,4 +1,4 @@
-import { db, auth } from '../../lib/firebase';
+import { db, auth } from '@monorepo/engine-auth';
 import {
     doc,
     getDoc,
@@ -99,8 +99,7 @@ export class PatientRepository {
         const validation = PatientSchema.safeParse({ ...patient, id: 'temp-id' });
         if (!validation.success) {
             console.error('[Titanium] Creation Blocked by Schema:', validation.error);
-            // We allow proceeding if partial data is accepted, but lets force strictness for Critical Fields
-            if (!patient.name) throw new Error("Validation Failed: Name is required");
+            throw new Error(`Validation Failed: ${validation.error.issues.map(i => i.path + ': ' + i.message).join(', ')}`);
         }
 
         return await runTransaction(db, async (transaction) => {
@@ -108,12 +107,17 @@ export class PatientRepository {
             const patientRef = doc(collection(db, COLLECTION)); // Auto-ID
 
             // B. Prepare Patient Data
+            // Ensure sessions array is included in the patient document for legacy support
+            // BUT we must also ensure the subcollection logic handles it.
+
+            const initialSessions = patient.sessions || [];
+
             const patientData = {
                 ...patient,
                 userId: uid,
                 createdAt: new Date().toISOString(),
                 updatedAt: new Date().toISOString(),
-                sessions: [] // Legacy Array starts empty, we might dual-write initial session below
+                sessions: initialSessions // Write the header array (legacy mirror)
             };
 
             // C. Prepare Audit Log
@@ -129,26 +133,23 @@ export class PatientRepository {
             transaction.set(patientRef, patientData);
             transaction.set(logRef, logData);
 
-            // E. Handle Initial Session (Subcollection) if exists in legacy array payload
-            // "Legacy Array" in payload is usually handled by UI.
-            // If the payload has 'sessions' with items, we should write them to subcollection too.
-            if (patient.sessions && patient.sessions.length > 0) {
-                const initialSession = patient.sessions[0];
-                const sessionRef = doc(collection(db, COLLECTION, patientRef.id, 'sessions'));
-                const sessionData = {
-                    ...initialSession,
-                    userId: uid,
-                    createdAt: new Date().toISOString()
-                };
-                transaction.set(sessionRef, sessionData);
+            // E. Handle Initial Sessions (Subcollection) 
+            // TITANIUM FIX: Ensure we iterate ALL initial sessions (e.g. from Batch import or Quick Appt)
+            // and write them to the subcollection. This is crucial for consistency.
+            if (initialSessions.length > 0) {
+                initialSessions.forEach(session => {
+                    // Force session ID if missing (shouldn't happen with proper upstream logic)
+                    const sessionId = session.id ? String(session.id) : String(Date.now() + Math.random());
 
-                // Dual Write to Legacy Array for consistency
-                // (patientData.sessions is empty above, let's fill it)
-                // transaction.update(patientRef, { sessions: [sessionData] }); // Cannot update strictly after set in same doc? 
-                // Actually we can just include it in 'patientData' above.
-                // Correct approach:
-                // patientData.sessions = [sessionData];
-                // BUT we already did set(patientRef).
+                    const sessionRef = doc(collection(db, COLLECTION, patientRef.id, 'sessions'), sessionId);
+                    const sessionData = {
+                        ...session,
+                        id: sessionId,
+                        userId: uid,
+                        createdAt: new Date().toISOString()
+                    };
+                    transaction.set(sessionRef, sessionData);
+                });
             }
 
             return patientRef.id;
@@ -167,11 +168,30 @@ export class PatientRepository {
             throw new Error('Invalid Session Data');
         }
 
-        const docRef = doc(db, COLLECTION, patientId);
-        await updateDoc(docRef, {
-            sessions: arrayUnion(parsed.data),
-            // enhance: auto-increment counter could be done here or via cloud function
+        const uid = auth.currentUser?.uid;
+        const sessionId = session.id ? String(session.id) : String(Date.now());
+        const sessionPayload = {
+            ...parsed.data,
+            id: sessionId,
+            userId: uid,
+            createdAt: new Date().toISOString()
+        };
+
+        // CORRECT FIX: Use modular writeBatch directly
+        const { writeBatch } = await import('firebase/firestore');
+        const batchOp = writeBatch(db);
+
+        // 1. Subcollection (Source of Truth)
+        const subSessionRef = doc(db, COLLECTION, patientId, 'sessions', sessionId);
+        batchOp.set(subSessionRef, sessionPayload);
+
+        // 2. Legacy Array (UI Cache)
+        const patientRef = doc(db, COLLECTION, patientId);
+        batchOp.update(patientRef, {
+            sessions: arrayUnion(sessionPayload)
         });
+
+        await batchOp.commit();
     }
 
     /**

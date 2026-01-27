@@ -1,5 +1,5 @@
 import { FileText, Printer } from 'lucide-react';
-import { Button } from '../../components/ui/Button';
+import { Button } from '@monorepo/ui-system';
 
 const RESOURCES = [
     { id: 'moca', title: 'MoCA - Evaluación Cognitiva Montreal', description: 'Screening de deterioro cognitivo leve y demencia.', color: 'indigo' },

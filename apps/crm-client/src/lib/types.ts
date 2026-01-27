@@ -1,4 +1,3 @@
-// --- TITANIUM CORE TYPES (IMPORTED FROM SHARED TRUTH) ---
 import {
   Patient,
   Session,
@@ -7,10 +6,14 @@ import {
   ClinicalSafetyProfile,
   MusicalIdentity,
   PsychosocialContext,
+  ForensicMetadata,
+  DocumentCategoryEnum,
+  GroupSession, // IMPORTED FROM SHARED
 } from '@monorepo/shared';
-// Note: We might need to export GroupSession from shared or define it if missing. 
+
 // Re-exporting for local usage
-export type { Patient, Session, ClinicalFormulation, CognitiveScores, ClinicalSafetyProfile, MusicalIdentity, PsychosocialContext };
+export type { Patient, Session, ClinicalFormulation, CognitiveScores, ClinicalSafetyProfile, MusicalIdentity, PsychosocialContext, ForensicMetadata, GroupSession };
+export { DocumentCategoryEnum };
 
 // TITANIUM NAVIGATION
 export interface NavigationOptions {
@@ -70,30 +73,7 @@ export interface QualitativeEval {
   physical?: string;
 }
 
-// EXTENDED GROUP SESSION FOR FRONTEND (Until Shared Schema supports GroupSession fully)
-export interface GroupSession {
-  id: string;
-  date: string;
-  time: string;
-  phase: number;
-  activities: string[];
-  location: string;
-  type: 'group';
-  participantNames: string[];
-  participants?: { id: string; name: string }[];
-  price: number;
-  paid: boolean;
-  methodology?: string;
-  observations?: string;
-  groupName?: string;
-  groupId?: string;
-  // Evolution Metrics
-  engagementScore?: number; // 0-10
-  cohesionScore?: number;   // 0-10
-  energyLevel?: 'High' | 'Medium' | 'Low';
-  moodTags?: string[];
-  domainsWorked?: string[];
-}
+// (GroupSession is now imported from shared)
 
 // --- COMMERCE & BILLING ---
 

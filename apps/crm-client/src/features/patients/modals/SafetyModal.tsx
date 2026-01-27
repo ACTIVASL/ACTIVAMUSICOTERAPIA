@@ -8,7 +8,7 @@ import {
     ShieldCheck
 } from 'lucide-react';
 import { ClinicalSafetyProfile } from '../../../lib/types';
-import { Button } from '../../../components/ui/Button';
+import { Button } from '@monorepo/ui-system';
 
 interface SafetyModalProps {
     onClose: () => void;

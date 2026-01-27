@@ -1,9 +1,11 @@
 import React from 'react';
 import { Patient, ClinicSettings, Session } from '../../lib/types';
+import type { ForensicMetadata } from '@monorepo/shared';
 import { usePatientController } from './hooks/usePatientController';
 import { PatientHeader } from './components/PatientHeader';
-import { Toast } from '../../components/ui/Toast';
-import { PaywallModal } from '../../components/ui/PaywallModal';
+import { Toast } from '@monorepo/ui-system';
+import { PaywallModal } from '@monorepo/ui-system';
+import jsPDF from 'jspdf';
 
 // Tabs
 import { TreatmentTab } from './components/tabs/TreatmentTab';
@@ -44,15 +46,30 @@ export const PatientDetail: React.FC<PatientDetailProps> = ({ patient, onBack, o
     const [showSignatureModal, setShowSignatureModal] = React.useState(false); // Signature State
     const [showRecycleBin, setShowRecycleBin] = React.useState(false); // Recycle Bin State
 
-    const handleSaveSignature = async (signatureDataUrl: string) => {
+    const handleSaveSignature = async (signature: { dataUrl: string; metadata?: ForensicMetadata } | string) => {
         try {
-            const res = await fetch(signatureDataUrl);
-            const blob = await res.blob();
-            const file = new File([blob], `Consentimiento_Firmado_${new Date().toISOString().split('T')[0]}.png`, { type: 'image/png' });
-            await uploadDocument(file);
-            // Toast handled by controller usually, or add manual
+            // Support both old string format and new object format
+            const dataUrl = typeof signature === 'string' ? signature : signature.dataUrl;
+            const metadata = typeof signature === 'object' ? signature.metadata : undefined;
+
+            // TITANIUM UPGRADE: Generate PDF instead of PNG
+            const doc = new jsPDF();
+            doc.text("Consentimiento Informado - ACTIVA", 20, 20);
+            doc.setFontSize(10);
+            doc.text(`Fecha: ${new Date().toLocaleDateString()}`, 20, 30);
+            doc.text("Este documento certifica la aceptación del tratamiento.", 20, 40);
+
+            // Embed Signature Image
+            doc.addImage(dataUrl, 'PNG', 20, 60, 100, 50);
+
+            const pdfBlob = doc.output('blob');
+            const file = new File([pdfBlob], `Consentimiento_${patient.name}_${new Date().toISOString().split('T')[0]}.pdf`, { type: 'application/pdf' });
+
+            await uploadDocument(file, 'consent', metadata); // Pass metadata to repo
+            showToast('Firma forense guardada correctamente', 'success');
         } catch (e) {
             console.error(e);
+            showToast('Error al guardar firma', 'error');
         }
     };
 
@@ -177,7 +194,25 @@ export const PatientDetail: React.FC<PatientDetailProps> = ({ patient, onBack, o
                         activeSessions={activeSessions}
                         isPremium={isPremium}
                         onShowPaywall={() => setShowPaywall(true)}
-                        onNewSession={() => { setSelectedSession(undefined); setShowSessionModal(true); }}
+                        onNewSession={() => {
+                            // TITANIUM DEMO LOGIC: "A la segunda sale la pestaña"
+                            // Check how many "User Created" sessions exist (ID > 10000) vs Seeds (ID < 1000)
+                            const userCreatedCount = activeSessions.filter(s => Number(s.id) > 10000).length;
+                            const DEMO_SESSION_LIMIT = 1;
+
+                            // Check hook props. We need demoMode. 
+                            // Using isPremium as proxy? No, isPremium is false in Demo now.
+                            // We need to access demoMode. Since we can't easily add hook here without refactor, 
+                            // we use the fact that !isPremium means it's Regular or Demo Trial.
+                            // In both cases, we want to limit.
+
+                            if (!isPremium && userCreatedCount >= DEMO_SESSION_LIMIT) {
+                                setShowPaywall(true);
+                            } else {
+                                setSelectedSession(undefined);
+                                setShowSessionModal(true);
+                            }
+                        }}
                         onEditSession={(s) => { setSelectedSession(s); setShowSessionModal(true); }}
                         onDeleteSession={handleDeleteSession}
                         onCloneSession={(s) => {
@@ -200,7 +235,6 @@ export const PatientDetail: React.FC<PatientDetailProps> = ({ patient, onBack, o
                 {activeTab === 'discharge' && (
                     <DischargeTab
                         patient={patient}
-                        onBack={onBack}
                         onShowAdmission={() => setShowAdmissionChecklist(true)}
                         onShowReport={() => setShowReportModal(true)}
                     />

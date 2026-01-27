@@ -1,13 +1,14 @@
 import {
     collection,
     doc,
-    writeBatch,
     query,
     where,
-    getDocs
+    getDocs,
+    runTransaction
 } from 'firebase/firestore';
-import { db, auth } from '../../lib/firebase';
+import { db, auth } from '@monorepo/engine-auth';
 import { Invoice } from '@monorepo/shared';
+import { InvoiceRepository } from './InvoiceRepository';
 
 export interface BillableSessionRef {
     id: string;
@@ -24,47 +25,47 @@ export const BillingRepository = {
      * Creates the invoice AND updates all related sessions to 'paid: true' in a single transaction.
      * Use this instead of separate calls to prevent "Phantom Revenue".
      */
-    createInvoiceBatch: async (invoice: Invoice, sessions: BillableSessionRef[]): Promise<void> => {
+    /**
+     * ATOMIC INVOICE CREATION
+     * Creates the invoice AND updates all related sessions to 'paid: true' in a single transaction.
+     * Uses atomic sequence generation to prevent duplicate invoice numbers.
+     */
+    createInvoiceBatch: async (invoiceTemplate: Invoice, sessions: BillableSessionRef[]): Promise<void> => {
         const uid = auth.currentUser?.uid;
         if (!uid) throw new Error("Unauthorized");
 
-        const batch = writeBatch(db);
+        // 0. Ensure Sequence exists (Self-Healing)
+        await InvoiceRepository.ensureSequenceInitialized();
 
-        // 1. Create Invoice Document
-        const invoiceRef = doc(db, 'invoices', invoice.id);
-        const invoiceData = {
-            ...invoice,
-            userId: uid,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString()
-        };
-        batch.set(invoiceRef, invoiceData);
+        await runTransaction(db, async (transaction) => {
+            // 1. Generate Atomic ID (locks the sequence document)
+            const nextNumber = await InvoiceRepository.getNextNumberAtomic(transaction);
 
-        // 2. Update Sessions (Mark as Paid)
-        for (const session of sessions) {
-            if (session.type === 'individual') {
-                if (!session.patientId) {
-                    console.error("Skipping individual session without patientId:", session);
-                    continue;
+            // 2. Prepare Invoice Data
+            const invoiceRef = doc(db, 'invoices', invoiceTemplate.id); // Use the template ID for the doc key, but update the number
+            const invoiceData = {
+                ...invoiceTemplate,
+                number: nextNumber, // OVERRIDE the optimistic number with the atomic one
+                userId: uid,
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString()
+            };
+
+            transaction.set(invoiceRef, invoiceData);
+
+            // 3. Update Sessions (Mark as Paid)
+            for (const session of sessions) {
+                if (session.type === 'individual') {
+                    if (!session.patientId) continue;
+                    const sessionRef = doc(db, 'patients', session.patientId, 'sessions', session.id);
+                    transaction.update(sessionRef, { paid: true, invoiceId: invoiceTemplate.id }); // Using the ID (UUID), not the Number
                 }
-                // Path: patients/{patientId}/sessions/{sessionId}
-                const sessionRef = doc(db, 'patients', session.patientId, 'sessions', session.id);
-                batch.update(sessionRef, { paid: true, invoiceId: invoice.id });
-
-                // NOTE: We are NOT updating the legacy 'sessions' array on the Patient document here.
-                // This means the array might show 'paid: false' until the patient is re-saved.
-                // The Subcollection is the Source of Truth for Billing.
+                else if (session.type === 'group') {
+                    const groupRef = doc(db, 'users', uid, 'group_sessions', session.id);
+                    transaction.update(groupRef, { paid: true, invoiceId: invoiceTemplate.id });
+                }
             }
-            else if (session.type === 'group') {
-                // Path: users/{uid}/group_sessions/{sessionId}
-                const groupRef = doc(db, 'users', uid, 'group_sessions', session.id);
-                batch.update(groupRef, { paid: true, invoiceId: invoice.id });
-            }
-        }
-
-        // 3. Commit Atomically
-        await batch.commit();
-
+        });
     },
 
     /**

@@ -4,8 +4,8 @@ import { PageTransition } from '../components/layout/PageTransition';
 import { Patient, GroupSession, NavigationPayload } from '../lib/types';
 
 // LAZY IMPORTS
-const DashboardView = lazy(() => import('@/features/dashboard/DashboardView').then(m => ({ default: m.DashboardView })));
-const PatientsDirectory = lazy(() => import('@/features/patients/PatientsDirectory').then(m => ({ default: m.PatientsDirectory })));
+const DashboardView = lazy(() => import('../features/dashboard/DashboardView').then(m => ({ default: m.DashboardView })));
+const PatientsDirectory = lazy(() => import('../features/patients/PatientsDirectory').then(m => ({ default: m.PatientsDirectory })));
 const PatientDetail = lazy(() => import('../features/patients/PatientDetail').then(m => ({ default: m.PatientDetail })));
 const SessionsManager = lazy(() => import('../features/sessions/SessionsManager').then(m => ({ default: m.SessionsManager })));
 const GroupSessionsHistory = lazy(() => import('../features/sessions/GroupSessionsHistory').then(m => ({ default: m.GroupSessionsHistory })));

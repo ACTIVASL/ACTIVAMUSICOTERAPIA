@@ -1,19 +1,16 @@
 import React, { useMemo } from 'react';
-import { Button } from '../../../../components/ui/Button';
-import { CheckSquare, ClipboardCheck, FileText, Trash2 } from 'lucide-react';
+import { Button } from '@monorepo/ui-system';
+import { CheckSquare, ClipboardCheck, FileText } from 'lucide-react';
 import { Patient } from '../../../../lib/types';
-import { useActivityLog } from '../../../../hooks/useActivityLog';
 
 
 interface DischargeTabProps {
     patient: Patient;
-    onBack: () => void;
     onShowAdmission: () => void;
     onShowReport: () => void;
 }
 
-export const DischargeTab: React.FC<DischargeTabProps> = ({ patient, onBack, onShowAdmission, onShowReport }) => {
-    const { logActivity } = useActivityLog();
+export const DischargeTab: React.FC<DischargeTabProps> = ({ patient, onShowAdmission, onShowReport }) => {
     // Local toast since this tab has a destructive action "Archivar" which shows a toast and then navigates
     // Wait, onBack navigates. 
     // Ideally toast should be up the chain or global.
@@ -24,14 +21,7 @@ export const DischargeTab: React.FC<DischargeTabProps> = ({ patient, onBack, onS
 
     const validSessions = useMemo(() => patient.sessions ? patient.sessions.filter(s => !s.isAbsent) : [], [patient.sessions]);
 
-    const handleArchive = () => {
-        if (confirm("¿Archivar paciente como 'Alta Clínica'? Esta acción moverá el expediente al histórico.")) {
-            logActivity('system', `Alta Clínica: Paciente ${patient.name} archivado`);
-            // We can't easily show toast and navigate immediately without global toast.
-            // But we will call onBack.
-            onBack();
-        }
-    };
+
 
     return (
         <div className="animate-in fade-in space-y-6">
@@ -81,13 +71,7 @@ export const DischargeTab: React.FC<DischargeTabProps> = ({ patient, onBack, onS
                         >
                             Informe
                         </Button>
-                        <Button
-                            variant="danger"
-                            icon={Trash2}
-                            onClick={handleArchive}
-                        >
-                            Archivar Expediente
-                        </Button>
+
                     </div>
                 </div>
             </div>

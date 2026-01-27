@@ -1,4 +1,4 @@
-import { ArrowRight, Video, Users, Heart, Baby, MonitorPlay, MapPin } from 'lucide-react';
+import { ArrowRight, Users, Heart, Baby, MonitorPlay, MapPin } from 'lucide-react';
 import individualImage from '../../assets/images/individual-session-child.png';
 import groupImage from '../../assets/images/group-session-aurora.jpg';
 import { NeonIcon } from '../ui/NeonIcon';

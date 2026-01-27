@@ -21,7 +21,9 @@ import { User } from 'firebase/auth';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-import { useFirebaseAuthState } from '../auth/useAuth';
+// import { useFirebaseAuthState } from '@monorepo/engine-auth'; // DISABLED: Using local version to fix Context
+import { useFirebaseAuthState } from '../hooks/useFirebaseAuthState'; // INLINED FOR STABILITY
+
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const auth = useFirebaseAuthState();

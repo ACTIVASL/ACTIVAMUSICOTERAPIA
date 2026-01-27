@@ -1,6 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
 import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react';
-import { Toast } from '../components/ui/Toast';
+import { Toast } from '@monorepo/ui-system';
 
 interface ToastMessage {
     id: string;

@@ -23,7 +23,7 @@ export const PWAInstallPrompt: React.FC = () => {
         if (typeof window === 'undefined') return false;
         return window.matchMedia('(display-mode: standalone)').matches ||
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            (window.navigator as any).standalone === true;
+            (window.navigator as unknown as { standalone?: boolean }).standalone === true;
     });
 
     useEffect(() => {
@@ -65,13 +65,9 @@ export const PWAInstallPrompt: React.FC = () => {
         deferredPrompt.prompt();
 
         // Wait for the user to respond to the prompt
-        const choiceResult = await deferredPrompt.userChoice;
+        await deferredPrompt.userChoice;
 
-        if (choiceResult.outcome === 'accepted') {
-            console.log('User accepted the install prompt');
-        } else {
-            console.log('User dismissed the install prompt');
-        }
+
 
         setDeferredPrompt(null);
         setShowPrompt(false);

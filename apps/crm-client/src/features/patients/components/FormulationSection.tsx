@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { CheckSquare, Save } from 'lucide-react';
-import { Button } from '../../../components/ui/Button';
+import { Button } from '@monorepo/ui-system';
 import { FORMULATION_OPTIONS, PATHOLOGY_MAP } from '../../../lib/patientUtils';
 import { ClinicalFormulation, FormulationData, Patient } from '../../../lib/types';
 

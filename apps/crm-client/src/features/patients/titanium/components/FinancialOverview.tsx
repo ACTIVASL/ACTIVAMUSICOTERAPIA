@@ -1,4 +1,4 @@
-import { Card } from '../../../../components/ui/Card';
+import { Card } from '@monorepo/ui-system';
 import { DollarSign, AlertCircle } from 'lucide-react';
 
 interface FinancialOverviewProps {

@@ -3,7 +3,7 @@ import { DocumentRepository } from '../../data/repositories/DocumentRepository';
 import { queryKeys } from '../../api/queryKeys';
 import { useActivityLog } from '../useActivityLog';
 import { useToast } from '../../context/ToastContext';
-// Titanium Standard Feedback
+import { ForensicMetadata } from '../../lib/types';
 
 export const useDocumentController = (patientId?: string) => {
     const queryClient = useQueryClient();
@@ -28,12 +28,12 @@ export const useDocumentController = (patientId?: string) => {
 
     // Upload Command
     const uploadMutation = useMutation({
-        mutationFn: async (file: File) => {
+        mutationFn: async (payload: { file: File, metadata?: ForensicMetadata }) => {
             if (!patientId) throw new Error("No patient selected");
             // Pre-flight Validation (Controller level)
-            if (file.size > 10 * 1024 * 1024) throw new Error("El archivo excede 10MB");
+            if (payload.file.size > 100 * 1024 * 1024) throw new Error("El archivo excede 100MB"); // TITANIUM LIMIT
 
-            return await DocumentRepository.upload(patientId, file);
+            return await DocumentRepository.upload(patientId, payload.file, payload.metadata);
         },
         onSuccess: (data) => {
             queryClient.invalidateQueries({ queryKey: queryKeys.patients.documents(patientId!) });
@@ -49,7 +49,8 @@ export const useDocumentController = (patientId?: string) => {
 
     // Delete Command
     const deleteMutation = useMutation({
-        mutationFn: async (document: { path: string; type: string; id: string; url: string; name: string; size: number; createdAt: string }) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        mutationFn: async (document: any) => { // Relaxed type to ensure simple passing to repo
             if (!patientId) throw new Error("No patient selected");
             return await DocumentRepository.delete(patientId, document);
         },
@@ -68,7 +69,8 @@ export const useDocumentController = (patientId?: string) => {
         documents,
         isLoading,
         isError,
-        uploadDocument: uploadMutation.mutateAsync,
+        uploadDocument: (file: File, category?: 'invoice' | 'consent' | 'report' | 'lab' | 'general' | 'other', metadata?: ForensicMetadata) =>
+            uploadMutation.mutateAsync({ file, metadata: { ...metadata, category: category || 'general' } as unknown as ForensicMetadata }),
         isUploading: uploadMutation.isPending,
         deleteDocument: deleteMutation.mutateAsync,
         isDeleting: deleteMutation.isPending

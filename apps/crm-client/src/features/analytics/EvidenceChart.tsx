@@ -57,7 +57,7 @@ export const EvidenceChart: React.FC<EvidenceChartProps> = ({ sessions }) => {
     }
 
     return (
-        <div className="w-full h-[300px] font-sans">
+        <div className="w-full h-full min-h-[300px] font-sans">
             <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={data} margin={{ top: 20, right: 10, left: -20, bottom: 0 }}>
                     <defs>

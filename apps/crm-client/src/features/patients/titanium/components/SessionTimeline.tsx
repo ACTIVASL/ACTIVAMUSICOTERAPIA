@@ -1,6 +1,6 @@
 import React from 'react';
 import { Session } from '@monorepo/shared';
-import { Card } from '../../../../components/ui/Card';
+import { Card } from '@monorepo/ui-system';
 import { Calendar, CheckCircle, XCircle, Clock } from 'lucide-react';
 
 interface SessionTimelineProps {

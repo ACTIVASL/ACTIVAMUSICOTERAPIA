@@ -8,7 +8,7 @@ import { FAQ } from '../components/landing/FAQ';
 import { Testimonials } from '../components/landing/Testimonials';
 import { About } from '../components/landing/About';
 import { Footer } from '../components/landing/Footer';
-import { Preloader } from '../components/ui/Preloader';
+// import { Preloader } from '../components/ui/Preloader'; // Unused
 import { BookModal } from '../components/modals/BookModal';
 import { ClinicModal } from '../components/modals/ClinicModal';
 import { CourseModal } from '../components/modals/CourseModal';

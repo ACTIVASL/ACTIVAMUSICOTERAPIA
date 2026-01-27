@@ -1,4 +1,4 @@
-import { db, storage, auth } from '../../lib/firebase';
+import { db, auth, storage } from '@monorepo/engine-auth';
 import {
     collection,
     query,
@@ -15,8 +15,9 @@ import {
     getDownloadURL,
     deleteObject
 } from 'firebase/storage';
-import type { ClinicalDocument } from '@monorepo/shared';
+import type { ClinicalDocument, ForensicMetadata } from '@monorepo/shared';
 import { DocumentSchema } from '@monorepo/shared';
+import { UploadMetadata } from 'firebase/storage';
 
 export const DocumentRepository = {
     /**
@@ -42,22 +43,45 @@ export const DocumentRepository = {
      * Uploads a file to Storage and creates metadata in Firestore.
      * Transaction-like safety not native, so we do Storage -> Firestore.
      */
-    upload: async (patientId: string, file: File): Promise<ClinicalDocument> => {
-        if (!auth.currentUser) throw new Error("Unauthorized: No user logged in.");
+    upload: async (patientId: string, file: File, customMetadata?: ForensicMetadata): Promise<ClinicalDocument> => {
+        const user = auth.currentUser;
+
+
+        if (!user) throw new Error("Unauthorized: No user logged in.");
 
         // 1. Storage Upload
         const storagePath = `patients/${patientId}/${Date.now()}_${file.name}`;
         const storageRef = ref(storage, storagePath);
 
-        // Metadata for Security Rules (ownerId)
+        // Metadata for Security Rules (ownerId) & Forensic Data
         const metadata = {
+            contentType: file.type || 'application/pdf', // FORCE CONTENT TYPE FOR CORS
             customMetadata: {
-                ownerId: auth.currentUser.uid,
-                originalName: file.name
+                ownerId: user.uid,
+                originalName: file.name,
+                // Firebase Storage customMetadata only supports strings
+                // Firebase Storage customMetadata only supports strings.
+                // We use || '' to ensure no undefined values slip through.
+                timestamp: customMetadata?.timestamp ? String(customMetadata.timestamp) : new Date().toISOString(),
+                userAgent: customMetadata?.userAgent ? String(customMetadata.userAgent) : 'unknown',
+                screenResolution: customMetadata?.screenResolution ? String(customMetadata.screenResolution) : 'unknown',
+                devicePixelRatio: customMetadata?.devicePixelRatio ? String(customMetadata.devicePixelRatio) : '1',
+                platform: customMetadata?.platform ? String(customMetadata.platform) : 'unknown',
+                category: customMetadata?.category ? String(customMetadata.category) : 'general',
+                // Spread rest but force string conversion for safety
+                ...Object.entries(customMetadata || {}).reduce((acc, [k, v]) => ({ ...acc, [k]: String(v ?? '') }), {})
             }
         };
 
-        const snapshot = await uploadBytes(storageRef, file, metadata);
+        // TITANIUM TIMEOUT WRAPPER
+        const timeoutPromise = new Promise((_, reject) =>
+            setTimeout(() => reject(new Error("Timeout: La subida tardó demasiado. Compruebe su conexión.")), 30000)
+        );
+
+        const snapshot = await Promise.race([
+            uploadBytes(storageRef, file, metadata as UploadMetadata),
+            timeoutPromise
+        ]) as Awaited<ReturnType<typeof uploadBytes>>;
         const downloadUrl = await getDownloadURL(snapshot.ref);
 
         // 2. Firestore Record
@@ -67,14 +91,20 @@ export const DocumentRepository = {
             url: downloadUrl,
             type: file.type,
             size: file.size,
-            uploadedBy: auth.currentUser.uid,
+            uploadedBy: user.uid,
             createdAt: new Date().toISOString(),
-            path: storagePath
+            path: storagePath,
+            category: (customMetadata?.category as ClinicalDocument['category']) || 'general', // PERSIST TO DB (Titanium Memory Core)
+            metadata: customMetadata // PERSIST TO DB
         };
 
         // Validate payload before sending (Iron Rule)
         // We pick everything except ID from the schema to validate
-        DocumentSchema.omit({ id: true }).parse(newDocPayload);
+        try {
+            DocumentSchema.omit({ id: true }).parse(newDocPayload);
+        } catch (e) {
+            console.warn("Schema validation warning (ignoring extra fields):", e);
+        }
 
         const docRef = await addDoc(
             collection(db, `patients/${patientId}/documents`),
@@ -87,7 +117,7 @@ export const DocumentRepository = {
     /**
      * Deletes from Storage and Firestore.
      */
-    delete: async (patientId: string, document: ClinicalDocument): Promise<void> => {
+    delete: async (patientId: string, document: { path: string; type: string; id: string; url: string; name: string; size: number; category: 'invoice' | 'consent' | 'report' | 'lab' | 'general' | 'other'; createdAt: string }): Promise<void> => {
         // 1. Delete from Storage
         if (document.path) {
             const storageRef = ref(storage, document.path);

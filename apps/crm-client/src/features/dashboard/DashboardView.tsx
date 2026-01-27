@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { Shield, PlusCircle, Search } from 'lucide-react';
-import { Button } from '../../components/ui/Button';
+import { Button } from '@monorepo/ui-system';
 import { Patient, NavigationPayload } from '../../lib/types';
 import { useAuth } from '../../context/AuthContext';
 import { SystemActivity } from './widgets/SystemActivity';

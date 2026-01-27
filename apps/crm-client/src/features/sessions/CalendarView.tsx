@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { Button } from '../../components/ui/Button';
-import { ChevronLeft, ChevronRight, CalendarCheck, Users, Phone, AlertTriangle, Loader2 } from 'lucide-react';
+import { Button } from '@monorepo/ui-system';
+import { ChevronLeft, ChevronRight, CalendarCheck, Users, AlertTriangle, Loader2 } from 'lucide-react';
 import { Patient, GroupSession, NavigationPayload } from '../../lib/types';
-import { Toast } from '../../components/ui/Toast';
-import { useSessionController } from '../../hooks/controllers/useSessionController';
-import { format, startOfMonth, endOfMonth, addMonths } from 'date-fns';
+import { Toast } from '@monorepo/ui-system';
+// Removed unused controller
+import { format, addMonths } from 'date-fns';
 import { es } from 'date-fns/locale';
 
 interface CalendarViewProps {
@@ -32,26 +32,33 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
   // Derive date range for the query (current month)
   // We fetch a bit more (previous/next week) if needed, but per month is fine.
   // Using ISO 'YYYY-MM-DD'
-  const start = format(startOfMonth(currentDate), 'yyyy-MM-dd');
-  const end = format(endOfMonth(currentDate), 'yyyy-MM-dd');
+  // const start = format(startOfMonth(currentDate), 'yyyy-MM-dd'); // REMOVED: Unused
+  // const end = format(endOfMonth(currentDate), 'yyyy-MM-dd'); // REMOVED: Unused
 
-  // TITANIUM CONTROLLER
-  const { sessions: fetchedSessions, isLoading, isError, error } = useSessionController({ start, end });
+  // TITANIUM UPGRADE: DIRECT SYNC WITH PATIENT STATE
+  // Instead of re-fetching, we calculate events directly from the fully loaded patients array.
+  // This guarantees INSTANT UI updates when adding/editing sessions elsewhere.
+  const individualEvents = React.useMemo(() => {
+    return patients.flatMap(patient =>
+      (patient.sessions || []).map(session => ({
+        ...session,
+        patientId: patient.id, // Ensure patientId is present
+        title: patient.name,
+        patientName: patient.name,
+        contact: patient.contact,
+        dateObj: new Date(session.date), // Assumes ISO YYYY-MM-DD
+        type: 'individual' as const,
+        time: session.time,
+        // Calculate status for UI
+        isAbsent: session.isAbsent,
+        isPunctual: !session.isAbsent,
+      }))
+    );
+  }, [patients]);
 
-  // Map fetched sessions to UI Events
-  // We need to look up Patient Name from the patients prop
-  const individualEvents = fetchedSessions.map(session => {
-    const patient = patients.find(p => String(p.id) === String(session.patientId)) || { name: 'Desconocido', contact: '' };
-    return {
-      ...session,
-      title: patient.name, // Derived name
-      patientName: patient.name,
-      contact: patient.contact,
-      dateObj: new Date(session.date), // Assumes ISO YYYY-MM-DD
-      type: 'individual' as const,
-      time: session.time, // EXPLICITLY INCLUDE TIME
-    };
-  });
+  const isLoading = false;
+  const isError = false;
+  const error = null;
 
   // Legacy Group Sessions (passed as prop for now, assuming not refactored yet)
   const groupEvents = groupSessions.map(s => {
@@ -269,21 +276,22 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                   <div className="text-xs text-slate-500 truncate">
                     {e.type === 'individual' ? e.notes || 'Sin notas' : e.observations || 'Sesión Grupal'}
                   </div>
-                  {e.type === 'individual' && !e.isAbsent && e.contact && (
-                    <div className="mt-2 pt-2 border-t border-slate-200 flex justify-end">
-                      <button
-                        onClick={(evt) => {
-                          evt.stopPropagation();
-                          if (e.contact) {
-                            window.location.href = `tel:${e.contact.replace(/\s/g, '')}`;
-                          }
-                        }}
-                        className="text-[10px] font-bold text-slate-600 flex items-center gap-1 hover:bg-slate-50 px-2 py-1 rounded transition-colors"
-                      >
-                        <Phone size={12} /> Llamar
-                      </button>
-                    </div>
-                  )}
+                  {
+                    e.type === 'individual' && (
+                      <div className="flex gap-2 mt-2 pt-2 border-t border-slate-100">
+                        <button
+                          className="bg-slate-100 text-slate-600 text-xs px-3 py-1.5 rounded-md hover:bg-slate-200 transition-colors flex-1"
+                          onClick={(ev) => {
+                            ev.stopPropagation();
+                            const p = patients.find(p => String(p.id) === String(e.patientId));
+                            if (p) onNavigate('patient-detail', p);
+                          }}
+                        >
+                          Ver Paciente
+                        </button>
+                      </div>
+                    )
+                  }
                 </div>
               ))
             ) : (
@@ -295,6 +303,6 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
           </div>
         </div>
       </div>
-    </div>
+    </div >
   );
 };

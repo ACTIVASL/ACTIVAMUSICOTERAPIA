@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { X, Plus, Users, Activity, Zap, Heart, Trash2, Settings } from 'lucide-react';
-import { Button } from '../../../components/ui/Button';
+import { Button } from '@monorepo/ui-system';
 import { Patient, GroupSession } from '../../../lib/types';
 
 interface GroupSessionModalProps {
   onClose: () => void;
   onSave: (data: GroupSession) => Promise<void> | void;
+  onDelete?: (id: string) => void;
   patients?: Patient[];
   initialGroupName?: string;
   mode?: 'schedule' | 'evolution';
@@ -16,6 +17,7 @@ export const GroupSessionModal: React.FC<GroupSessionModalProps> = ({
   onClose,
   patients = [],
   onSave,
+  onDelete, // Destructure here to fix 'Cannot find name'
   initialGroupName = '',
   mode = 'evolution',
   initialData
@@ -24,7 +26,8 @@ export const GroupSessionModal: React.FC<GroupSessionModalProps> = ({
   // On load, if initialData has names but no IDs, treat as guests
   const [participants, setParticipants] = useState<{ name: string; id?: string }[]>(
     // initialData?.participants is not in Type, rely on participantNames or passed props
-    initialData?.participantNames?.map((n: string) => ({ name: n })) ||
+    // initialData?.participants is strict typed now
+    initialData?.participants?.map(p => ({ name: p.name, id: p.id })) ||
     []
   );
 
@@ -98,28 +101,32 @@ export const GroupSessionModal: React.FC<GroupSessionModalProps> = ({
             {/* DELETE OPTION - ROBUST */}
             <button
               onClick={async () => {
-                // Try to find ID: standard 'id' or 'groupId' (if coming from patient record view)
                 const sessionId = initialData?.id || initialData?.groupId;
 
                 if (!sessionId) {
-                  if (confirm("Error de sincronización: Falta el ID de la sesión. \n\n¿Quieres recargar la página para corregir los datos automáticamente?")) {
-                    window.location.reload();
-                  }
+                  alert("Error: ID de sesión no encontrado.");
                   return;
                 }
 
-                if (confirm('¿Estás seguro de eliminar esta sesión y todos sus registros asociados? (Acción irreversible)')) {
-                  try {
-                    const { GroupSessionRepository } = await import('../../../data/repositories/GroupSessionRepository');
-                    // Ensure we delete passing the correct ID string
-                    await GroupSessionRepository.delete(String(sessionId));
-                    alert('Sesión eliminada correctamente.');
-                    onClose();
-                    // Force reload to sync all views (legacy array cleanup relies on this or complex logic)
-                    window.location.reload();
-                  } catch (e) {
-                    console.error(e);
-                    alert('Error al eliminar: ' + (e as Error).message);
+                if (onDelete) {
+                  // Use the prop provided by parent (App.tsx) which handles state + log
+                  if (confirm('¿Estás seguro de eliminar esta sesión y todos sus registros asociados? (Acción irreversible)')) {
+                    onDelete(String(sessionId));
+                    // Close handled by parent or state change, but we can close menu
+                    setShowConfigMenu(false);
+                  }
+                } else {
+                  // Fallback for standalone usage (unlikely but safe)
+                  if (confirm('¿Estás seguro de eliminar esta sesión?')) {
+                    try {
+                      const { GroupSessionRepository } = await import('../../../data/repositories/GroupSessionRepository');
+                      await GroupSessionRepository.delete(String(sessionId));
+                      alert('Sesión eliminada.');
+                      onClose();
+                      window.location.reload();
+                    } catch (e) {
+                      alert('Error al eliminar: ' + (e as Error).message);
+                    }
                   }
                 }
               }}
@@ -144,34 +151,21 @@ export const GroupSessionModal: React.FC<GroupSessionModalProps> = ({
           </div>
           <div className="flex gap-2">
             {/* CONFIG BUTTON */}
-            {/* DIRECT DELETE BUTTON (Requested: Discreet but Visible) */}
-            <button
-              type="button"
-              onClick={async () => {
-                const sessionId = initialData?.id || initialData?.groupId;
-                // Pre-check
-                if (!sessionId) {
-                  if (confirm("Error: ID perdido. ¿Recargar para intentar reparar?")) window.location.reload();
-                  return;
-                }
-
-                if (confirm('⚠️ ¿Eliminar Definitivamente este Grupo?\n\nSe borrará del calendario y del historial de todos los pacientes.')) {
-                  try {
-                    const { GroupSessionRepository } = await import('../../../data/repositories/GroupSessionRepository');
-                    await GroupSessionRepository.delete(String(sessionId));
-                    alert('Grupo Eliminado.');
-                    onClose();
-                    window.location.reload();
-                  } catch (e) {
-                    alert("Error: " + e);
+            {/* DIRECT DELETE BUTTON (Titanium Clean: No Reloads) */}
+            {onDelete && initialData?.id && (
+              <button
+                type="button"
+                onClick={() => {
+                  if (confirm('⚠️ ¿Eliminar Definitivamente este Grupo?\n\nSe borrará del calendario.')) {
+                    onDelete(String(initialData.id));
                   }
-                }
-              }}
-              className="p-2 hover:bg-red-50 rounded-full transition-colors h-fit text-slate-300 hover:text-red-500 mr-1"
-              title="Eliminar Grupo"
-            >
-              <Trash2 size={20} />
-            </button>
+                }}
+                className="p-2 hover:bg-red-50 rounded-full transition-colors h-fit text-slate-300 hover:text-red-500 mr-1"
+                title="Eliminar Grupo"
+              >
+                <Trash2 size={20} />
+              </button>
+            )}
 
             {/* CONFIG BUTTON - FORCED */}
             <button
@@ -205,10 +199,17 @@ export const GroupSessionModal: React.FC<GroupSessionModalProps> = ({
                 phase: Number(formData.get('phase')) || 1,
                 activities: ['Dinámica'], // Default or derive from form
                 location: formData.get('location') as string,
-                type: 'group',
-                participantNames: participants.map(p => p.name),
+                // type: 'group', // Removed: Not in Schema
+                participants: participants.map(p => ({
+                  id: p.id || crypto.randomUUID(),
+                  name: p.name,
+                  attendance: 'present' as const
+                })),
                 price: sessionPrice, // Use state variable
                 paid: false, // Default
+                name: groupName.trim(), // REQUIRED: Name vs GroupName duality in Schema
+                status: 'scheduled',
+                patientIds: [], // REQUIRED: Defaults to empty for groups
                 groupName: groupName.trim(), // Use state variable
                 methodology: formData.get('methodology') as string || '',
                 observations: formData.get('observations') as string || '',

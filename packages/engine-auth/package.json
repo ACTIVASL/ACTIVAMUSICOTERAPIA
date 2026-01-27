@@ -1,0 +1,39 @@
+{
+    "name": "@monorepo/engine-auth",
+    "version": "1.0.0",
+    "author": "ECONEURA S.L.",
+    "license": "UNLICENSED",
+    "private": true,
+    "sideEffects": false,
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/monorepo/engine-auth.git"
+    },
+    "main": "./src/index.ts",
+    "types": "./src/index.ts",
+    "scripts": {
+        "lint": "eslint src --ext ts,tsx --max-warnings 0",
+        "typecheck": "tsc --noEmit"
+    },
+    "dependencies": {
+        "clsx": "^2.1.1",
+        "cmdk": "^1.1.1",
+        "lucide-react": "^0.563.0",
+        "react-signature-canvas": "1.1.0-alpha.2",
+        "react-to-print": "^3.2.0",
+        "tailwind-merge": "^3.4.0",
+        "zod": "^3.22.4"
+    },
+    "peerDependencies": {
+        "firebase": "^10.14.1",
+        "react": "^18.3.1",
+        "react-dom": "^18.3.1",
+        "react-router-dom": "^7.11.0"
+    },
+    "devDependencies": {
+        "@types/react": "^18.2.66",
+        "@types/react-dom": "^18.2.22",
+        "typescript": "^5.9.3",
+        "vite": "^5.2.0"
+    }
+}

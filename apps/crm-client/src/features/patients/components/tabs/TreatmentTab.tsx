@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { ShieldCheck, Music, CheckSquare } from 'lucide-react';
-import { Button } from '../../../../components/ui/Button';
-import { Badge } from '../../../../components/ui/Badge';
+import { Button } from '@monorepo/ui-system';
+import { Badge } from '@monorepo/ui-system';
 import { Patient, FormulationData, ClinicalSafetyProfile, MusicalIdentity } from '../../../../lib/types';
 import { FormulationSection } from '../FormulationSection';
 import { useActivityLog } from '../../../../hooks/useActivityLog';
@@ -9,7 +9,7 @@ import { TREATMENT_PHASES } from '../../../../lib/clinicalUtils';
 import { MOBILITY_MAP } from '../../../../lib/patientUtils';
 import { SafetyModal } from '../../modals/SafetyModal';
 import { MusicalIdentityModal } from '../../modals/MusicalIdentityModal';
-import { Toast } from '../../../../components/ui/Toast';
+import { Toast } from '@monorepo/ui-system';
 
 interface TreatmentTabProps {
     patient: Patient;

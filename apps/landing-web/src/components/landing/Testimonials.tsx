@@ -1,14 +1,8 @@
-import { Quote, Star, Building2, Users, Award, LucideIcon } from 'lucide-react';
-import { NeonIcon } from '../ui/NeonIcon';
+import { Quote, Star } from 'lucide-react';
+
 import { RevealSection } from '../ui/RevealSection';
 
-const TrustBadge = ({ icon: Icon, label, value }: { icon: LucideIcon, label: string, value: string }) => (
-    <div className="flex flex-col items-center justify-center p-6 bg-white border border-gray-100 rounded-2xl hover:border-gray-200 hover:shadow-lg transition-all group">
-        <Icon className="w-8 h-8 text-[#EC008C] mb-3 group-hover:scale-110 transition-transform" />
-        <span className="text-3xl font-['Outfit'] font-bold text-slate-900 mb-1">{value}</span>
-        <span className="text-xs text-slate-500 font-medium uppercase tracking-widest">{label}</span>
-    </div>
-);
+// TrustBadge component removed as it was unused and causing lint errors
 
 export const Testimonials = () => {
     return (

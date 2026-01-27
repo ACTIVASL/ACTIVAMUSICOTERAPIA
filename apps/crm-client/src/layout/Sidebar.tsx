@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import {
   Users,
   Calendar,
@@ -10,17 +11,16 @@ import {
   FileText,
   ChevronLeft,
   ChevronRight,
+
   Fingerprint,
-  Download,
   Receipt,
   User,
   Baby,
   Contact,
 } from 'lucide-react';
-import { useFirebaseAuthState as useAuth } from '../auth/useAuth';
+import { useFirebaseAuthState as useAuth } from '@monorepo/engine-auth';
 import { useTranslation } from 'react-i18next';
 
-import { useInstallPrompt } from '../hooks/useInstallPrompt';
 import logoCircular from '../assets/logo-alpha.png'; // RENAMED TO ALPHA, KEPT VAR NAME FOR MINIMAL DIFF
 import { SidebarAgenda } from './SidebarAgenda';
 
@@ -30,6 +30,7 @@ interface SidebarProps {
   userEmail?: string;
   isOpen?: boolean; // Mobile State
   onClose?: () => void; // Mobile Close
+  onLogout?: () => void; // TITANIUM: Global Logout Handler
   events?: Array<{
     date: string;
     time: string;
@@ -44,15 +45,57 @@ export const Sidebar: React.FC<SidebarProps> = ({
   userEmail,
   isOpen = false,
   onClose,
+  onLogout,
 }) => {
-  const { signOut } = useAuth();
+  const { user, demoMode } = useAuth(); // Restored signOut, removed unused isPremium
   const { t } = useTranslation();
   const [collapsed, setCollapsed] = useState(false);
-  const { isInstallable, promptInstall } = useInstallPrompt();
+  // TITANIUM PREDICTIVE ENGINE
+  const queryClient = useQueryClient();
 
   const handleNavigate = (id: string) => {
     onNavigate(id);
-    if (onClose) onClose(); // Close mobile menu on click
+    if (onClose) onClose();
+  };
+
+  // Zero-Latency Prefetch Strategy
+  const handlePrefetch = async (id: string) => {
+    const uid = user?.uid;
+    const baseContext = { demoMode, uid };
+
+    try {
+      if (id.startsWith('patients')) {
+        const { PatientRepository } = await import('../data/repositories/PatientRepository');
+        const { queryKeys } = await import('../api/queryKeys');
+
+        // Prefetch Main List
+        queryClient.prefetchQuery({
+          queryKey: [...queryKeys.patients.all, baseContext],
+          queryFn: async () => {
+            const raw = await PatientRepository.getAll();
+            return raw; // Schema validation skipped for prefetch speed, handled by hook later
+          },
+          staleTime: 1000 * 60 * 5 // 5 min
+        });
+      }
+      else if (id === 'group-sessions' || id === 'groups') {
+        const { GroupSessionRepository } = await import('../data/repositories/GroupSessionRepository');
+        // Assuming key structure, strictly we should export keys centrally
+        queryClient.prefetchQuery({
+          queryKey: ['groupSessions', baseContext],
+          queryFn: () => GroupSessionRepository.getAll(),
+          staleTime: 1000 * 60 * 5
+        });
+      }
+      else if (id === 'calendar' || id === 'sessions') {
+        // Calendar relies on Patient Sessions (already fetched with patients)
+        // But if we had a dedicated sessions query, we'd prefetch it here.
+        // We ensure patients are fresh for the calendar.
+        handlePrefetch('patients');
+      }
+    } catch (e) {
+      console.warn('Prefetch failed silently', e);
+    }
   };
 
   return (
@@ -120,58 +163,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             {collapsed ? <ChevronRight size={14} strokeWidth={1.5} /> : <ChevronLeft size={14} strokeWidth={1.5} />}
           </button>
 
-          {isInstallable && (
-            <button
-              onClick={promptInstall}
-              className={`
-                w-full flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all duration-300 group relative mt-2 md:mt-0 md:absolute md:top-20 md:left-1/2 md:-translate-x-1/2 md:w-auto md:px-2 md:py-1
-                bg-gradient-to-r from-pink-600 to-rose-600 text-white shadow-lg shadow-pink-200 border border-transparent hover:shadow-xl hover:scale-[1.02]
-                ${collapsed ? 'hidden' : 'block'}
-              `}
-              title={t('sidebar.pwa.install_long')}
-            >
-              <Download
-                size={16}
-                strokeWidth={1.5}
-                className="transition-transform duration-300 group-hover:bounce"
-              />
-              <span className="font-bold text-xs tracking-wide ml-2">{t('sidebar.pwa.install_short')}</span>
-            </button>
-          )}
 
-          {/* Mobile Install Button (Visible in Menu) */}
-          {isInstallable && (
-            <button
-              onClick={promptInstall}
-              className="md:hidden w-full flex items-center gap-3 px-4 py-3.5 rounded-xl bg-gradient-to-r from-pink-600 to-rose-600 text-white shadow-lg mb-4"
-            >
-              <Download size={20} strokeWidth={1.5} />
-              <span className="font-bold text-sm">{t('sidebar.pwa.install_long')}</span>
-            </button>
-          )}
-
-          {isInstallable && (
-            <button
-              onClick={promptInstall}
-              className={`
-                w-full flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all duration-300 group relative mt-2
-                bg-gradient-to-r from-pink-600 to-rose-600 text-white shadow-lg shadow-pink-200 border border-transparent hover:shadow-xl hover:scale-[1.02]
-                ${collapsed ? 'md:justify-center md:px-0' : ''}
-                min-h-[44px] touch-manipulation
-              `}
-            >
-              <Download
-                size={20}
-                strokeWidth={1.5}
-                className={`transition-transform duration-300 ${collapsed ? '' : 'group-hover:bounce'}`}
-              />
-              {(!collapsed || isOpen) && (
-                <span className={`font-bold text-sm tracking-wide md:${collapsed ? 'hidden' : 'block'}`}>
-                  {t('sidebar.pwa.download')}
-                </span>
-              )}
-            </button>
-          )}
 
           {/* Mobile Close Button */}
           <button
@@ -186,6 +178,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         <nav className="flex-1 py-6 space-y-2 px-3 overflow-y-auto custom-scrollbar relative z-10">
           <button
             onClick={() => handleNavigate('dashboard')}
+            onMouseEnter={() => handlePrefetch('dashboard')}
             className={`
                             w-full flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all duration-300 group relative
                             ${currentView === 'dashboard'
@@ -229,6 +222,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               <button
                 key={item.id}
                 onClick={() => handleNavigate(item.id)}
+                onMouseEnter={() => handlePrefetch(item.id)} // TITANIUM PREFETCH
                 className={`w-full flex items-center gap-3 px-4 py-2 rounded-xl transition-all duration-200 group relative ${currentView === item.id ? 'bg-slate-100 text-pink-600 font-bold' : 'text-slate-500 hover:bg-slate-50'}`}
               >
                 <item.icon
@@ -250,6 +244,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             )}
             <button
               onClick={() => handleNavigate('calendar')}
+              onMouseEnter={() => handlePrefetch('calendar')}
               className={`w-full flex items-center gap-3 px-4 py-2 rounded-xl transition-all duration-200 group relative ${currentView === 'calendar' ? 'bg-slate-100 text-pink-600 font-bold' : 'text-slate-500 hover:bg-slate-50'}`}
             >
               <Calendar
@@ -371,8 +366,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
             {(!collapsed || isOpen) && (
               <button
-                onClick={signOut}
+                onClick={onLogout}
                 className={`p-1.5 rounded-lg hover:bg-white text-slate-400 hover:text-red-500 transition-all md:${collapsed ? 'hidden' : 'block'}`}
+                title="Cerrar Sesión"
               >
                 <LogOut size={16} strokeWidth={1.5} />
               </button>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card } from '../../../components/ui/Card';
+import { Card } from '@monorepo/ui-system';
 import { EVALUATION_AREAS } from '../../../lib/constants';
 import { Patient } from '../../../lib/types';
 

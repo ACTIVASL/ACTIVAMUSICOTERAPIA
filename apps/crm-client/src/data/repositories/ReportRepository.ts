@@ -1,4 +1,4 @@
-import { db, auth } from '../../lib/firebase';
+import { db, auth } from '@monorepo/engine-auth';
 import {
     collection,
     query,

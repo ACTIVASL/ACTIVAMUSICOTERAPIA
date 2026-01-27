@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Search } from 'lucide-react';
 // Button removed (unused)
-import { Card } from '../../components/ui/Card';
-import { EmptyState } from '../../components/ui/EmptyState';
+import { Card } from '@monorepo/ui-system';
+import { EmptyState } from '@monorepo/ui-system';
 import { Patient, Session, GroupSession } from '../../lib/types';
 import { SessionModal, ExtendedSession } from '../../features/patients/modals/SessionModal';
 import { GroupSessionModal } from './modals/GroupSessionModal';
@@ -101,9 +101,9 @@ export const SessionsManager: React.FC<SessionsManagerProps> = ({
   };
 
   const handleSaveGroupSession = (newSession: GroupSession) => {
-    if (newSession.participantNames) {
+    if (newSession.participants) {
       patients.forEach((p) => {
-        if (newSession.participantNames?.includes(p.name)) {
+        if (newSession.participants?.some(part => part.name === p.name)) {
           const currentSessions = p.sessions || [];
           const adapterSession: Session = {
             id: newSession.id,
@@ -172,7 +172,7 @@ export const SessionsManager: React.FC<SessionsManagerProps> = ({
                 <div className="flex items-center gap-2 text-sm text-slate-500">
                   {s.type === 'group' && (
                     <span className="bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded text-[10px] font-bold uppercase">
-                      {s.participantNames?.length || 0} Participantes
+                      {s.participants?.length || 0} Participantes
                     </span>
                   )}
                   <span>{s.price}€</span>

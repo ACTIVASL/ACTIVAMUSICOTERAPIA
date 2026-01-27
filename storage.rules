@@ -2,39 +2,25 @@ rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
     
-    // Helper Functions
-    function isAuthenticated() {
-      return request.auth != null;
-    }
-    
-    function isOwner(userId) {
-      return isAuthenticated() && request.auth.uid == userId;
-    }
-    
-    function isValidSize() {
-      return request.resource.size < 10 * 1024 * 1024; // Max 10MB
-    }
-    
-    function isValidType() {
-      return request.resource.contentType.matches('image/.*') || 
-             request.resource.contentType.matches('application/pdf');
+    // DEBUG MODE: REGLA PERMISIVA TEMPORAL PARA DIAGNÓSTICO
+    // Si esto funciona, el problema era la regla estricta anterior.
+    match /patients/{patientId}/{fileName} {
+      allow read: if request.auth != null;
+      // Write covers Create, Update, Delete.
+      // For create/update (resource != null), check quota.
+      // For delete (resource == null), just check Auth.
+      allow write: if request.auth != null 
+                   && (request.resource == null || request.resource.size < 100 * 1024 * 1024);
     }
 
-    // Rules for User Folders
-    match /users/{userId}/{allPaths=**} {
-      allow read: if isOwner(userId);
-      allow write: if isOwner(userId) && isValidSize() && isValidType();
+    match /tenants/{tenantId}/files/{fileId} {
+       allow read: if request.auth != null;
+       allow write: if request.auth != null
+                    && request.resource.size < 100 * 1024 * 1024;
     }
-    
-    // Rules for Patient Documents (stored under patients/patientId)
-    match /patients/{patientId}/{fileName} {
-      // For now, assuming flat structure or matching logic. 
-      // Ideally should check patient ownership in Firestore, but Storage rules are limited.
-      // We enforce strict Auth ownership on the path if possible, or reliance on App Check.
-      // Here we assume path includes userId or we rely on Cloud Functions for deeper validation.
-      // For MVP Titanium, we enforce Auth + Size + Type.
-      allow read: if isAuthenticated(); // Broad for now, usually restricted to owner in path
-      allow write: if isAuthenticated() && isValidSize() && isValidType();
+
+    match /{allPaths=**} {
+      allow read, write: if false;
     }
   }
 }

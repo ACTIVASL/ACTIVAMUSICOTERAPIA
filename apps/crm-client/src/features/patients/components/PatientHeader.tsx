@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
-import { ArrowLeft, CalendarPlus, FileText, Lightbulb, Phone, Trash2, Edit, FileDown } from 'lucide-react';
-import { Button } from '../../../components/ui/Button';
-import { Card } from '../../../components/ui/Card';
-import { PatientAvatar } from '../../../components/ui/PatientAvatar';
-import { ConfirmationModal } from '../../../components/ui/ConfirmationModal';
+import { ArrowLeft, CalendarPlus, FileText, Lightbulb, Trash2, Edit, FileDown } from 'lucide-react';
+import { Button } from '@monorepo/ui-system';
+import { Card } from '@monorepo/ui-system';
+import { PatientAvatar } from '@monorepo/ui-system';
+import { ConfirmationModal } from '@monorepo/ui-system';
 import { Patient } from '../../../lib/types'; // Import PATHOLOGY_MAP if needed or pass as prop
 import { PATHOLOGY_MAP } from '../../../lib/patientUtils';
-import { useActivityLog } from '../../../hooks/useActivityLog';
-import { Toast } from '../../../components/ui/Toast';
+import { Toast } from '@monorepo/ui-system';
 
 interface PatientHeaderProps {
     patient: Patient;
@@ -40,7 +39,7 @@ export const PatientHeader: React.FC<PatientHeaderProps> = ({
     onShowRecycleBin,
     recycleBinCount = 0
 }) => {
-    const { logActivity } = useActivityLog();
+    // const { logActivity } = useActivityLog(); // Calling disabled
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [toast, setToast] = useState<{ msg: string; type: 'error' } | null>(null);
 
@@ -58,7 +57,7 @@ export const PatientHeader: React.FC<PatientHeaderProps> = ({
                     className="flex items-center gap-2 text-slate-500 font-bold text-sm hover:text-slate-800 transition-colors"
                     onClick={onBack}
                 >
-                    <ArrowLeft size={18} /> Volver al Directorio
+                    <ArrowLeft size={18} /> VOLVER AHORA
                 </button>
                 <div className="flex gap-2 flex-wrap">
                     <Button
@@ -111,23 +110,17 @@ export const PatientHeader: React.FC<PatientHeaderProps> = ({
                     >
                         Guía
                     </Button>
-                    <Button
-                        variant="primary"
-                        size="sm"
-                        className="bg-emerald-500 hover:bg-emerald-600 text-white border-emerald-600"
-                        icon={Phone}
-                        onClick={() => {
-                            const targetPhone = patient.contact || patient.caregiverPhone;
-                            if (targetPhone) {
-                                window.location.href = `tel:${targetPhone.replace(/\s/g, '')}`;
-                                logActivity('system', `Llamada iniciada con ${patient.name}`);
-                            } else {
-                                setToast({ msg: 'No hay teléfono registrado', type: 'error' });
-                            }
-                        }}
-                    >
-                        Llamar
-                    </Button>
+
+                    {/* TITANIUM PHONE RECORD (READ ONLY) */}
+                    {(patient.contact || patient.caregiverPhone) && (
+                        <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-100 rounded-lg border border-slate-200 text-slate-600 font-mono text-xs select-all cursor-text">
+                            <span className="font-bold text-slate-400 text-[10px] uppercase tracking-wider">TEL:</span>
+                            {patient.contact || patient.caregiverPhone}
+                        </div>
+                    )}
+
+
+
                     {canDelete && (
                         <Button
                             variant="danger"

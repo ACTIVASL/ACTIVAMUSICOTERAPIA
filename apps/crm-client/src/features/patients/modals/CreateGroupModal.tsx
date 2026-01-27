@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { X, Users, Save, Calendar, FileText } from 'lucide-react';
-import { Button } from '../../../components/ui/Button';
+import { Button } from '@monorepo/ui-system';
 
 interface CreateGroupModalProps {
     onClose: () => void;
@@ -43,7 +43,7 @@ export const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ onClose, onS
                                 autoFocus
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
-                                className="input-pro text-lg font-semibold"
+                                className="input-pro text-lg font-semibold text-lg p-3"
                                 placeholder="Ej. Taller de Memoria - Lunes"
                                 required
                             />
@@ -58,7 +58,7 @@ export const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ onClose, onS
                                 <div className="relative">
                                     <Calendar className="absolute left-3 top-3 text-slate-300" size={16} />
                                     <input
-                                        className="input-pro pl-9"
+                                        className="input-pro pl-9 text-lg p-3"
                                         placeholder="Ej. Lunes 10:00"
                                     />
                                 </div>
@@ -66,7 +66,7 @@ export const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ onClose, onS
                             <div>
                                 <label className="label-pro mb-1.5 block text-slate-400">Sala / Ubicación (Opcional)</label>
                                 <input
-                                    className="input-pro"
+                                    className="input-pro text-lg p-3"
                                     placeholder="Ej. Sala 2"
                                 />
                             </div>

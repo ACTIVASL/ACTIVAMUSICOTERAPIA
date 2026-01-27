@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Brain, X, Activity, Music, Baby } from 'lucide-react';
-import { Button } from '../../../components/ui/Button';
+import { Button } from '@monorepo/ui-system';
 import {
     EVALUATION_AREAS_ADULT,
     MOCA_SECTIONS,

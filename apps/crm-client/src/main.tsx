@@ -4,34 +4,32 @@ import App from './App.tsx';
 import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { ToastProvider } from './context/ToastContext';
-import './i18n';
 import './index.css';
 
-import { ReloadPrompt } from './ReloadPrompt';
-
-import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client';
+import { I18nextProvider } from 'react-i18next';
+import i18n from './i18n';
+import { QueryClientProvider } from '@tanstack/react-query';
+import { queryClient } from './lib/react-query';
 import { BrowserRouter } from 'react-router-dom';
-import { queryClient, persister } from '@/lib/react-query';
 
-// Auto-update PWA - Managed by ReloadPrompt & VitePWA
-// TITANIUM: KILL SWITCH REMOVED. MOBILE APP ENABLED.
+// TITANIUM FENIX DEPLOY
+console.log("%c ☢️ OPERATION PHOENIX - V3.0 (MONOLITH) ", "background: #ff0000; color: #fff; font-size: 24px; padding: 10px;");
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <PersistQueryClientProvider
-      client={queryClient}
-      persistOptions={{ persister, maxAge: 1000 * 60 * 60 * 24 * 7 }} // 7 Days Persistence (Mobile App Standard)
-    >
-      <BrowserRouter>
-        <AuthProvider>
-          <ThemeProvider>
-            <ToastProvider>
-              <App />
-            </ToastProvider>
-          </ThemeProvider>
-        </AuthProvider>
-      </BrowserRouter>
-    </PersistQueryClientProvider>
-    <ReloadPrompt />
+    <I18nextProvider i18n={i18n}>
+      <QueryClientProvider client={queryClient}>
+        <BrowserRouter>
+          <AuthProvider>
+            <ThemeProvider>
+              <ToastProvider>
+                <App />
+              </ToastProvider>
+            </ThemeProvider>
+          </AuthProvider>
+        </BrowserRouter>
+      </QueryClientProvider>
+    </I18nextProvider>
   </React.StrictMode>,
 );
+

@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
 import { addWeeks } from 'date-fns';
 import { useAuth } from '../../../context/AuthContext';
 import { useActivityLog } from '../../../hooks/useActivityLog';
@@ -35,6 +35,33 @@ export const usePatientController = ({ patient, onUpdate, onBack }: UsePatientCo
         setNotification({ msg, type });
         setTimeout(() => setNotification(null), 3000);
     }, []);
+
+    // TITANIUM HEALER: Background Consistency Check
+    const [hasSynced, setHasSynced] = useState(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    const runHealer = useCallback(() => {
+        if (patient.id && !hasSynced) {
+            import('../../../data/repositories/SessionRepository').then(({ SessionRepository }) => {
+                SessionRepository.syncLegacySessions(patient).catch(err =>
+                    console.warn("[TitaniumHeal] Background sync warning:", err)
+                );
+                setHasSynced(true);
+            });
+        }
+    }, [patient, hasSynced]); // Titanium: Dependencies fix
+
+    // Trigger on mount or patient change
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    useEffect(() => {
+        // We can't run async in useState init, but we can trigger simpler effects.
+        // Actually simpler: just use useEffect.
+    }, []);
+
+    // Simple Effect
+    useEffect(() => {
+        // Trigger sync only if patient ID changes
+        if (patient.id) runHealer();
+    }, [patient.id, runHealer]);
 
     // Mutations
     const { mutate: deletePatient, isPending: isDeleting } = useDeletePatient(demoMode);
@@ -88,7 +115,7 @@ export const usePatientController = ({ patient, onUpdate, onBack }: UsePatientCo
             if (isNew) {
                 if (patient.id) {
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    const rec = (sessionData as any).recurrence;
+                    const rec = sessionData.recurrence;
 
                     if (rec) {
                         const { frequency, occurrences } = rec; // Fixed properties
@@ -101,7 +128,7 @@ export const usePatientController = ({ patient, onUpdate, onBack }: UsePatientCo
                             const newDate = addWeeks(baseDate, i * weeksToAdd);
                             // Avoid mutating original reference and remove recurrence from individual items
                             // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any
-                            const { recurrence: _, ...rest } = sessionData as any;
+                            const { recurrence: _, ...rest } = sessionData;
                             const sessionPayload = {
                                 ...rest,
                                 id: Date.now().toString() + i,

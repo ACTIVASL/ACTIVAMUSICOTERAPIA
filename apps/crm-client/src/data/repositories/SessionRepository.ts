@@ -1,15 +1,15 @@
-import { db, auth } from '../../lib/firebase';
+import { db, auth } from '@monorepo/engine-auth';
+import { deepSanitize } from '@monorepo/shared';
 import {
     collection,
     collectionGroup,
     query,
     where,
-    getDocs,
-    getDoc,
-    updateDoc,
     doc,
     writeBatch,
-    arrayUnion
+    arrayUnion,
+    runTransaction,
+    getDocs
 } from 'firebase/firestore';
 import { Session, Patient } from '../../lib/types';
 
@@ -99,10 +99,10 @@ export const SessionRepository = {
 
         // Force string ID
         const sessionId = session.id ? String(session.id) : String(Date.now());
+
         const ref = doc(db, 'patients', patientId, 'sessions', sessionId);
 
-        // Inject userId for collectionGroup security/filtering
-        const payload = { ...session, id: sessionId, userId: uid, createdAt: new Date().toISOString() };
+        const payload = deepSanitize({ ...session, id: sessionId, userId: uid, createdAt: new Date().toISOString() });
 
         // TITANIUM STANDARD: Atomic Batch Write
         const batch = writeBatch(db);
@@ -123,33 +123,134 @@ export const SessionRepository = {
         return sessionId;
     },
 
-    update: async (patientId: string, sessionId: string, data: Partial<Session>): Promise<void> => {
-        const ref = doc(db, 'patients', patientId, 'sessions', String(sessionId));
-        await updateDoc(ref, data);
-    },
+    /**
+     * Creates multiple sessions in a single atomic batch.
+     * TITANIUM: Used for Recurring Sessions.
+     * Ensures either all sessions are created or none, preventing partial data states.
+     * Limit: 500 ops (Firestore limit), but typically < 50 for UX reasons.
+     */
+    createBatch: async (patientId: string, sessions: Session[]): Promise<void> => {
+        const uid = auth.currentUser?.uid;
+        if (!uid) throw new Error("No authenticated user");
+        if (sessions.length === 0) return;
 
-    delete: async (patientId: string, sessionId: string): Promise<void> => {
         const batch = writeBatch(db);
-
-        // 1. Delete from Subcollection (Source of Truth)
-        const sessionRef = doc(db, 'patients', patientId, 'sessions', sessionId);
-        batch.delete(sessionRef);
-
-        // 2. Remove from Legacy Array (UI Consistency)
-        // rigorous consistency check: read parent, filter, write back.
         const patientRef = doc(db, 'patients', patientId);
-        try {
-            const patientSnap = await getDoc(patientRef);
-            if (patientSnap.exists()) {
-                const p = patientSnap.data() as Patient;
-                const updatedSessions = (p.sessions || []).filter(s => String(s.id) !== String(sessionId));
-                batch.update(patientRef, { sessions: updatedSessions });
-            }
-        } catch (e) {
-            console.error('TitaniumDelete: Error sync legacy array', e);
+
+        // Prepare Legacy Array Updates
+        // Note: arrayUnion takes varargs. We can pass multiple items.
+        // However, we must ensure each session has a unique ID and proper structure.
+
+        const preparedSessions = sessions.map(s => {
+            const sid = s.id ? String(s.id) : String(Date.now() + Math.random());
+            return deepSanitize({
+                ...s,
+                id: sid,
+                userId: uid,
+                createdAt: new Date().toISOString()
+            });
+        });
+
+        // 1. Write each session to Subcollection (Source of Truth)
+        preparedSessions.forEach(session => {
+            const ref = doc(db, 'patients', patientId, 'sessions', String(session.id));
+            batch.set(ref, session);
+        });
+
+        // 2. Update Legacy Array (Atomic Update)
+        // arrayUnion(...items)
+        if (preparedSessions.length > 0) {
+            batch.update(patientRef, {
+                sessions: arrayUnion(...preparedSessions)
+            });
         }
 
         await batch.commit();
+    },
+
+    update: async (patientId: string, sessionId: string, data: Partial<Session>): Promise<void> => {
+        // TITANIUM UPGRADE: Transactional Sync for "Notes" & "Updates"
+        // Ensures the legacy array (UI Cache) matches the Subcollection (Source of Truth)
+        try {
+            await runTransaction(db, async (transaction) => {
+                const patientRef = doc(db, 'patients', patientId);
+                const sessionRef = doc(db, 'patients', patientId, 'sessions', sessionId);
+
+                // 1. Read Patient (Blocking)
+                const patientSnap = await transaction.get(patientRef);
+                const sessionSnap = await transaction.get(sessionRef);
+
+                if (!sessionSnap.exists()) {
+                    console.warn(`[TitaniumHeal] Session ${sessionId} missing in subcollection. Auto-creating.`);
+                    transaction.set(sessionRef, {
+                        ...data,
+                        id: sessionId,
+                        userId: auth.currentUser?.uid,
+                        healedAt: new Date().toISOString()
+                    }, { merge: true });
+                } else {
+                    transaction.update(sessionRef, { ...data, updatedAt: new Date().toISOString() });
+                }
+
+                // 3. Update Legacy Array (Mirror)
+                if (patientSnap.exists()) {
+                    const p = patientSnap.data() as Patient;
+                    const sessions = p.sessions || [];
+
+                    // Find and Splice (Titanium Hardened: Trim whitespace)
+                    const index = sessions.findIndex(s => String(s.id).trim() === String(sessionId).trim());
+
+                    if (index !== -1) {
+                        // Update existing item
+                        sessions[index] = { ...sessions[index], ...data };
+                        transaction.update(patientRef, { sessions });
+                    } else {
+                        // RECOVERY MODE: If missing in array, append it (Dual-Write Consistency)
+                        // This fixes the "Ghost Session" issue where a session exists in DB but not in UI List.
+                        console.warn(`[TitaniumHeal] Session ${sessionId} restored to legacy array.`);
+                        sessions.push({ ...data, id: sessionId } as Session);
+                        transaction.update(patientRef, { sessions });
+                    }
+                }
+            });
+        } catch (e) {
+            console.error('[TitaniumUpdate] Transaction failed:', e);
+            throw e;
+        }
+    },
+
+    delete: async (patientId: string, sessionId: string): Promise<void> => {
+        // TITANIUM UPGRADE: Use Transaction for Atomic Consistency
+        // Prevents Race Conditions on the Legacy Array
+        try {
+            await runTransaction(db, async (transaction) => {
+                const patientRef = doc(db, 'patients', patientId);
+                const sessionRef = doc(db, 'patients', patientId, 'sessions', sessionId);
+
+                // 1. Read Patient (Blocking)
+                const patientSnap = await transaction.get(patientRef);
+
+                // 3. Logic: Update Legacy Array
+                if (patientSnap.exists()) {
+                    const p = patientSnap.data() as Patient;
+                    const sessions = p.sessions || [];
+                    // Filter with Trim Hardening
+                    const updatedSessions = sessions.filter(s => String(s.id).trim() !== String(sessionId).trim());
+
+                    if (updatedSessions.length !== sessions.length) {
+                        // Only write if something changed
+                        transaction.update(patientRef, { sessions: updatedSessions });
+                    }
+                }
+
+                // 4. Delete Subcollection Doc (Source of Truth)
+                transaction.delete(sessionRef);
+            });
+
+        } catch (e) {
+            console.error('[TitaniumDelete] Transaction failed:', e);
+            throw e; // Propagate error so Mutation knows it failed
+        }
     },
 
     /**
@@ -157,30 +258,44 @@ export const SessionRepository = {
      * Moves sessions from Patient.sessions (Array) to patients/{id}/sessions (Subcollection).
      * This is atomic per patient.
      */
-    migratePatientSessions: async (patient: Patient): Promise<void> => {
+    /**
+     * TITANIUM HEALER:
+     * Syncs sessions from the Legacy Array to the Subcollection (Source of Truth).
+     * This ensures editable documents exist for all historical data.
+     * Non-destructive: Does NOT clear the array.
+     */
+    syncLegacySessions: async (patient: Patient): Promise<void> => {
         const uid = auth.currentUser?.uid;
         if (!uid || !patient.id) return;
 
         if (!patient.sessions || patient.sessions.length === 0) return;
 
+        // We use a batch to ensure efficiency
         const batch = writeBatch(db);
         const sessionsRef = collection(db, 'patients', String(patient.id), 'sessions');
+        let updateCount = 0;
 
-        // 1. Move sessions to subcollection
         patient.sessions.forEach(session => {
-            const newDoc = doc(sessionsRef); // Auto-ID
-            batch.set(newDoc, {
+            // Trust existing ID or generate one if strictly necessary (legacy data might have weak IDs)
+            // But we must preserve the ID in the array to keep the link.
+            const sessionId = session.id ? String(session.id) : `legacy_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+            const docRef = doc(sessionsRef, sessionId);
+
+            // We use 'set' with merge to be idempotent. 
+            // If it exists, we update/ensure. If not, we create.
+            batch.set(docRef, {
                 ...session,
+                id: sessionId,
                 userId: uid,
-                migratedAt: new Date().toISOString()
-            });
+                syncedAt: new Date().toISOString()
+            }, { merge: true });
+
+            updateCount++;
         });
 
-        // 2. Clear legacy array
-        const patientRef = doc(db, 'patients', String(patient.id));
-        batch.update(patientRef, { sessions: [] }); // Empty the array
-
-        await batch.commit();
-
+        if (updateCount > 0) {
+            await batch.commit();
+            console.log(`[TitaniumHeal] Synced ${updateCount} sessions for patient ${patient.name}`);
+        }
     }
 };

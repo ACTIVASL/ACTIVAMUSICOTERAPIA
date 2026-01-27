@@ -1,6 +1,6 @@
 import React from 'react';
 import { Users, CalendarDays } from 'lucide-react';
-import { Card } from '../../../components/ui/Card';
+import { Card } from '@monorepo/ui-system';
 
 interface StatsCardsProps {
   activePatients: number;

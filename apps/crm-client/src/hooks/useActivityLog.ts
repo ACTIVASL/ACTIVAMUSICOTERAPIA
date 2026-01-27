@@ -1,15 +1,10 @@
 import { useCallback } from 'react';
-import { db, auth } from '../lib/firebase';
-import { collection, addDoc, query, where, getDocs } from 'firebase/firestore';
+import { auth } from '@monorepo/engine-auth';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { AuditRepository, AuditLogEntry } from '../data/repositories/AuditRepository';
 
-export interface ActivityLogItem {
-    id: string;
-    type: 'patient' | 'settings' | 'session' | 'system' | 'report' | 'finance' | 'security' | 'delete';
-    message: string;
-    timestamp: string;
-    userId: string;
-}
+// Re-export for compatibility
+export type ActivityLogItem = AuditLogEntry;
 
 export const useActivityLog = () => {
     const queryClient = useQueryClient();
@@ -17,55 +12,34 @@ export const useActivityLog = () => {
 
     // FETCH LOGS (Read-Only from DB)
     const { data: activities = [], isLoading: isQueryLoading, refetch } = useQuery({
-        queryKey: ['activity_logs', userId],
+        queryKey: ['activity_logs', userId || 'anonymous'],
         queryFn: async () => {
-            if (!userId) return [];
-
-            // TITANIUM FALLBACK: Fetch all logs for user and sort in memory.
-            const q = query(
-                collection(db, 'activity_logs'),
-                where('userId', '==', userId)
-            );
-
-            try {
-                const snapshot = await getDocs(q);
-                // In-Memory Sort & Limit (Safe for < 1000 items)
-                return snapshot.docs
-                    .map(d => ({ id: d.id, ...d.data() } as ActivityLogItem))
-                    .filter(item => item.timestamp && !isNaN(new Date(item.timestamp).getTime())) // Filter invalid dates
-                    .sort((a, b) => {
-                        const dateA = new Date(a.timestamp).getTime();
-                        const dateB = new Date(b.timestamp).getTime();
-                        return dateB - dateA;
-                    })
-                    .slice(0, 50);
-            } catch (err) {
-                console.error("Activity Log Query Failed:", err);
-                return [];
+            // TITANIUM DEMO: Read from LocalStorage if no user or demo user
+            if (!userId || auth.currentUser?.email === 'demo@activamusicoterapia.com') {
+                try {
+                    const stored = localStorage.getItem('demo_logs');
+                    return stored ? JSON.parse(stored) : [];
+                } catch { return []; }
             }
+            return await AuditRepository.getLogs(userId);
         },
-        enabled: !!userId,
+        enabled: true, // Always enabled to show local logs
         staleTime: 1000 * 60 * 5, // Cache for 5 mins
     });
 
     // APPEND LOG (Write-Only to DB)
     const logMutation = useMutation({
         mutationFn: async (payload: { type: ActivityLogItem['type']; message: string }) => {
-            if (!userId) return;
-            await addDoc(collection(db, 'activity_logs'), {
-                type: payload.type,
-                message: payload.message,
-                timestamp: new Date().toISOString(),
-                userId
-            });
+            await AuditRepository.log(payload.type, payload.message);
         },
         onSuccess: () => {
+            // Invalidate to show new log immediately
+            // Must match the key used in useQuery exactly or be a prefix
             queryClient.invalidateQueries({ queryKey: ['activity_logs'] });
         }
     });
 
     const logActivity = useCallback((type: ActivityLogItem['type'], message: string) => {
-        // Fire and forget (optimistic UI could be improved later)
         logMutation.mutate({ type, message });
     }, [logMutation]);
 

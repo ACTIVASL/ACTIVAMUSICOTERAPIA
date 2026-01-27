@@ -6,7 +6,7 @@ interface SeoHeadProps {
     keywords?: string;
     image?: string;
     url?: string;
-    schema?: Record<string, any>;
+    schema?: Record<string, unknown>;
 }
 
 export const SeoHead = ({

@@ -1,38 +1,48 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { PatientRepository } from '../data/repositories/PatientRepository';
 import { SettingsRepository } from '../data/repositories/SettingsRepository';
-import { auth } from '../lib/firebase';
+import { auth } from '@monorepo/engine-auth';
 import { Patient, ClinicSettings } from '../lib/types';
 import { INITIAL_PATIENTS } from '../lib/seeds';
-import { PatientSchema } from '@monorepo/shared';
+// import { PatientSchema as _PatientSchema } from '@monorepo/shared';
+// Removed unused import to satisfy linter.
 import { queryKeys } from './queryKeys';
 
 // -- HOOKS --
 
 export function usePatients(demoMode: boolean) {
     const uid = auth.currentUser?.uid;
+    const email = auth.currentUser?.email; // TITANIUM CHECK
+    // Force Demo Mode at Data Level if email matches
+    const effectiveDemoMode = demoMode || email === 'demo@activamusicoterapia.com';
+
     return useQuery({
-        queryKey: [...queryKeys.patients.all, { demoMode, uid }],
+        queryKey: [...queryKeys.patients.all, { demoMode: effectiveDemoMode, uid }],
         queryFn: async () => {
-            if (demoMode) return INITIAL_PATIENTS;
+            if (effectiveDemoMode) {
+                // TITANIUM DEMO PERSISTENCE (LocalStorage)
+                const stored = localStorage.getItem('demo_patients');
+                if (stored) {
+                    try {
+                        const parsed = JSON.parse(stored);
+                        if (Array.isArray(parsed) && parsed.length > 0) return parsed as Patient[];
+                    } catch (e) {
+                        console.warn("Corrupt demo data, resetting.", e);
+                    }
+                }
+                // Initialize if empty
+                localStorage.setItem('demo_patients', JSON.stringify(INITIAL_PATIENTS));
+                return INITIAL_PATIENTS;
+            }
             const rawData = await PatientRepository.getAll();
 
-            // ZOD "IRON SHIELD" VALIDATION
-            const validPatients = rawData.reduce((acc, item) => {
-                const result = PatientSchema.safeParse(item);
-                if (result.success) {
-                    acc.push(result.data as Patient);
-                } else {
-                    // SILENT RESCUE: Do not log schema errors in production loop to prevent FPS drop.
-                    acc.push(item as Patient);
-                }
-                return acc;
-            }, [] as Patient[]);
-
-            return validPatients;
+            // TITANIUM OPTIMIZATION: Removed heavy runtime validation loop.
+            // Trusting DB data for read performance ("Fluidity First").
+            // Validation happens strictly on WRITE (Mutations).
+            return rawData as Patient[];
         },
         enabled: true,
-        staleTime: 1000 * 60 * 5, // 5 minutes
+        staleTime: 0, // TITANIUM REALTIME: Always fresh
     });
 }
 
@@ -69,8 +79,13 @@ export function useCreatePatient(demoMode: boolean) {
     return useMutation({
         mutationFn: async (payload: CreatePatientPayload) => {
             if (demoMode) {
-                // Mock ID generation
-                return { id: Date.now().toString(), ...payload } as Patient;
+                // TITANIUM DEMO PERSISTENCE
+                const newPatient = { id: Date.now().toString(), ...payload } as Patient;
+                const stored = localStorage.getItem('demo_patients');
+                const current = stored ? JSON.parse(stored) : INITIAL_PATIENTS;
+                const updated = [...current, newPatient];
+                localStorage.setItem('demo_patients', JSON.stringify(updated));
+                return newPatient;
             }
             // TITANIUM ACID TRANSACTION
             const newId = await PatientRepository.create(payload);

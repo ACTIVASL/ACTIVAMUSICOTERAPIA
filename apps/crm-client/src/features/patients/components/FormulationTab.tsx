@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card } from '../../../components/ui/Card';
+import { Card } from '@monorepo/ui-system';
 import { ClinicalFormulation, FormulationData } from '../../../lib/types';
 import { FORMULATION_OPTIONS as FORMULATION_DATA } from '../../../lib/constants'; // Importing constant data
 

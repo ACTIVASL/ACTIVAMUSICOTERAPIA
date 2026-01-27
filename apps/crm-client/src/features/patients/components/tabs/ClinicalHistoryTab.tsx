@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
-import { Button } from '../../../../components/ui/Button';
-import { Badge } from '../../../../components/ui/Badge';
+import { Button } from '@monorepo/ui-system';
+import { Badge } from '@monorepo/ui-system';
 import { PlusCircle, Edit, Trash2, Copy } from 'lucide-react';
 import { PhaseProgress } from '../PhaseProgress';
 import { Patient, Session } from '../../../../lib/types';

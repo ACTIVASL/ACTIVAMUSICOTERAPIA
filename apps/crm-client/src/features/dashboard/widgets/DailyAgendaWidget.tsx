@@ -7,8 +7,8 @@ import {
 } from 'lucide-react';
 
 import { Session, Patient } from '../../../lib/types';
-import { Card } from '../../../components/ui/Card';
-import { EmptyState } from '../../../components/ui/EmptyState';
+import { Card } from '@monorepo/ui-system';
+import { EmptyState } from '@monorepo/ui-system';
 
 
 type ExtendedSession = Session & { patientId?: string | number; time?: string };
@@ -302,18 +302,9 @@ export const DailyAgendaWidget: React.FC<DailyAgendaWidgetProps> = ({
 
                                 {/* 3. PHONE (Subtle, right aligned) */}
                                 <div className="hidden sm:flex flex-col items-end gap-1 text-slate-400">
-                                    <button
-                                        onClick={(evt) => {
-                                            evt.stopPropagation();
-                                            if (patient.contact) {
-                                                window.location.href = `tel:${patient.contact.replace(/\s/g, '')}`;
-                                            }
-                                        }}
-                                        className="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center hover:bg-slate-200 hover:text-slate-800 transition-colors z-10"
-                                        title="Llamar"
-                                    >
-                                        <Phone size={14} />
-                                    </button>
+                                    <div className="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center text-slate-300">
+                                        <Phone size={14} className="opacity-50" />
+                                    </div>
                                     <span className="text-[10px] font-medium opacity-0 group-hover:opacity-100 transition-opacity">
                                         {patient.contact}
                                     </span>

@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { X, UserCheck, Hash, Users, Music, Printer, Save } from 'lucide-react';
-import { Button } from '../../../components/ui/Button';
+import { Button } from '@monorepo/ui-system';
 import { COMMON_PATHOLOGIES } from '../../../lib/patientUtils';
 import { compressImage } from '../../../lib/utils';
 import { useImageUpload } from '../../../hooks/useImageUpload'; // TITANIUM HOOK
@@ -149,22 +149,36 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({ onClose, onS
               }
               const d = Object.fromEntries(formData) as unknown as EditFormData;
 
+              // TITANIUM STRICT VALIDATION
+              if (!d.name?.trim()) {
+                alert("El Nombre Completo es obligatorio.");
+                return;
+              }
+              if (!d.age || Number(d.age) < 0) {
+                alert("La Edad debe ser un número válido mayor o igual a 0.");
+                return;
+              }
+              if (!diagnosisType) {
+                alert("Seleccione una patología o motivo.");
+                return;
+              }
+
               d.age = Number(d.age);
               d.reference = reference;
               d.hasConsent = hasConsent;
 
               if (photoPreview) d.photo = photoPreview;
 
-              const selectedOption = COMMON_PATHOLOGIES.find(p => p.value === d.diagnosisSelect);
+              const selectedOption = COMMON_PATHOLOGIES.find(p => p.value === diagnosisType);
 
-              if (d.diagnosisSelect === 'other' || !d.diagnosisSelect) {
-                d.diagnosis = d.customDiagnosis;
+              if (diagnosisType === 'other' || !diagnosisType) {
+                d.diagnosis = d.customDiagnosis || 'Sin especificar';
                 d.pathologyType = 'other';
               } else if (selectedOption) {
                 d.diagnosis = selectedOption.label;
                 d.pathologyType = selectedOption.value;
               } else {
-                d.diagnosis = d.diagnosisSelect;
+                d.diagnosis = diagnosisType;
                 d.pathologyType = pathologyType;
               }
 
@@ -207,21 +221,19 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({ onClose, onS
                       name="name"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
-                      className="input-pro text-lg"
+                      className="input-pro text-lg p-3"
                       required
                       autoCapitalize="words"
                       placeholder="Ej. Juan Pérez"
                     />
                   </div>
-                  {/* MOBILE FIX: grid-cols-1 on mobile, 3 on desktop */}
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div>
-                      {/* REMOVED DUPLICATE LABEL "Nacimiento" */}
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 items-end">
+                    <div className="col-span-2">
                       <label className="label-pro">Nacimiento (D/M/A)</label>
                       <div className="flex gap-2">
                         <input
                           placeholder="Día"
-                          className="input-pro w-16 text-center px-1"
+                          className="input-pro w-16 text-center px-1 text-lg p-3"
                           type="number"
                           inputMode="numeric"
                           min={1}
@@ -230,7 +242,7 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({ onClose, onS
                           onChange={(e) => setBDay(e.target.value)}
                         />
                         <select
-                          className="input-pro flex-1 min-w-0 px-1 text-sm bg-white"
+                          className="input-pro flex-1 min-w-[80px] px-1 text-lg p-3 bg-white"
                           value={bMonth}
                           onChange={(e) => setBMonth(e.target.value)}
                         >
@@ -240,7 +252,7 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({ onClose, onS
                         </select>
                         <input
                           placeholder="Año"
-                          className="input-pro w-20 text-center px-1"
+                          className="input-pro w-20 text-center px-1 text-lg p-3"
                           type="number"
                           inputMode="numeric"
                           min={1920}
@@ -251,7 +263,7 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({ onClose, onS
                         <input type="hidden" name="birthDate" value={birthDate} />
                       </div>
                     </div>
-                    <div>
+                    <div className="col-span-1">
                       <label className="label-pro">Edad</label>
                       <input
                         name="age"
@@ -259,18 +271,18 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({ onClose, onS
                         inputMode="numeric"
                         value={age}
                         onChange={(e) => setAge(e.target.value)}
-                        className="input-pro font-bold text-slate-700"
+                        className="input-pro font-bold text-slate-700 text-lg p-3 w-full text-center"
                         required
                       />
                     </div>
-                    <div>
+                    <div className="col-span-1">
                       <label className="label-pro">Fecha Ingreso</label>
                       <input
                         name="joinedDate"
                         type="date"
                         value={date}
                         onChange={(e) => setDate(e.target.value)}
-                        className="input-pro"
+                        className="input-pro text-lg p-3 w-full"
                       />
                     </div>
                   </div>
@@ -296,9 +308,9 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({ onClose, onS
                     <label className="label-pro">Patología / Motivo</label>
                     <select
                       name="diagnosisSelect"
-                      className="input-pro"
+                      className="input-pro text-lg p-3"
                       onChange={handleDiagnosisChange}
-                      defaultValue={initialData?.diagnosis || ''}
+                      value={diagnosisType}
                       required
                     >
                       {COMMON_PATHOLOGIES.map((p, i) => (
@@ -334,7 +346,7 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({ onClose, onS
                   <input
                     name="caregiverName"
                     defaultValue={initialData?.caregiverName}
-                    className="input-pro"
+                    className="input-pro text-lg p-3"
                     placeholder="Ej: María (Hija)"
                   />
                 </div>
@@ -343,7 +355,7 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({ onClose, onS
                   <input
                     name="caregiverPhone"
                     defaultValue={initialData?.caregiverPhone}
-                    className="input-pro"
+                    className="input-pro text-lg p-3"
                     placeholder="+34 600..."
                     inputMode="tel"
                   />

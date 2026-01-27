@@ -1,7 +1,7 @@
 import React from 'react';
 import { X, Trash2, Undo2, AlertCircle } from 'lucide-react';
-import { Button } from '@/components/ui/Button';
-import { Card } from '@/components/ui/Card';
+import { Button } from '@monorepo/ui-system';
+import { Card } from '@monorepo/ui-system';
 import { Session } from '@/lib/types';
 
 interface RecycleBinModalProps {

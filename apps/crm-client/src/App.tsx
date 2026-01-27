@@ -5,12 +5,12 @@ import { useNavigate, useLocation } from 'react-router-dom';
 // LAYOUT & THEME
 
 import { AppLayout } from '@/layout/AppLayout';
-import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
+import { ErrorBoundary, CommandMenu, OfflineIndicator } from '@monorepo/ui-system';
 
 // AUTH
 import { AnimatePresence } from 'framer-motion'; // TITANIUM ANIMATION
-import { LoginView } from '@/auth/LoginView';
-import { useFirebaseAuthState as useAuth } from '@/auth/useAuth';
+import { LoginView } from '@monorepo/engine-auth';
+import { useAuth } from './context/AuthContext';
 
 // ROUTES
 import { AppRoutes } from './routes/AppRoutes';
@@ -22,7 +22,6 @@ import { QuickAppointmentModal } from './features/sessions/modals/QuickAppointme
 import { CreateGroupModal } from './features/patients/modals/CreateGroupModal';
 import { GroupSessionModal } from './features/sessions/modals/GroupSessionModal';
 import { SessionRepository } from './data/repositories/SessionRepository';
-import { CommandMenu } from './components/ui/CommandMenu';
 // STORES
 import { useUIStore } from './stores/useUIStore';
 
@@ -30,10 +29,6 @@ import { useUIStore } from './stores/useUIStore';
 import { Patient, GroupSession, CalendarEvent, NavigationPayload, Session } from './lib/types';
 
 // Loading Spinner for Code Splitting Suspense
-import { OfflineIndicator } from './components/ui/OfflineIndicator';
-// PremiumSplash removed per user request
-import { ReloadPrompt } from './components/ui/ReloadPrompt';
-import { PWAInstallPrompt } from './features/pwa/PWAInstallPrompt';
 
 const PageLoader = () => <div className="h-screen w-full flex items-center justify-center bg-slate-50"><div className="w-8 h-8 rounded-full border-4 border-slate-200 border-t-pink-500 animate-spin" /></div>;
 
@@ -73,7 +68,7 @@ const DEFAULT_SOCIAL_CONTEXT = {
 };
 
 function App() {
-  const { user, demoMode, enterDemoMode } = useAuth();
+  const { user, demoMode, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const queryClient = useQueryClient();
@@ -98,65 +93,93 @@ function App() {
   const [isCreateGroupOpen, setIsCreateGroupOpen] = useState(false);
 
   // LOAD GROUP SESSIONS (TITANIUM PERMANENCE)
-  React.useEffect(() => {
+  const fetchGroupSessions = React.useCallback(() => {
     if (user) {
       import('./data/repositories/GroupSessionRepository').then(({ GroupSessionRepository }) => {
-        GroupSessionRepository.getAll().then(setGroupSessions);
+        GroupSessionRepository.getAll().then(setGroupSessions).catch(console.error);
       });
     }
   }, [user]);
 
-  const handleSaveGroupSession = async (data: GroupSession) => {
+  React.useEffect(() => {
+    fetchGroupSessions();
+  }, [fetchGroupSessions]);
 
-    // 1. Optimistic Update (Visible immediately in Group Views)
-    setGroupSessions((prev) => [...prev, data]);
+  // TITANIUM CRUD LOGIC FOR GROUPS
+  // Handles Create, Update, and Delete with instant UI Updates (No Reloads)
+
+  const handleSaveGroupSession = async (data: GroupSession) => {
+    const isEdit = groupSessions.some(g => g.id === data.id);
+
+    // 1. Optimistic UI Update
+    setGroupSessions(prev => {
+      if (isEdit) {
+        return prev.map(g => g.id === data.id ? data : g);
+      }
+      return [...prev, data];
+    });
     groupSession.close();
 
-    // 2. Persist to Firestore (Fan-Out Transaction)
+    // 2. Persist to Firestore
     try {
       const { GroupSessionRepository } = await import('./data/repositories/GroupSessionRepository');
       const { SessionRepository } = await import('./data/repositories/SessionRepository');
 
-      // A. SAVE MASTER GROUP RECORD
-      await GroupSessionRepository.create(data);
+      if (isEdit) {
+        await GroupSessionRepository.update(String(data.id), data);
+        logActivity('session', `Sesión Grupal actualizada: ${data.groupName}`);
 
-      // B. FAN-OUT: Sync to Individual Patient Histories (Billing & Personal Logs)
-      if (data.participants && Array.isArray(data.participants)) {
-        const linkedParticipants = data.participants.filter((p) => p.id); // Only those with IDs
+      } else {
+        await GroupSessionRepository.create(data);
 
-        if (linkedParticipants.length > 0) {
-
-
-          // We iterate and create individual sessions
-          // Ideally this should be a Batch, but for now concurrent promises is fine for Beta.
-          const syncPromises = linkedParticipants.map(async (p) => {
-            const individualSessionPayload = {
-              date: data.date,
-              id: `GS-${data.id}-${p.id}`,
-              type: 'group' as const,
-              groupName: data.groupName,
-              groupId: data.id,
-              notes: `Sesión Grupal: ${data.groupName}. ${data.observations || ''}`,
-              price: Math.round(Number(data.price) / (data.participants?.length || 1)),
-              paid: false,
-              billable: true,
-              isAbsent: false,
-              activities: data.activities || [],
-            };
-            return SessionRepository.create(p.id, individualSessionPayload);
-          });
-
-          await Promise.all(syncPromises);
-
-          // Force refresh of patients to show new sessions in PatientDetail immediately
-          queryClient.invalidateQueries({ queryKey: queryKeys.patients.all });
+        // Fan-Out for New Sessions
+        if (data.participants && Array.isArray(data.participants)) {
+          const linkedParticipants = data.participants.filter((p) => p.id);
+          if (linkedParticipants.length > 0) {
+            const syncPromises = linkedParticipants.map(async (p) => {
+              const individualSessionPayload = {
+                date: data.date,
+                id: `GS-${data.id}-${p.id}`,
+                type: 'group' as const,
+                groupName: data.groupName,
+                groupId: data.id,
+                notes: `Sesión Grupal: ${data.groupName}. ${data.observations || ''}`,
+                price: Math.round(Number(data.price) / (data.participants?.length || 1)),
+                paid: false,
+                billable: true,
+                isAbsent: false,
+                activities: data.activities || [],
+              };
+              return SessionRepository.create(p.id, individualSessionPayload);
+            });
+            await Promise.all(syncPromises);
+            queryClient.invalidateQueries({ queryKey: queryKeys.patients.all });
+          }
         }
+        logActivity('session', `Sesión Grupal creada: ${data.date} (${data.participants?.length || 0} pax)`);
       }
-
-      logActivity('session', `Sesión Grupal creada: ${data.date} (${data.participants?.length || 0} pax)`);
     } catch (e) {
       console.error("Failed to save group session", e);
-      alert("Error al guardar en base de datos: " + e);
+      // Soft Rollback: Re-fetch data to sync with server truth
+      alert("Error de sincronización. Restaurando datos...");
+      fetchGroupSessions();
+    }
+  };
+
+  const handleDeleteGroupSession = async (sessionId: string) => {
+    // 1. Optimistic UI
+    setGroupSessions(prev => prev.filter(g => g.id !== sessionId));
+    groupSession.close();
+
+    // 2. Persist
+    try {
+      const { GroupSessionRepository } = await import('./data/repositories/GroupSessionRepository');
+      await GroupSessionRepository.delete(sessionId);
+      logActivity('delete', 'Sesión Grupal eliminada');
+    } catch (e) {
+      console.error(e);
+      alert("Error al eliminar. Restaurando datos...");
+      fetchGroupSessions();
     }
   };
   const getCurrentViewID = (pathname: string) => {
@@ -289,16 +312,21 @@ function App() {
     // 1. ISO DATE STANDARD (YYYY-MM-DD)
     const isoDate = data.date; // Input is already ISO from <input type="date">
 
-    const newSessionBase = {
+    // Generate Session ID here to ensure consistency
+    const newSessionId = Date.now().toString();
+
+    const newSessionBase: Session = {
+      id: newSessionId,
       date: isoDate,
-      time: data.time,
-      type: 'individual' as const,
+      time: data.time || '10:00', // SAFETY DEFAULT
+      type: 'individual',
       notes: 'Cita programada desde Calendario',
       price: 50,
       paid: false,
       isAbsent: false,
       billable: true,
-      activities: [] as string[],
+      activities: [],
+      // Ensure all required fields by Zod are present or optional
     };
 
     if (data.mode === 'new') {
@@ -308,7 +336,7 @@ function App() {
         diagnosis: 'Sin diagnosticar',
         pathologyType: 'other' as const,
         joinedDate: isoDate,
-        sessions: [{ id: Date.now().toString(), ...newSessionBase }],
+        sessions: [newSessionBase], // This initial session must be handled by PatientRepository txn
         clinicalFormulation: {},
         reference: `REF-${Date.now().toString().slice(-4)}`,
         sessionsCompleted: 1,
@@ -319,22 +347,43 @@ function App() {
 
       createPatient.mutate(payload, {
         onSuccess: () => {
-          logActivity('session', 'Cita rápida creada (Nuevo Paciente)');
+          logActivity('session', 'Cita rápida creada (Nuevo Paciente + Sesión Inicial)');
+        },
+        onError: (err) => {
+          console.error("QuickAppointment Error:", err);
+          alert("Error al crear la cita y el paciente. Verifique los datos.");
         }
       });
     } else {
-      const patient = patients.find((p) => p.id == data.patientId);
+      const patient = patients.find((p) => String(p.id) === String(data.patientId));
       if (patient && patient.id) {
-        const updatedSessions = [{ id: Date.now().toString(), ...newSessionBase }, ...(patient.sessions || [])];
-        const updatedPatient = { ...patient, sessions: updatedSessions } as Patient;
 
-        SessionRepository.create(String(patient.id), newSessionBase as unknown as Session)
-          .then(() => { })
-          .catch(err => console.error("Titanium Sync Error:", err));
+        // 1. Write to Subcollection (Source of Truth) via Repository
+        // This ensures ID consistency and DB write BEFORE UI update logic if we wanted strictly.
+        // But we use Optimistic UI in mutation.
 
-        updatePatient.mutate(updatedPatient, {
-          onSuccess: () => logActivity('session', `Cita rápida creada para ${patient.name}`)
-        });
+        // We use the mutation which handles optimistic UI, but for Sessions specifically
+        // we might be calling just 'createSession' hook if we had it exposed here.
+        // Since we don't have 'useCreateSession' imported and exposed in App.tsx easily without refactor,
+        // we manually orchestrate.
+
+        // BETTER: Use the Repository directly for the WRITE, and manual UI update or invalidate.
+        try {
+          await SessionRepository.create(String(patient.id), newSessionBase);
+
+          // 2. Mock Optimistic Update for Legacy Array support in UI
+          const updatedSessions = [newSessionBase, ...(patient.sessions || [])];
+          const updatedPatient = { ...patient, sessions: updatedSessions };
+
+          // We update patient top-level to trigger UI refresh if listeners are on patient
+          // But really we should just invalidate queries.
+          await updatePatient.mutateAsync(updatedPatient);
+
+          logActivity('session', `Cita rápida creada para ${patient.name}`);
+        } catch (err) {
+          console.error("Titanium Sync Error:", err);
+          alert("Error al agendar la cita. Inténtelo de nuevo.");
+        }
       }
     }
     quickAppointment.close();
@@ -364,7 +413,7 @@ function App() {
   if (!user && !demoMode) {
     return (
       <>
-        <LoginView onDemoLogin={enterDemoMode} />
+        <LoginView />
       </>
     );
   }
@@ -378,11 +427,13 @@ function App() {
         userEmail={user?.email || 'demo@activa.com'}
         currentView={currentView}
         onNavigate={(view) => handleNavigate(view)}
-        onLogout={() => window.location.reload()}
+        onLogout={async () => {
+          await logout();
+          window.location.reload();
+        }}
         events={events}
       >
         <Suspense fallback={<PageLoader />}>
-          <ReloadPrompt />
 
 
           <AnimatePresence mode="wait">
@@ -418,6 +469,7 @@ function App() {
           patients={patients} // Pass Full Patient List
           onClose={() => groupSession.close()}
           onSave={handleSaveGroupSession}
+          onDelete={handleDeleteGroupSession}
         />
       )}
 
@@ -432,7 +484,6 @@ function App() {
       )}
       <CommandMenu />
       <OfflineIndicator />
-      <PWAInstallPrompt />
     </ErrorBoundary>
   );
 }

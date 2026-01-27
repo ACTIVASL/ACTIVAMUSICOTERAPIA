@@ -9,7 +9,7 @@ import {
     Mic2
 } from 'lucide-react';
 import { MusicalIdentity } from '../../../lib/types';
-import { Button } from '../../../components/ui/Button';
+import { Button } from '@monorepo/ui-system';
 
 interface MusicalIdentityModalProps {
     onClose: () => void;

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card } from '../../../components/ui/Card';
+import { Card } from '@monorepo/ui-system';
 import { Activity, UserPlus, Settings2, CalendarCheck, FileSignature, CreditCard, ShieldCheck, FileX, Loader2 } from 'lucide-react';
 import { ActivityLogItem } from '../../../hooks/useActivityLog';
 import { formatDistanceToNow } from 'date-fns';

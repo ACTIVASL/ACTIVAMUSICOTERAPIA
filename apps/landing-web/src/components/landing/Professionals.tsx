@@ -1,11 +1,11 @@
-import { ArrowRight, BookOpen, MonitorPlay, GraduationCap, Sparkles, Video, Settings, PlayCircle } from 'lucide-react';
-import { NeonIcon } from '../ui/NeonIcon';
+import { ArrowRight, BookOpen, MonitorPlay, GraduationCap, Sparkles, PlayCircle } from 'lucide-react';
+
 import bookCover from '../../assets/images/book_real.jpg';
 import academyInterface from '../../assets/images/academy_campus_interface.png';
 import crmDesktop from '../../assets/images/hero-desktop.jpg';
 import crmTablet from '../../assets/images/hero-tablet.jpg';
 import crmMobile from '../../assets/images/hero-mobile.jpg';
-import { RevealSection } from '../ui/RevealSection';
+// import { RevealSection } from '../ui/RevealSection'; // Unused
 
 interface ProfessionalsProps {
     onOpenModal?: (modal: string) => void;

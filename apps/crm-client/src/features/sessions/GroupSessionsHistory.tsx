@@ -99,7 +99,7 @@ export const GroupSessionsHistory: React.FC<GroupSessionsHistoryProps> = ({ sess
                                             </td>
                                             <td className="p-4 text-right">
                                                 <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-slate-100 text-slate-600 font-bold text-xs">
-                                                    <Users size={12} /> {session.participantNames?.length || 0}
+                                                    <Users size={12} /> {session.participants?.length || 0}
                                                 </span>
                                             </td>
                                             <td className="p-4 text-right font-black text-slate-700">

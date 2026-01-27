@@ -1,4 +1,4 @@
-import { ArrowRight, HeartPulse, Stethoscope, Play } from 'lucide-react';
+import { HeartPulse, Stethoscope } from 'lucide-react';
 import { RevealSection } from '../ui/RevealSection';
 import heroBg from '../../assets/images/hero-bg.png';
 

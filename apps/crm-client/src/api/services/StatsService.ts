@@ -1,5 +1,5 @@
 import { getAuth } from 'firebase/auth';
-import { app } from '../../lib/firebase';
+import { app } from '@monorepo/engine-auth';
 
 const API_URL = import.meta.env.VITE_API_URL;
 

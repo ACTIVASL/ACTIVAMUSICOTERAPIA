@@ -1,0 +1,6 @@
+Write-Host "--- INICIANDO CORRECCION ---"
+Set-Location "c:\Users\Usuario\.gemini\antigravity\scratch\monorepo-crm-activa"
+cmd /c "firebase login --reauth"
+cmd /c "gsutil cors set cors.json gs://webycrm-activa.firebasestorage.app"
+cmd /c "gsutil cors set cors.json gs://webycrm-activa.appspot.com"
+Write-Host "--- TERMINADO ---"

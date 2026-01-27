@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Card } from '../../components/ui/Card';
+import { Card } from '@monorepo/ui-system';
 import { BookOpen, FileText, ExternalLink } from 'lucide-react';
 import { CLINICAL_GUIDES } from '../../lib/constants';
 import { ClinicalGuideModal } from './ClinicalGuideModal';

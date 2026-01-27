@@ -1,11 +1,12 @@
 import React from 'react';
-import { Modal } from '@/components/ui/Modal';
-import { SignaturePad } from '@/components/ui/SignaturePad';
+import { Modal } from '@monorepo/ui-system';
+import { SignaturePad } from '@monorepo/ui-system';
+import type { ForensicMetadata } from '@monorepo/shared';
 
 interface SignatureModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onSave: (signature: string) => void;
+    onSave: (signature: { dataUrl: string; metadata: ForensicMetadata }) => void;
     title?: string;
 }
 

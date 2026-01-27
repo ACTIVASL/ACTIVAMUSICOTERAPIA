@@ -60,14 +60,14 @@ export const useSessionController = (dateRange?: { start: string; end: string })
     // TITANIUM: Use Centralized Optimistic Mutation
     const { mutateAsync: updateSession } = useUpdateSession();
 
-    // --- MIGRATION (Admin Tool) ---
+    // --- SYNC (Legacy Healer) ---
     const migrateMutation = useMutation({
         mutationFn: async (patient: Patient) => {
-            return await SessionRepository.migratePatientSessions(patient);
+            return await SessionRepository.syncLegacySessions(patient);
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: queryKeys.patients.all });
-            logActivity('system', 'Migración de sesiones completada');
+            logActivity('system', 'Sincronización de sesiones completada');
         }
     });
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Patient } from '@monorepo/shared';
-import { Card } from '../../../../components/ui/Card';
+import { Card } from '@monorepo/ui-system';
 import { Brain, Lightbulb, Target } from 'lucide-react';
 
 interface ClinicalSummaryCardProps {

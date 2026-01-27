@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
-import { SessionTimer } from '../../../components/ui/SessionTimer';
+import { SessionTimer, Button, Badge, Card } from '@monorepo/ui-system';
 import { X, ClipboardCheck, Lightbulb, CheckSquare, Save, ClipboardList, Trash2, AlarmClock, Repeat } from 'lucide-react';
-import { Button } from '../../../components/ui/Button';
-import { Badge } from '../../../components/ui/Badge';
-import { Card } from '../../../components/ui/Card';
+
 import {
   CLINICAL_GUIDES,
   SESSION_ACTIVITIES,
@@ -44,7 +42,8 @@ export interface ExtendedSession extends Partial<Session> {
 interface SessionModalProps {
   isOpen?: boolean;
   onClose: () => void;
-  onSave: (data: ExtendedSession) => void;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  onSave: (data: ExtendedSession) => Promise<any> | void;
   onDelete?: (id: string | number) => void;
   initialData?: ExtendedSession;
   patientType: string;
@@ -57,7 +56,10 @@ export const SessionModal: React.FC<SessionModalProps> = ({
   initialData,
   patientType,
 }) => {
+  const [isSaving, setIsSaving] = useState(false);
+
   const [scores, setScores] = useState<number[]>(initialData?.scores || Array(9).fill(0));
+  const [notes, setNotes] = useState(initialData?.notes || ''); // TITANIUM FIX #5: Controlled State
   const [date, setDate] = useState(formatDateForInput(initialData?.date));
   const [time, setTime] = useState(initialData?.time || '10:00');
   const [sessionType] = useState(initialData?.type || 'individual');
@@ -74,6 +76,30 @@ export const SessionModal: React.FC<SessionModalProps> = ({
   // frequency must be uppercase
   const [recurrenceFreq, setRecurrenceFreq] = useState<'WEEKLY' | 'BIWEEKLY'>('WEEKLY');
   const [recurrenceCount, setRecurrenceCount] = useState(4); // Mapped to occurrences
+
+  // TITANIUM FIX: Sync state with props change
+  React.useEffect(() => {
+    if (initialData) {
+      setScores(initialData.scores || Array(9).fill(0));
+      setNotes(initialData.notes || '');
+      setDate(formatDateForInput(initialData.date));
+      setTime(initialData.time || '10:00');
+      setActivityDetails(initialData.activityDetails || {});
+      setIsAbsent(initialData.isAbsent || false);
+      setPrice(initialData.price || 50);
+      setIsPaid(initialData.paid || false);
+    } else {
+      // Reset for new session
+      setScores(Array(9).fill(0));
+      setNotes('');
+      setDate(new Date().toISOString().split('T')[0]);
+      setTime('10:00');
+      setActivityDetails({});
+      setIsAbsent(false);
+      setPrice(50);
+      setIsPaid(false);
+    }
+  }, [initialData]);
 
   // Safe guide retrieval
   const guideKey = patientType in CLINICAL_GUIDES ? (patientType as ClinicalGuideKey) : 'other';
@@ -109,7 +135,7 @@ export const SessionModal: React.FC<SessionModalProps> = ({
               <span className="text-xs text-slate-400 font-medium">({guide.title})</span>
             </div>
           </div>
-          <button onClick={onClose}>
+          <button onClick={onClose} disabled={isSaving}>
             <X className="text-slate-400 hover:text-slate-600" />
           </button>
         </div>
@@ -127,69 +153,84 @@ export const SessionModal: React.FC<SessionModalProps> = ({
 
         <form
           className="p-8 space-y-8"
-          onSubmit={(e) => {
+          onSubmit={async (e) => {
             e.preventDefault();
             const formData = new FormData(e.target as HTMLFormElement);
 
-            const qual_mus = (formData.get('qual_mus') as string) || '';
-            const qual_emo = (formData.get('qual_emo') as string) || '';
-            const qual_cog = (formData.get('qual_cog') as string) || '';
-            const qual_fis = (formData.get('qual_fis') as string) || '';
-            const groupAnalysis = (formData.get('groupAnalysis') as string) || '';
+            if (!notes.trim()) {
+              alert(isAbsent ? "Indique el motivo de la ausencia." : "Las notas de la sesión son obligatorias.");
+              return;
+            }
 
-            // Calculate Day of Week from Date
-            const selectedDate = new Date((formData.get('date') as string) || new Date());
-            // Shared type comment says 1=Monday, 7=Sunday. JS getDay() returns 0 for Sunday.
-            const adjustedDay = selectedDate.getDay() === 0 ? 7 : selectedDate.getDay();
+            // Lock UI
+            setIsSaving(true);
 
-            const newSession: ExtendedSession = {
-              id: initialData?.id || Date.now().toString(),
-              date: (formData.get('date') as string) || new Date().toISOString(),
-              time: (formData.get('time') as string) || '09:00',
-              type: sessionType as 'individual' | 'group',
-              notes: (formData.get('notes') as string) || '',
-              activities: [],
-              activityDetails,
-              mood: (formData.get('mood') as string) || 'neutral',
-              engagement: Number(formData.get('engagement') || 5),
-              phase: 2,
-              scores,
-              groupAnalysis,
-              qualitative: {
-                musical: qual_mus,
-                emotional: qual_emo,
-                cognitive: qual_cog,
-                physical: qual_fis,
-              },
-              price,
-              paid: isPaid,
-              isAbsent,
-              recurrence: isRecurring ? {
-                frequency: recurrenceFreq,
-                occurrences: recurrenceCount,
-                daysOfWeek: [adjustedDay]
-              } : undefined
-            };
+            try {
+              const qual_mus = (formData.get('qual_mus') as string) || '';
+              const qual_emo = (formData.get('qual_emo') as string) || '';
+              const qual_cog = (formData.get('qual_cog') as string) || '';
+              const qual_fis = (formData.get('qual_fis') as string) || '';
+              const groupAnalysis = (formData.get('groupAnalysis') as string) || '';
 
-            onSave(newSession);
+              const selectedDate = new Date((formData.get('date') as string) || new Date());
+              const adjustedDay = selectedDate.getDay() === 0 ? 7 : selectedDate.getDay();
+
+              const newSession: ExtendedSession = {
+                id: initialData?.id || Date.now().toString(),
+                date: (formData.get('date') as string) || new Date().toISOString(),
+                time: (formData.get('time') as string) || '09:00',
+                type: sessionType as 'individual' | 'group',
+                notes: notes,
+                activities: [],
+                activityDetails,
+                mood: (formData.get('mood') as string) || 'neutral',
+                engagement: Number(formData.get('engagement') || 5),
+                phase: 2,
+                scores,
+                groupAnalysis,
+                qualitative: {
+                  musical: qual_mus,
+                  emotional: qual_emo,
+                  cognitive: qual_cog,
+                  physical: qual_fis,
+                },
+                price,
+                paid: isPaid,
+                isAbsent,
+                recurrence: isRecurring ? {
+                  frequency: recurrenceFreq,
+                  occurrences: recurrenceCount,
+                  daysOfWeek: [adjustedDay]
+                } : undefined
+              };
+
+              // AWAIT THE RESULT
+              await onSave(newSession);
+              // Do not setIsSaving(false) here because parent closes modal typically.
+              // If it failed, it throws and we catch.
+            } catch (err) {
+              console.error(err);
+              alert("Error al guardar: " + String(err));
+              setIsSaving(false); // Unlock only on error
+            }
           }}
         >
           <div className="flex justify-center mb-6 gap-6 items-end">
             <div className="flex flex-col w-1/3">
               <label className="label-pro">Fecha y Hora</label>
-              <div className="flex gap-2">
+              <div className="grid grid-cols-3 gap-3">
                 <input
                   type="date"
                   value={date}
                   onChange={(e) => setDate(e.target.value)}
-                  className="input-pro w-2/3"
+                  className="input-pro col-span-2 text-lg p-2.5"
                   required
                 />
                 <input
                   type="time"
                   value={time}
                   onChange={(e) => setTime(e.target.value)}
-                  className="input-pro w-1/3"
+                  className="input-pro col-span-1 text-lg p-2.5 text-center"
                   required
                 />
               </div>
@@ -242,7 +283,7 @@ export const SessionModal: React.FC<SessionModalProps> = ({
                         <select
                           value={recurrenceFreq}
                           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                          onChange={e => setRecurrenceFreq(e.target.value as any)}
+                          onChange={e => setRecurrenceFreq(e.target.value as 'WEEKLY' | 'BIWEEKLY')}
                           className="w-full text-xs p-1.5 rounded-lg border border-indigo-200 bg-white text-indigo-900 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                         >
                           <option value="WEEKLY">Semanal (7 días)</option>
@@ -461,7 +502,8 @@ export const SessionModal: React.FC<SessionModalProps> = ({
             <label className="label-pro">Notas Generales / Incidencias</label>
             <textarea
               name="notes"
-              defaultValue={initialData?.notes}
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
               className="input-pro h-32 text-base"
               placeholder={
                 isAbsent ? 'Motivo de la ausencia...' : 'Observaciones generales de la sesión...'
@@ -488,8 +530,8 @@ export const SessionModal: React.FC<SessionModalProps> = ({
                 Eliminar
               </Button>
             )}
-            <Button type="submit" icon={Save} className="shadow-lg hover:shadow-xl px-8">
-              Guardar Sesión
+            <Button type="submit" icon={Save} className="shadow-lg hover:shadow-xl px-8" isLoading={isSaving} disabled={isSaving}>
+              {isSaving ? 'Guardando...' : 'Guardar Sesión'}
             </Button>
           </div>
         </form>

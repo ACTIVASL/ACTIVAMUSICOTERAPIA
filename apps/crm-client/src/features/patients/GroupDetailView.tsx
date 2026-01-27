@@ -1,8 +1,8 @@
 import React, { useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Users, Calendar, Brain, Clock, Plus, Activity, Trash2 } from 'lucide-react';
-import { Button } from '../../components/ui/Button';
-import { Card } from '../../components/ui/Card';
+import { Button } from '@monorepo/ui-system';
+import { Card } from '@monorepo/ui-system';
 import { GroupSession } from '../../lib/types';
 import { useUIStore } from '../../stores/useUIStore';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
@@ -35,7 +35,7 @@ export const GroupDetailView: React.FC<GroupDetailViewProps> = ({ groupSessions,
 
     const uniqueParticipants = useMemo(() => {
         const names = new Set<string>();
-        groupHistory.forEach(s => s.participantNames.forEach(n => names.add(n)));
+        groupHistory.forEach(s => s.participants?.forEach(p => names.add(p.name)));
         return Array.from(names);
     }, [groupHistory]);
 
@@ -126,8 +126,8 @@ export const GroupDetailView: React.FC<GroupDetailViewProps> = ({ groupSessions,
                             <Activity className="text-pink-600" size={20} />
                             <h3 className="font-bold text-slate-800">Evolución de Métricas</h3>
                         </div>
-                        <div className="h-64 w-full">
-                            <ResponsiveContainer width="100%" height="100%">
+                        <div className="h-64 w-full min-w-0">
+                            <ResponsiveContainer width="99%" height="100%">
                                 <LineChart data={chartData}>
                                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
                                     <XAxis dataKey="date" hide />
@@ -227,9 +227,9 @@ export const GroupDetailView: React.FC<GroupDetailViewProps> = ({ groupSessions,
                                 )}
 
                                 <div className="flex flex-wrap gap-2 mt-4 pt-4 border-t border-slate-50">
-                                    {session.participantNames.map((p, i) => (
+                                    {session.participants?.map((p, i) => (
                                         <span key={i} className="text-xs bg-slate-50 text-slate-500 px-2 py-1 rounded border border-slate-100 flex items-center gap-1">
-                                            <Users size={10} className="opacity-50" /> {p}
+                                            <Users size={10} className="opacity-50" /> {p.name}
                                         </span>
                                     ))}
                                 </div>

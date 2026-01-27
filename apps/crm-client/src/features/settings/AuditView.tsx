@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card } from '../../components/ui/Card';
+import { Card } from '@monorepo/ui-system';
 import { Search, ShieldAlert, Loader2 } from 'lucide-react';
 import { useActivityLog } from '../../hooks/useActivityLog';
 
@@ -7,7 +7,7 @@ export const AuditView: React.FC = () => {
     const { activities, isLoading } = useActivityLog();
     const [searchQuery, setSearchQuery] = React.useState('');
 
-    const filteredLogs = activities.filter(log =>
+    const filteredLogs = activities.filter((log: { type?: string; userId?: string; message?: string }) =>
         log.type?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         log.userId?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         log.message?.toLowerCase().includes(searchQuery.toLowerCase())
@@ -49,7 +49,7 @@ export const AuditView: React.FC = () => {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-100">
-                            {filteredLogs.map(log => (
+                            {filteredLogs.map((log: { id: string; timestamp: number; type?: string; message?: string; userId?: string }) => (
                                 <tr key={log.id} className="hover:bg-slate-50 transition-colors">
                                     <td className="px-6 py-4 font-mono text-slate-500 text-xs">
                                         {new Date(log.timestamp).toLocaleString()}

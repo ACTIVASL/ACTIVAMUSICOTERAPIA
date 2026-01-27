@@ -1,4 +1,4 @@
-import { QueryClient } from '@tanstack/react-query';
+import { QueryClient, MutationCache } from '@tanstack/react-query';
 import { get, set, del } from 'idb-keyval';
 import { PersistedClient, Persister } from '@tanstack/react-query-persist-client';
 
@@ -28,11 +28,21 @@ export const createIDBPersister = (idbValidKey: IDBValidKey = "TITANIUM_OFFLINE_
 export const persister = createIDBPersister();
 
 export const queryClient = new QueryClient({
+    mutationCache: new MutationCache({
+        onError: (error) => {
+            console.error('🔥 TITANIUM GLOBAL MUTATION ERROR:', error);
+            // Dispatch event for UI to pick up if needed
+            if (typeof window !== 'undefined') {
+                window.dispatchEvent(new CustomEvent('titanium-error', { detail: error }));
+            }
+        },
+    }),
     defaultOptions: {
         queries: {
             staleTime: 1000 * 60 * 5, // 5 minutes (Titanium Standard: Low Volatility by Default)
             gcTime: 1000 * 60 * 60 * 24, // 24 HOURS (Bunker Mode) - Keep data in memory/disk for a full day
-            retry: 1, // Fail fast, don't hang the UI
+            retry: 2, // TITANIUM RESILIENCE: 2 Retries (Exponential Backoff Default)
+            retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000), // Smart Backoff
             refetchOnWindowFocus: false, // Save Firebase reads
             networkMode: 'offlineFirst',
         },

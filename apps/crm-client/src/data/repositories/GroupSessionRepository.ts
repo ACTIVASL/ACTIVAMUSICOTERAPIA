@@ -4,12 +4,13 @@ import {
     getDocs,
     setDoc,
     updateDoc,
+    deleteDoc,
     writeBatch,
     query,
     where
 } from 'firebase/firestore';
-import { db, auth } from '../../lib/firebase';
-import { GroupSession } from '../../lib/types';
+import { db, auth } from '@monorepo/engine-auth';
+import { GroupSession, GroupSessionSchema } from '@monorepo/shared';
 
 // REFACTOR: Use Subcollections for Security (users/{uid}/group_sessions)
 // This avoids root-level permission issues and missing composite indexes.
@@ -24,13 +25,24 @@ export const GroupSessionRepository = {
             const user = auth.currentUser;
             if (!user) throw new Error('Usuario no autenticado');
 
+            // TITANIUM DATA FIREWALL: Validation
+            // Relax strict id check for creation payload
+            const validationPayload = { ...session, id: session.id || 'temp-id' };
+            const parsed = GroupSessionSchema.safeParse(validationPayload);
+
+            if (!parsed.success) {
+                console.error('[GroupSession] Validation Failed:', parsed.error);
+                // We throw to prevent corrupt data
+                throw new Error(`Invalid Session Data: ${parsed.error.message}`);
+            }
+
             // Subcollection Path
             const collectionRef = getCollectionRef(user.uid);
             const sessionId = session.id || doc(collectionRef).id;
 
             // Clean Payload
             const sessionData = {
-                ...session,
+                ...parsed.data, // Access validated data
                 id: sessionId,
                 userId: user.uid,
                 updatedAt: new Date().toISOString()
@@ -90,18 +102,20 @@ export const GroupSessionRepository = {
             const user = auth.currentUser;
             if (!user) throw new Error('Unauthorized');
 
-            // TITANIUM STANDARD: Atomic Batch Delete
-            const batch = writeBatch(db);
+            // TITANIUM STANDARD: Sequential Delete (Robustness over Atomicity for Legacy Cleanup)
 
-            // 1. Delete from Subcollection (Standard)
+            // 1. Delete from Subcollection (Primary Source of Truth)
             const docRef = doc(db, 'users', user.uid, 'group_sessions', sessionId);
-            batch.delete(docRef);
+            await deleteDoc(docRef);
 
-            // 2. Delete from Root Collection (Legacy/Fallback)
-            const rootDocRef = doc(db, 'group_sessions', sessionId);
-            batch.delete(rootDocRef);
-
-            await batch.commit();
+            // 2. Delete from Root Collection (Legacy/Fallback) - Best Effort
+            try {
+                const rootDocRef = doc(db, 'group_sessions', sessionId);
+                await deleteDoc(rootDocRef);
+            } catch (e) {
+                console.warn('Legacy root delete skipped (Permission/Existence)', e);
+                // Swallow error ensures primary delete is not rolled back or reported as failure
+            }
         } catch (error) {
             console.error('GroupSessionRepository: Delete Error', error);
             throw error;
@@ -132,8 +146,6 @@ export const GroupSessionRepository = {
             snapshot.docs.forEach(docSnap => {
                 // Delete from Subcollection
                 batch.delete(docSnap.ref);
-                // Try delete from legacy root (best effort, assuming ID match)
-                batch.delete(doc(db, 'group_sessions', docSnap.id));
             });
 
             await batch.commit();

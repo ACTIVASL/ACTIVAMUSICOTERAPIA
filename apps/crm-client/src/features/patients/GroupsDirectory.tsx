@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { Search, Plus, Users, ArrowRight, LayoutGrid, Clock } from 'lucide-react';
-import { Button } from '../../components/ui/Button';
-import { Card } from '../../components/ui/Card';
+import { Button } from '@monorepo/ui-system';
+import { Card } from '@monorepo/ui-system';
 import { GroupSession } from '../../lib/types';
 import { GroupSessionsHistory } from '../sessions/GroupSessionsHistory'; // Imported History Component
 
@@ -29,7 +29,7 @@ export const GroupsDirectory: React.FC<GroupsDirectoryProps> = ({
             groups.set(s.groupName, {
                 count: existing.count + 1,
                 lastDate: s.date > existing.lastDate ? s.date : existing.lastDate,
-                participants: Math.max(existing.participants, s.participantNames?.length || 0)
+                participants: Math.max(existing.participants, s.participants?.length || 0)
             });
         });
 

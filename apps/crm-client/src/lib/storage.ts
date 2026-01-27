@@ -1,4 +1,4 @@
-import { storage } from './firebase';
+import { storage } from '@monorepo/engine-auth';
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 
 export const TitaniumStorage = {

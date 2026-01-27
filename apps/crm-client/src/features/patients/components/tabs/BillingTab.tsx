@@ -1,8 +1,8 @@
 import React from 'react';
-import { Button } from '../../../../components/ui/Button';
+import { Button } from '@monorepo/ui-system';
 import { FileText } from 'lucide-react';
 import { useBilling } from '../../hooks/useBilling';
-import { InvoiceGenerator } from '../../../../components/ui/InvoiceGenerator';
+import { InvoiceGenerator } from '@monorepo/ui-system';
 import { Patient, ClinicSettings, Session } from '../../../../lib/types'; // Import Session
 
 interface BillingTabProps {

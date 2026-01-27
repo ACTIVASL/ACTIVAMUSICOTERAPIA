@@ -1,6 +1,6 @@
 import React from 'react';
-import { Card } from '../../../../components/ui/Card';
-import { Button } from '../../../../components/ui/Button';
+import { Card } from '@monorepo/ui-system';
+import { Button } from '@monorepo/ui-system';
 import { BarChart3, PenTool } from 'lucide-react';
 import { EvidenceChart } from '../../../analytics/EvidenceChart';
 import { Patient } from '../../../../lib/types';

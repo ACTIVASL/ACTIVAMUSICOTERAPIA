@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { X, FileText, Printer, Wand2, Cloud } from 'lucide-react';
-import { Button } from '../../../components/ui/Button';
+import { Button } from '@monorepo/ui-system';
 import { Patient, ClinicSettings } from '../../../lib/types';
 import logoCircular from '../../../assets/logo-alpha.png';
 import { useActivityLog } from '../../../hooks/useActivityLog';
@@ -10,7 +10,7 @@ import { PATHOLOGY_MAP } from '../../../lib/patientUtils';
 import { EVALUATION_AREAS_CHILD, EVALUATION_AREAS_ADULT } from '../../../lib/constants';
 import { useReactToPrint, UseReactToPrintOptions } from 'react-to-print';
 import { useAuth } from '../../../context/AuthContext';
-import { Toast } from '../../../components/ui/Toast';
+import { Toast } from '@monorepo/ui-system';
 
 interface ReportModalProps {
   isOpen: boolean;
@@ -141,7 +141,6 @@ Se observa una respuesta favorable a la intervención musical...[Espacio para qu
 
 Se recomienda la continuidad del tratamiento con una frecuencia de...`;
 
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setReportText(draft);
 
       setIsGenerating(false);

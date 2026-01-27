@@ -1,4 +1,4 @@
-import { PlayCircle, Video, Receipt, Sparkles, Settings, BadgeCheck, Smartphone, Monitor, Tablet } from 'lucide-react';
+import { PlayCircle, Sparkles } from 'lucide-react';
 import { RevealSection } from '../ui/RevealSection';
 import crmDesktop from '../../assets/images/hero-desktop.jpg';
 import crmTablet from '../../assets/images/hero-tablet.jpg';

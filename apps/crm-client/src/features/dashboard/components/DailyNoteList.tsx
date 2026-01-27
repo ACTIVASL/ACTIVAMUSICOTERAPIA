@@ -13,7 +13,7 @@ const NoteRow = ({ item, onUpdate, onDelete }: { item: NoteItem, onUpdate: (id: 
 
 
     useEffect(() => {
-        setText(item.text); // eslint-disable-line react-hooks/set-state-in-effect
+        setText(item.text);
     }, [item.text]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const handleSave = () => {

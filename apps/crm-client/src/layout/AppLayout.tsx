@@ -24,6 +24,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
   currentView,
   onNavigate,
   userEmail,
+  onLogout,
   events = [],
 }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -48,6 +49,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
         userEmail={userEmail}
         isOpen={isMobileMenuOpen}
         onClose={() => setIsMobileMenuOpen(false)}
+        onLogout={onLogout}
         events={events}
       />
 

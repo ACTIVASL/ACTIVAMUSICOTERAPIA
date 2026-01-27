@@ -1,7 +1,7 @@
 import React from 'react';
 import { Activity, ChevronRight } from 'lucide-react';
-import { Card } from '../../../components/ui/Card';
-import { EmptyState } from '../../../components/ui/EmptyState';
+import { Card } from '@monorepo/ui-system';
+import { EmptyState } from '@monorepo/ui-system';
 import { Patient, Session } from '../../../lib/types';
 import { TREATMENT_PHASES } from '../../../lib/constants';
 

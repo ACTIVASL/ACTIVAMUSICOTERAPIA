@@ -8,6 +8,8 @@ export const MobilityAidEnum = z.enum(['none', 'cane', 'walker', 'wheelchair']);
 export const SensitivityLevelEnum = z.enum(['low', 'medium', 'high']);
 export const RecurrenceFrequencyEnum = z.enum(['WEEKLY', 'BIWEEKLY', 'MONTHLY']);
 export const WaitlistPriorityEnum = z.enum(['LOW', 'MEDIUM', 'HIGH']);
+// TITANIUM MEMORY CORE
+export const DocumentCategoryEnum = z.enum(['invoice', 'consent', 'report', 'lab', 'general', 'other']);
 
 // --- RECURRENCE ENGINE ---
 export const RecurrenceRuleSchema = z.object({
@@ -124,15 +126,26 @@ export const CognitiveScoresSchema = z.object({
   }).optional(),
 });
 
+export const ForensicMetadataSchema = z.object({
+  timestamp: z.string().optional(),
+  userAgent: z.string().optional(),
+  screenResolution: z.string().optional(),
+  devicePixelRatio: z.number().optional().or(z.string().optional()), // Allow string "1" or number 1
+  platform: z.string().optional(),
+  category: DocumentCategoryEnum.optional(), // TITANIUM: Added for Metadata persistence
+}).catchall(z.union([z.string(), z.number(), z.boolean()]));
+
 export const DocumentSchema = z.object({
   id: z.string().uuid().or(z.string().min(1)),
   name: z.string().min(1),
   url: z.string().url(),
   type: z.string(),
   size: z.number().int().min(0),
+  category: DocumentCategoryEnum.default('general'), // TITANIUM MEMORY CORE: Strict Categorization
   uploadedBy: z.string().optional(),
   createdAt: z.string().datetime().or(z.string()), // Flexible ISO check
   path: z.string(), // Storage path
+  metadata: ForensicMetadataSchema.optional(), // Forensic Metadata (Titanium)
 });
 
 // --- MASTER PATIENT ENTITY ---
@@ -195,3 +208,4 @@ export type SessionType = z.infer<typeof SessionTypeEnum>;
 export type PathologyType = z.infer<typeof PathologyTypeEnum>;
 export type ClinicalFormulation = z.infer<typeof ClinicalFormulationSchema>;
 export type CognitiveScores = z.infer<typeof CognitiveScoresSchema>;
+export type ForensicMetadata = z.infer<typeof ForensicMetadataSchema>;

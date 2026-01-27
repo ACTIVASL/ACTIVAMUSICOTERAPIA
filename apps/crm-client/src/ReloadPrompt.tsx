@@ -1,5 +1,5 @@
 import { useRegisterSW } from 'virtual:pwa-register/react';
-import { Button } from './components/ui/Button';
+import { Button } from '@monorepo/ui-system';
 import { RefreshCw, WifiOff } from 'lucide-react';
 import { useEffect, useState } from 'react';
 

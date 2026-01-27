@@ -2,14 +2,17 @@ import {
     collection,
     doc,
     getDocs,
+    getDoc,
     setDoc,
     updateDoc,
     query,
     where,
     orderBy,
-    deleteDoc
+    deleteDoc,
+    Transaction,
+    limit
 } from 'firebase/firestore';
-import { db, auth } from '../../lib/firebase';
+import { db, auth } from '@monorepo/engine-auth';
 import { Invoice } from '@monorepo/shared';
 
 const COLLECTION = 'invoices';
@@ -68,26 +71,74 @@ export const InvoiceRepository = {
         await deleteDoc(doc(db, COLLECTION, id));
     },
 
-    // Helper: Generate next Invoice Number
-    async getNextInvoiceNumber(): Promise<string> {
-        try {
-            const q = query(collection(db, COLLECTION), orderBy('number', 'desc'), where('number', '>=', 'INV-'), where('number', '<=', 'INV-\uf8ff'));
-            // Limit 1 is ideal but ordering by string desc ensures we get highest 2024 over 2023 etc.
-            const snapshot = await getDocs(q);
-            if (snapshot.empty) return `INV-${new Date().getFullYear()}-001`;
+    // --- ATOMIC SEQUENCE HANLDING ---
 
-            const lastInv = snapshot.docs[0].data() as Invoice;
-            const parts = lastInv.number.split('-');
-            if (parts.length === 3) {
-                const currentYear = new Date().getFullYear().toString();
-                if (parts[1] !== currentYear) return `INV-${currentYear}-001`; // New year reset
+    /**
+     * Ensures the 'sequences/invoices' document exists and is synced with the latest invoice.
+     * Call this BEFORE starting the transaction if you suspect it might not exist.
+     */
+    async ensureSequenceInitialized(): Promise<void> {
+        const sequenceRef = doc(db, 'sequences', 'invoices');
+        const sequenceSnap = await getDoc(sequenceRef);
 
-                const nextSeq = parseInt(parts[2]) + 1;
-                return `INV-${currentYear}-${nextSeq.toString().padStart(3, '0')}`;
+        if (!sequenceSnap.exists()) {
+            // FALLBACK: If sequence doesn't exist, strictly find the Max
+            // This is a "Cold Start" repair.
+            const currentYear = new Date().getFullYear();
+            let maxSeq = 0;
+            try {
+                // Try to find the max invoice to seed the counter
+                const q = query(collection(db, COLLECTION), orderBy('number', 'desc'), limit(1));
+                const snapshot = await getDocs(q);
+                if (!snapshot.empty) {
+                    const lastInv = snapshot.docs[0].data() as Invoice;
+                    const parts = lastInv.number.split('-');
+                    if (parts.length === 3 && parseInt(parts[1]) === currentYear) {
+                        maxSeq = parseInt(parts[2]);
+                    }
+                }
+            } catch (e) {
+                console.warn("Could not seed invoice sequence from existing data", e);
             }
-            return `INV-${new Date().getFullYear()}-001`;
-        } catch {
-            return `INV-${new Date().getFullYear()}-${Date.now().toString().slice(-3)}`; // Fallback
+
+            await setDoc(sequenceRef, {
+                current: maxSeq,
+                year: currentYear,
+                updatedAt: new Date().toISOString()
+            });
         }
+    },
+
+    /**
+     * Transactional ID Generator.
+     * Must be called INSIDE a runTransaction block.
+     */
+    async getNextNumberAtomic(transaction: Transaction): Promise<string> {
+        const sequenceRef = doc(db, 'sequences', 'invoices');
+        const sequenceDoc = await transaction.get(sequenceRef);
+
+        let currentSeq = 0;
+        const currentYear = new Date().getFullYear();
+
+        if (!sequenceDoc.exists()) {
+            throw new Error("SEQUENCE_NOT_INITIALIZED");
+        }
+
+        const data = sequenceDoc.data();
+        if (data.year !== currentYear) {
+            currentSeq = 1;
+        } else {
+            currentSeq = (data.current || 0) + 1;
+        }
+
+        transaction.set(sequenceRef, {
+            current: currentSeq,
+            year: currentYear,
+            updatedAt: new Date().toISOString()
+        });
+
+        return `INV-${currentYear}-${currentSeq.toString().padStart(3, '0')}`;
     }
 };
+
+

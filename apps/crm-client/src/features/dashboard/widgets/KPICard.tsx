@@ -1,6 +1,6 @@
 import React from 'react';
 import { LucideIcon } from 'lucide-react';
-import { Card } from '../../../components/ui/Card';
+import { Card } from '@monorepo/ui-system';
 
 interface KPICardProps {
     title: string;

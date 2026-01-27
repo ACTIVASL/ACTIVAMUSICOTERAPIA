@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Card } from '../../components/ui/Card';
-import { Button } from '../../components/ui/Button';
+import { Card } from '@monorepo/ui-system';
+import { Button } from '@monorepo/ui-system';
 import { FileText, Download, Search, Filter, Calendar, AlertTriangle, Loader2 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 // Titanium Upgrade: New Controller

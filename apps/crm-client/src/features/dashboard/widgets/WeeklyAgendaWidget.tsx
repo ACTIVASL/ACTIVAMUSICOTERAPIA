@@ -3,7 +3,7 @@ import { format, startOfWeek, addDays, isSameDay } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { Users } from 'lucide-react';
 import { Session, Patient } from '../../../lib/types';
-import { Card } from '../../../components/ui/Card';
+import { Card } from '@monorepo/ui-system';
 
 type ExtendedSession = Session & { patientId?: string | number };
 

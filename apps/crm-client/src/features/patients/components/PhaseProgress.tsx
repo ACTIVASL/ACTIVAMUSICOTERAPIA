@@ -1,6 +1,6 @@
 import React from 'react';
 import { TREATMENT_PHASES } from '../../../lib/clinicalUtils';
-import { Card } from '../../../components/ui/Card';
+import { Card } from '@monorepo/ui-system';
 import { Check } from 'lucide-react';
 
 interface PhaseProgressProps {
