@@ -18,6 +18,7 @@ interface AppLayoutProps {
 // Unused imports removed
 import { MobileBottomNav } from './MobileBottomNav';
 import { useUIStore } from '../stores/useUIStore';
+import { PwaInstallPrompt } from './PwaInstallPrompt';
 
 export const AppLayout: React.FC<AppLayoutProps> = ({
   children,
@@ -61,6 +62,8 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
         onNewAction={() => quickAppointment.open('new')}
         isMenuOpen={isMobileMenuOpen}
       />
+
+      <PwaInstallPrompt />
 
       {/* Main Content Area */}
       <main id="main-content" className="flex-1 relative z-10 transition-all duration-300 h-screen overflow-y-auto flex flex-col no-select">

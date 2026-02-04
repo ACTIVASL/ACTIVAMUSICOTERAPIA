@@ -29,6 +29,7 @@ export const ReportModal: React.FC<ReportModalProps> = ({
   const [reportText, setReportText] = useState('');
   const [isGenerating, setIsGenerating] = useState(true);
   const [toast, setToast] = useState<{ msg: string; type: 'success' | 'error' } | null>(null);
+  const [showContext, setShowContext] = useState(false); // Mobile Toggle State
 
   const { logActivity } = useActivityLog();
   const { createReport, isCreating } = useReportController(patient.id ? String(patient.id) : undefined);
@@ -170,8 +171,13 @@ Se recomienda la continuidad del tratamiento con una frecuencia de...`;
         </div>
 
         <div className="flex-1 flex flex-col md:flex-row h-full overflow-hidden">
-          {/* Left Panel: Context & Template */}
-          <div className="w-full md:w-1/3 bg-slate-50 border-r border-slate-200 p-6 overflow-y-auto hidden md:block">
+          {/* Left Panel: Context & Template (Collapsible on Mobile) */}
+          <div className={`w-full md:w-1/3 bg-slate-50 border-r border-slate-200 p-6 overflow-y-auto ${!showContext ? 'hidden md:block' : 'block absolute inset-0 z-20'}`}>
+            <div className="md:hidden flex justify-between items-center mb-4">
+              <h3 className="font-bold text-slate-800">Contexto Clínico</h3>
+              <button onClick={() => setShowContext(false)} className="p-1 bg-white rounded-full shadow-sm text-slate-500"><X size={16} /></button>
+            </div>
+
             <div className="bg-pink-50 border border-pink-100 rounded-xl p-4 mb-6">
               <h4 className="font-bold text-pink-700 text-sm mb-2 flex items-center gap-2">
                 <Wand2 size={16} /> Smart Template Activo
@@ -206,6 +212,13 @@ Se recomienda la continuidad del tratamiento con una frecuencia de...`;
 
           {/* Right Panel: Editor */}
           <div className="flex-1 flex flex-col relative">
+            {/* Mobile Context Toggle */}
+            <div className="md:hidden p-2 bg-slate-50 border-b border-slate-100 flex justify-end">
+              <button onClick={() => setShowContext(!showContext)} className="text-xs font-bold text-pink-600 flex items-center gap-1">
+                <Wand2 size={12} /> {showContext ? 'Ocultar Datos' : 'Ver Datos Paciente'}
+              </button>
+            </div>
+
             {isGenerating && (
               <div className="absolute inset-0 bg-white/80 z-10 flex items-center justify-center flex-col gap-3">
                 <Wand2 className="animate-spin text-pink-500" size={32} />

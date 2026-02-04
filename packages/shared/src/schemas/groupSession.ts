@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { SessionSchema } from './patient';
+
 
 export const GroupSessionSchema = z.object({
     id: z.string(),

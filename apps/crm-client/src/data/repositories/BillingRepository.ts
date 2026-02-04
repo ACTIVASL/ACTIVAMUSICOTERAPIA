@@ -3,6 +3,7 @@ import {
     doc,
     query,
     where,
+    orderBy,
     getDocs,
     runTransaction
 } from 'firebase/firestore';
@@ -81,9 +82,11 @@ export const BillingRepository = {
             // Query users/{uid}/group_sessions where groupName == X
             // Removed orderBy('date', 'desc') to avoid Composite Index dependency.
             // We sort in memory.
+            // Titanium Optimized: Server-side sorting enabled by Index
             const q = query(
                 collection(db, 'users', uid, 'group_sessions'),
-                where('groupName', '==', groupName)
+                where('groupName', '==', groupName),
+                orderBy('date', 'desc')
             );
 
             const snapshot = await getDocs(q);

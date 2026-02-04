@@ -1,5 +1,5 @@
 import {
-  Patient,
+  Patient as SharedPatient,
   Session,
   ClinicalFormulation,
   CognitiveScores,
@@ -11,8 +11,36 @@ import {
   GroupSession, // IMPORTED FROM SHARED
 } from '@monorepo/shared';
 
+// New Type for PDF History
+export interface EvaluationRecord {
+  id: string;
+  date: string;
+  results: {
+    moca: string;
+    mmse: string;
+    gds: string;
+  };
+  notes?: string;
+  pdfUrl?: string; // Optional if we store file
+}
+
+// Extend Patient locally
+export interface ExtendedCognitiveScores extends CognitiveScores {
+  childProfile?: Record<string, Record<string, number>>;
+  childObs?: string;
+  functionalScores?: number[];
+  date?: string; // Ensure date is present
+  admissionChecks?: { safety: string[]; prep: string[] }; // Typed strictly to match Schema
+}
+
+export interface Patient extends SharedPatient {
+  evaluationHistory?: EvaluationRecord[];
+  cognitiveScores?: ExtendedCognitiveScores;
+  currentEval?: number[]; // Added for Radar Chart persistence
+}
+
 // Re-exporting for local usage
-export type { Patient, Session, ClinicalFormulation, CognitiveScores, ClinicalSafetyProfile, MusicalIdentity, PsychosocialContext, ForensicMetadata, GroupSession };
+export type { Session, ClinicalFormulation, CognitiveScores, ClinicalSafetyProfile, MusicalIdentity, PsychosocialContext, ForensicMetadata, GroupSession };
 export { DocumentCategoryEnum };
 
 // TITANIUM NAVIGATION

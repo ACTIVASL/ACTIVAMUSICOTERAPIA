@@ -1,4 +1,4 @@
-import { PlayCircle, Sparkles } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 import { RevealSection } from '../ui/RevealSection';
 import crmDesktop from '../../assets/images/hero-desktop.jpg';
 import crmTablet from '../../assets/images/hero-tablet.jpg';
@@ -59,11 +59,11 @@ export const Software = ({ onOpenModal }: SoftwareProps) => {
 
                         <div className="flex flex-col sm:flex-row gap-5">
                             <button onClick={() => onOpenModal?.('book')} className="flex cursor-pointer items-center justify-center rounded-2xl h-16 px-10 bg-[#EC008C] hover:bg-[#D6007E] transition-all text-white text-base font-['Outfit'] font-bold shadow-2xl shadow-[#EC008C]/30 transform active:scale-95 duration-300 uppercase tracking-wide">
-                                Prueba Gratuita 14 días
+                                Contratar SaaS (299€)
                             </button>
-                            <button onClick={() => onOpenModal?.('clinic')} className="flex cursor-pointer items-center justify-center rounded-2xl h-16 px-10 bg-white border border-gray-200 hover:border-[#0A0F1D] text-[#0A0F1D] text-base font-['Outfit'] font-bold transition-all group active:scale-95 duration-300 hover:shadow-xl uppercase tracking-wide">
-                                <PlayCircle className="mr-3 group-hover:text-[#EC008C] transition-colors" size={24} />
-                                Demo Interactiva
+                            <button onClick={() => onOpenModal?.('contact')} className="flex cursor-pointer items-center justify-center rounded-2xl h-16 px-10 bg-white border border-gray-200 hover:border-[#0A0F1D] text-[#0A0F1D] text-base font-['Outfit'] font-bold transition-all group active:scale-95 duration-300 hover:shadow-xl uppercase tracking-wide">
+                                <Sparkles className="mr-3 text-slate-400 group-hover:text-[#EC008C] transition-colors" size={24} />
+                                White Label (3000€)
                             </button>
                         </div>
                     </div>
@@ -76,7 +76,7 @@ export const Software = ({ onOpenModal }: SoftwareProps) => {
                     <div className="relative w-[90%] lg:w-[800px] aspect-[16/10] bg-[#0A0F1D] rounded-xl shadow-2xl shadow-[#0A0F1D]/30 border-[6px] border-[#0A0F1D] ring-1 ring-gray-800 z-10 transition-transform duration-700 hover:scale-[1.01] overflow-hidden group/desktop">
                         {/* Screen */}
                         <div className="w-full h-full bg-slate-900 overflow-hidden relative">
-                            <img src={crmDesktop} alt="Panel de Control Clínico CRM Método Activa en Escritorio" className="w-full h-full object-contain bg-slate-900 opacity-90 group-hover/desktop:opacity-100 transition-opacity" loading="lazy" />
+                            <img src={crmDesktop} alt="Panel de Control Clínico CRM Método Activa en Escritorio" className="w-full h-full object-cover object-top bg-slate-900 opacity-90 group-hover/desktop:opacity-100 transition-opacity" loading="lazy" />
                             {/* Reflection */}
                             <div className="absolute inset-0 bg-gradient-to-tr from-white/10 to-transparent pointer-events-none"></div>
                         </div>
@@ -87,7 +87,7 @@ export const Software = ({ onOpenModal }: SoftwareProps) => {
                     {/* TABLET (Bottom Right Overlap) */}
                     <div className="absolute -bottom-10 right-0 lg:-right-12 lg:bottom-20 w-[60%] lg:w-[450px] aspect-[4/3] bg-[#1a1a1a] rounded-[1.5rem] shadow-[0_20px_50px_-12px_rgba(0,0,0,0.5)] border-[8px] border-[#1a1a1a] ring-1 ring-gray-700 z-20 animate-float" style={{ animationDelay: '1s' }}>
                         <div className="w-full h-full bg-slate-800 rounded-2xl overflow-hidden relative group/tablet">
-                            <img src={crmTablet} alt="Gestión de Pacientes en Tablet para Terapeutas" className="w-full h-full object-contain bg-slate-800" loading="lazy" />
+                            <img src={crmTablet} alt="Gestión de Pacientes en Tablet para Terapeutas" className="w-full h-full object-cover object-top bg-slate-800" loading="lazy" />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
                         </div>
                         {/* Camera Dot */}
@@ -97,23 +97,14 @@ export const Software = ({ onOpenModal }: SoftwareProps) => {
                     {/* MOBILE (Bottom Left Overlap) */}
                     <div className="absolute -bottom-20 left-4 lg:left-0 lg:bottom-40 w-[35%] lg:w-[240px] aspect-[9/19.5] bg-black rounded-[2.5rem] shadow-[0_20px_60px_-15px_rgba(236,0,140,0.4)] border-[8px] border-black ring-1 ring-gray-800 z-30 animate-float" style={{ animationDelay: '0s' }}>
                         <div className="w-full h-full bg-slate-900 rounded-[2rem] overflow-hidden relative group/mobile">
-                            <img src={crmMobile} alt="App Móvil PWA Método Activa para Pacientes" className="w-full h-full object-contain bg-black" loading="lazy" />
+                            <img src={crmMobile} alt="App Móvil PWA Método Activa para Pacientes" className="w-full h-full object-cover object-top bg-black" loading="lazy" />
                             {/* Dynamic Notch/Bar */}
                             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/3 h-5 bg-black rounded-b-xl z-40"></div>
                             <div className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1/3 h-1 bg-white/20 rounded-full z-40"></div>
                         </div>
                     </div>
 
-                    {/* Floating Badge */}
-                    <div className="absolute right-10 top-20 bg-white/90 backdrop-blur-md p-4 rounded-2xl shadow-xl shadow-[#3B82F6]/20 animate-bounce delay-1000 hidden lg:block z-40 border border-white/50">
-                        <div className="flex items-center gap-3">
-                            <div className="bg-[#3B82F6]/10 p-2.5 rounded-full text-[#3B82F6]"><Sparkles size={20} /></div>
-                            <div>
-                                <p className="text-xs text-[#64748B] font-medium uppercase tracking-wide">Actualización</p>
-                                <p className="text-sm font-bold text-[#0A0F1D] font-['Outfit']">CRM v2.3 Disponible</p>
-                            </div>
-                        </div>
-                    </div>
+
                 </div>
 
             </div>

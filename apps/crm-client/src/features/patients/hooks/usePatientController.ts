@@ -27,7 +27,6 @@ export const usePatientController = ({ patient, onUpdate, onBack }: UsePatientCo
     const [showEditProfile, setShowEditProfile] = useState(false);
     const [showReportModal, setShowReportModal] = useState(false);
     const [showPaywall, setShowPaywall] = useState(false);
-    const [showAdmissionChecklist, setShowAdmissionChecklist] = useState(false);
 
     // Notifications
     const [notification, setNotification] = useState<{ msg: string; type: 'success' | 'error' } | null>(null);
@@ -141,9 +140,17 @@ export const usePatientController = ({ patient, onUpdate, onBack }: UsePatientCo
                     } else {
                         await createSession({ patientId: String(patient.id), session: sessionData as Session });
                         if (sessionData.isAbsent) {
-                            logActivity('session', `Ausencia registrada por ${patient.name}`);
+                            logActivity('session', `Ausencia registrada por ${patient.name}`, {
+                                type: 'session',
+                                sessionId: String(sessionData.id || 'new'),
+                                patientId: String(patient.id)
+                            });
                         } else {
-                            logActivity('session', `Sesión completada con ${patient.name}`);
+                            logActivity('session', `Sesión completada con ${patient.name}`, {
+                                type: 'session',
+                                sessionId: String(sessionData.id || 'new'),
+                                patientId: String(patient.id)
+                            });
                         }
                     }
                 }
@@ -170,15 +177,39 @@ export const usePatientController = ({ patient, onUpdate, onBack }: UsePatientCo
     }, [selectedSession, patient.id, patient.name, createSession, updateSession, logActivity, showToast]);
 
     const handleUpdateCognitive = useCallback((data: CognitiveScores & { functionalScores?: number[] }) => {
+        // Create Snapshot Record for History Line
+        const newRecord = {
+            id: Date.now().toString(),
+            date: data.date || new Date().toISOString(), // Ensure strict string
+            results: {
+                moca: String(data.moca || '').split('/')[0] || '0',
+                mmse: String(data.mmse || '').split('/')[0] || '0',
+                gds: String(data.gds || '') // Ensure string
+            },
+            notes: 'Evaluación rápida registrada.'
+        };
+
+        const updatedHistory = [...(patient.evaluationHistory || []), newRecord];
+
         onUpdate({
             ...patient,
             cognitiveScores: { ...patient.cognitiveScores, ...data },
             currentEval: data.functionalScores,
+            evaluationHistory: updatedHistory,
         });
+
+        if (patient.id) {
+            logActivity('patient', `Evaluación Cognitiva: MOCA ${data.moca} | MMSE ${data.mmse}`, {
+                type: 'patient',
+                patientId: String(patient.id),
+                action: 'update'
+            });
+        }
+
         setShowCognitiveModal(false);
         setCognitiveInitialTab('general');
-        showToast('Evaluación actualizada', 'success');
-    }, [patient, onUpdate, showToast]);
+        showToast('Evaluación actualizada e historial registrado', 'success');
+    }, [patient, onUpdate, showToast, logActivity]);
 
     const handleRestoreSession = useCallback(async (session: Session) => {
         if (!patient.id || !session.id) return;
@@ -229,7 +260,7 @@ export const usePatientController = ({ patient, onUpdate, onBack }: UsePatientCo
         { id: 'sessions', label: 'Bitácora', icon: ClipboardCheck },
         { id: 'documents', label: 'Gestor Documental', icon: Folder },
         ...(canViewFinancials ? [{ id: 'billing', label: 'Facturación', icon: DollarSign }] : []),
-        { id: 'discharge', label: 'Alta y Continuidad', icon: CheckSquare },
+        { id: 'lifecycle', label: 'Ciclo Vital & Alta', icon: CheckSquare },
     ];
 
     return {
@@ -242,7 +273,6 @@ export const usePatientController = ({ patient, onUpdate, onBack }: UsePatientCo
         showEditProfile, setShowEditProfile,
         showReportModal, setShowReportModal,
         showPaywall, setShowPaywall,
-        showAdmissionChecklist, setShowAdmissionChecklist,
         isDeleting,
         canDelete,
         isPremium,

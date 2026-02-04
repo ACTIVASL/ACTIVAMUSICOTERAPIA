@@ -13,15 +13,15 @@ import { EvaluationTab } from './components/tabs/EvaluationTab';
 import { ClinicalHistoryTab } from './components/tabs/ClinicalHistoryTab';
 import { DocumentsTab } from './tabs/DocumentsTab';
 import { BillingTab } from './components/tabs/BillingTab';
-import { DischargeTab } from './components/tabs/DischargeTab';
+import { LifecycleTab } from './components/tabs/LifecycleTab';
 
 // Modals
 import { SessionModal } from './modals/SessionModal';
+import { QuickAppointmentModal } from '../sessions/modals/QuickAppointmentModal'; // TITANIUM FIX
 import { CognitiveModal } from './modals/CognitiveModal';
 import { ClinicalGuideModal } from './modals/ClinicalGuideModal';
 import { EditProfileModal } from './modals/EditProfileModal';
 import { ReportModal } from './modals/ReportModal';
-import { AdmissionChecklistModal } from './modals/AdmissionChecklistModal';
 
 // Alert Banner Components (Still local as it's just a view part)
 import { ShieldCheck } from 'lucide-react';
@@ -45,6 +45,7 @@ export const PatientDetail: React.FC<PatientDetailProps> = ({ patient, onBack, o
     const { uploadDocument } = useDocumentController(String(patient.id)); // Signature Upload
     const [showSignatureModal, setShowSignatureModal] = React.useState(false); // Signature State
     const [showRecycleBin, setShowRecycleBin] = React.useState(false); // Recycle Bin State
+    const [showQuickApptModal, setShowQuickApptModal] = React.useState(false); // TITANIUM FIX: Separate modal
 
     const handleSaveSignature = async (signature: { dataUrl: string; metadata?: ForensicMetadata } | string) => {
         try {
@@ -84,7 +85,6 @@ export const PatientDetail: React.FC<PatientDetailProps> = ({ patient, onBack, o
         showEditProfile, setShowEditProfile,
         showReportModal, setShowReportModal,
         showPaywall, setShowPaywall,
-        showAdmissionChecklist, setShowAdmissionChecklist,
         isDeleting,
         canDelete,
         isPremium,
@@ -139,7 +139,7 @@ export const PatientDetail: React.FC<PatientDetailProps> = ({ patient, onBack, o
                 onDelete={handleDeletePatient}
                 isDeleting={isDeleting}
                 canDelete={canDelete}
-                onNewSession={() => { setSelectedSession(undefined); setShowSessionModal(true); }}
+                onNewSession={() => setShowQuickApptModal(true)}
                 onShowReport={() => setShowReportModal(true)}
                 onShowGuide={() => setShowGuideModal(true)}
                 onExport={() => generateReport(patient)}
@@ -186,6 +186,9 @@ export const PatientDetail: React.FC<PatientDetailProps> = ({ patient, onBack, o
                     <EvaluationTab
                         patient={patient}
                         onOpenCognitive={() => setShowCognitiveModal(true)}
+                        onUpdate={onUpdate}
+                        clinicSettings={clinicSettings || {} as ClinicSettings}
+                        showToast={showToast}
                     />
                 )}
                 {activeTab === 'sessions' && (
@@ -232,23 +235,54 @@ export const PatientDetail: React.FC<PatientDetailProps> = ({ patient, onBack, o
                         clinicSettings={clinicSettings || ({} as ClinicSettings)}
                     />
                 )}
-                {activeTab === 'discharge' && (
-                    <DischargeTab
+                {activeTab === 'lifecycle' && (
+                    <LifecycleTab
                         patient={patient}
-                        onShowAdmission={() => setShowAdmissionChecklist(true)}
-                        onShowReport={() => setShowReportModal(true)}
+                        activeSessions={activeSessions}
+                        onUpdate={onUpdate}
                     />
                 )}
             </div>
 
             {/* --- MODALS --- */}
             {
+                showQuickApptModal && (
+                    <QuickAppointmentModal
+                        mode="existing"
+                        patients={[patient]} // Context locked to this patient
+                        initialPatientId={String(patient.id)}
+                        onClose={() => setShowQuickApptModal(false)}
+                        onSave={async (data) => {
+                            // Bridge manual QuickAppt output to Session logic
+                            // Reuse handleSaveSession but adapt input
+                            const newSessionData: Partial<Session> = {
+                                date: data.date,
+                                time: data.time || '10:00',
+                                type: 'individual', // Remove 'as const' if it causes mismatch, or keep if matches
+                                notes: 'Cita agendada desde Ficha',
+                                price: 50,
+                                paid: false,
+                                isAbsent: false,
+                                billable: true,
+                                activities: []
+                            };
+                            // We need to cast to the expected input of handleSaveSession which is ExtendedSession usually or Session
+                            // handleSaveSession expects Session? Let's check hook.
+                            // usePatientController defines handleSaveSession: (session: Session) => Promise<void>
+                            // So we need to match Session type.
+                            await handleSaveSession({ ...newSessionData } as Session);
+                            setShowQuickApptModal(false);
+                        }}
+                    />
+                )
+            }
+            {
                 showSessionModal && (
                     <SessionModal
                         initialData={selectedSession}
                         patientType={patient.pathologyType || 'other'}
                         onClose={() => setShowSessionModal(false)}
-                        onSave={handleSaveSession}
+                        onSave={async (data) => { await handleSaveSession(data); }}
                         onDelete={handleDeleteSession}
                     />
                 )
@@ -283,20 +317,6 @@ export const PatientDetail: React.FC<PatientDetailProps> = ({ patient, onBack, o
                         onClose={() => setShowReportModal(false)}
                         patient={patient}
                         clinicSettings={clinicSettings || {}}
-                    />
-                )
-            }
-            {
-                showAdmissionChecklist && (
-                    <AdmissionChecklistModal
-                        onClose={() => setShowAdmissionChecklist(false)}
-                        onSave={(data) => {
-                            onUpdate({ ...patient, cognitiveScores: { ...patient.cognitiveScores, admissionChecks: data } });
-                            setShowAdmissionChecklist(false);
-                            showToast('Checklist guardado', 'success');
-                        }}
-                        initialData={patient.cognitiveScores?.admissionChecks}
-                        isChild={patient.age < 15}
                     />
                 )
             }

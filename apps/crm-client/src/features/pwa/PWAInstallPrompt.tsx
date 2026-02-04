@@ -22,8 +22,7 @@ export const PWAInstallPrompt: React.FC = () => {
     const [isStandalone] = useState(() => {
         if (typeof window === 'undefined') return false;
         return window.matchMedia('(display-mode: standalone)').matches ||
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            (window.navigator as unknown as { standalone?: boolean }).standalone === true;
+            (window.navigator as Navigator & { standalone?: boolean }).standalone === true;
     });
 
     useEffect(() => {
@@ -32,12 +31,16 @@ export const PWAInstallPrompt: React.FC = () => {
         // Handle Android/Desktop "Add to Home Screen" event
         const handleBeforeInstallPrompt = (e: Event) => {
             e.preventDefault(); // Prevent Chrome 67 and earlier from automatically showing the prompt
-            setDeferredPrompt(e as BeforeInstallPromptEvent);
 
-            // Delay showing the prompt to not be intrusive immediately
-            setTimeout(() => {
-                setShowPrompt(true);
-            }, 3000);
+            // TITANIUM FIX: Safe Check
+            if ('prompt' in e) {
+                setDeferredPrompt(e as BeforeInstallPromptEvent);
+
+                // Delay showing the prompt to not be intrusive immediately
+                setTimeout(() => {
+                    setShowPrompt(true);
+                }, 3000);
+            }
         };
 
         // Show iOS prompt after a delay if not standalone

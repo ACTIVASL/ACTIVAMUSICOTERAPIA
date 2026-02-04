@@ -4,6 +4,7 @@ export const INITIAL_PATIENTS: Patient[] = [
   // --- CASO 1: NEURODIVERSIDAD & COMUNICACIÓN (Lucas) ---
   {
     id: 'demo-1',
+    status: 'active',
     name: 'Lucas Mateo',
     age: 8,
     diagnosis: 'TEA Grado 1 - Desafío en Comunicación Social',
@@ -85,6 +86,7 @@ export const INITIAL_PATIENTS: Patient[] = [
   },
   {
     id: 'demo-2',
+    status: 'active',
     name: 'Sofia Valderrama',
     age: 7,
     diagnosis: 'Síndrome de Down',
@@ -144,6 +146,7 @@ export const INITIAL_PATIENTS: Patient[] = [
   // --- CASO 2: DEMENCIA & IDENTIDAD (Carmen) ---
   {
     id: 'demo-3',
+    status: 'active',
     name: 'Carmen De la Fuente',
     age: 74,
     diagnosis: 'Alzheimer Fase LEVE/MODERADA (GDS 4)',
@@ -214,6 +217,7 @@ export const INITIAL_PATIENTS: Patient[] = [
   // --- CASO 3: NEUROREHABILITACIÓN (Isabel - NMT) ---
   {
     id: 'demo-4',
+    status: 'active',
     name: 'Isabel Cifuentes',
     age: 82,
     diagnosis: 'Parkinson (Estadio 3 - Hoehn & Yahr)',
@@ -271,6 +275,7 @@ export const INITIAL_PATIENTS: Patient[] = [
   },
   {
     id: 'demo-5',
+    status: 'active',
     name: 'Antonio Machado',
     age: 79,
     diagnosis: 'Recuperación Post-Ictus',

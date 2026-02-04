@@ -13,7 +13,7 @@ import { queryClient } from './lib/react-query';
 import { BrowserRouter } from 'react-router-dom';
 
 // TITANIUM FENIX DEPLOY
-console.log("%c ☢️ OPERATION PHOENIX - V3.0 (MONOLITH) ", "background: #ff0000; color: #fff; font-size: 24px; padding: 10px;");
+
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
@@ -32,4 +32,3 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     </I18nextProvider>
   </React.StrictMode>,
 );
-

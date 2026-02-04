@@ -5,84 +5,54 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/png" href="/favicon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Activa Musicoterapia | Plataforma Clínica</title>
+
+    <!-- SEO: DOMINATION PROTOCOL -->
+    <title>Activa Musicoterapia | Software de Gestión Clínica e IA</title>
+    <meta name="description"
+        content="Plataforma SaaS integral para clínicas de musicoterapia. Historia clínica digital, facturación automatizada y análisis de datos basado en evidencia." />
+    <meta name="keywords"
+        content="musicoterapia software, historia clínica digital, gestión clínica, terapia no verbal, facturación terapeutas, CRM salud" />
+    <meta name="author" content="ACTIVA SL" />
+    <meta name="theme-color" content="#0A0F1D" />
+    <meta name="version" content="titanium-v5-nuclear-bust-2026-02-03-1205" />
+    <!-- NUCLEAR CACHE BUST: 2026-02-03T12:05:00 -->
+
+    <!-- OPEN GRAPH (Social Media Authority) -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://activamusicoterapia.com/" />
+    <meta property="og:title" content="El Futuro de la Gestión Clínica Musical" />
+    <meta property="og:description"
+        content="Descubre el primer sistema operativo diseñado para terapeutas que valoran sus datos. Ciencia y Tecnología unidas." />
+    <meta property="og:image" content="https://activamusicoterapia.com/og-clinical-v2.png" />
+
+    <!-- FONTS: CRITICAL PERFORMANCE (Preconnect + Display Swap) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@400;600;700;900&display=swap"
+        rel="stylesheet">
+
+    <!-- CRITICAL STYLES -->
     <style>
         html,
         body,
         #root {
             background-color: #0A0F1D;
-            /* Deep Slate Future Black */
             margin: 0;
             padding: 0;
             width: 100%;
-        }
-    </style>
-    <link rel="preload" as="image" href="/activa-logo-new.png" />
-    <style>
-        #splash-screen {
-            position: fixed;
-            inset: 0;
-            background: #0A0F1D;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 99999;
-            transition: opacity 0.5s ease-out;
-        }
-
-        .splash-logo {
-            width: 100px;
-            height: 100px;
-            animation: pulse 2s infinite;
-            border-radius: 50%;
-        }
-
-        @keyframes pulse {
-            0% {
-                opacity: 0.6;
-                transform: scale(0.95);
-            }
-
-            50% {
-                opacity: 1;
-                transform: scale(1.05);
-            }
-
-            100% {
-                opacity: 0.6;
-                transform: scale(0.95);
-            }
+            height: 100%;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
     </style>
 </head>
 
 <body>
-    <div id="splash-screen">
-        <img src="/activa-logo-new.png" class="splash-logo" alt="Loading..." />
-    </div>
     <div id="root"></div>
-    <script>
-        window.addEventListener('load', () => {
-            setTimeout(() => {
-                const splash = document.getElementById('splash-screen');
-                if (splash) {
-                    splash.style.opacity = '0';
-                    setTimeout(() => splash.remove(), 500);
-                }
-            }, 500);
-        });
-    </script>
-    <!-- ZOMBIE SERVICE WORKER KILLER: Purges any old CRM SW that might be stuck on this domain -->
-    <script>
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.getRegistrations().then(function (registrations) {
-                for (let registration of registrations) {
-                    registration.unregister();
-                }
-            });
-            // Force reload if we suspect cache issues (optional, but safer to let user do it once)
-        }
-    </script>
+
+    <!-- APP ENTRY -->
     <script type="module" src="/src/main.tsx"></script>
 </body>
 

@@ -1,4 +1,4 @@
-// @ts-ignore
+
 import { useRegisterSW } from 'virtual:pwa-register/react';
 import { RefreshCw, X } from 'lucide-react';
 

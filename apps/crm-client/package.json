@@ -2,7 +2,7 @@
   "name": "crm-client",
   "private": true,
   "description": "Clinical Interface for Método Activa SaaS.",
-  "author": "ECONEURA S.L.",
+  "author": "ACTIVA S.L.",
   "license": "UNLICENSED",
   "sideEffects": false,
   "repository": {

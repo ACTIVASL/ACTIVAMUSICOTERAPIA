@@ -5,6 +5,7 @@ import {
     collectionGroup,
     query,
     where,
+    orderBy,
     doc,
     writeBatch,
     arrayUnion,
@@ -12,6 +13,7 @@ import {
     getDocs
 } from 'firebase/firestore';
 import { Session, Patient } from '../../lib/types';
+import { AuditRepository } from './AuditRepository';
 
 export const SessionRepository = {
     /**
@@ -78,8 +80,8 @@ export const SessionRepository = {
         const q = query(
             sessionsRef,
             where('userId', '==', uid),
-            where('type', '==', 'group')
-            // orderBy('date', 'desc') // Requires Index
+            where('type', '==', 'group'),
+            orderBy('date', 'desc') // Enabled by Titanium Index
         );
 
         const snapshot = await getDocs(q);
@@ -95,7 +97,29 @@ export const SessionRepository = {
      */
     create: async (patientId: string, session: Session): Promise<string> => {
         const uid = auth.currentUser?.uid;
-        if (!uid) throw new Error("No authenticated user");
+
+        // --- TITANIUM DEMO MODE FALLBACK ---
+        if (!uid) {
+            console.warn("[Titanium] Demo Mode: Writing to LocalStorage");
+            const stored = localStorage.getItem('demo_patients');
+            if (stored) {
+                const patients = JSON.parse(stored) as Patient[];
+                const patientIndex = patients.findIndex(p => String(p.id) === String(patientId));
+                if (patientIndex > -1) {
+                    const newSession = {
+                        ...session,
+                        id: session.id ? String(session.id) : String(Date.now()),
+                        paid: session.paid ?? false, // Ensure defaults
+                        isAbsent: session.isAbsent ?? false
+                    };
+                    const sessions = patients[patientIndex].sessions || [];
+                    patients[patientIndex].sessions = [...sessions, newSession];
+                    localStorage.setItem('demo_patients', JSON.stringify(patients));
+                    return String(newSession.id);
+                }
+            }
+            return "demo-session-id";
+        }
 
         // Force string ID
         const sessionId = session.id ? String(session.id) : String(Date.now());
@@ -119,6 +143,8 @@ export const SessionRepository = {
 
         await batch.commit();
 
+        // TITANIUM AUDIT: Log Activity
+        await AuditRepository.log('session', 'Nueva Sesión Programada', { type: 'session', sessionId, patientId });
 
         return sessionId;
     },
@@ -131,7 +157,30 @@ export const SessionRepository = {
      */
     createBatch: async (patientId: string, sessions: Session[]): Promise<void> => {
         const uid = auth.currentUser?.uid;
-        if (!uid) throw new Error("No authenticated user");
+
+        // --- TITANIUM DEMO MODE FALLBACK ---
+        if (!uid) {
+            console.warn("[Titanium] Demo Mode: Batch Writing to LocalStorage");
+            const stored = localStorage.getItem('demo_patients');
+            if (stored) {
+                const patients = JSON.parse(stored) as Patient[];
+                const patientIndex = patients.findIndex(p => String(p.id) === String(patientId));
+                if (patientIndex > -1) {
+                    const existingSessions = patients[patientIndex].sessions || [];
+                    // Sanitize IDs
+                    const newSessions = sessions.map(s => ({
+                        ...s,
+                        id: s.id ? String(s.id) : String(Date.now() + Math.random()),
+                        paid: s.paid ?? false,
+                        isAbsent: s.isAbsent ?? false
+                    }));
+                    patients[patientIndex].sessions = [...existingSessions, ...newSessions];
+                    localStorage.setItem('demo_patients', JSON.stringify(patients));
+                }
+            }
+            return;
+        }
+
         if (sessions.length === 0) return;
 
         const batch = writeBatch(db);
@@ -169,6 +218,28 @@ export const SessionRepository = {
     },
 
     update: async (patientId: string, sessionId: string, data: Partial<Session>): Promise<void> => {
+        const uid = auth.currentUser?.uid;
+
+        // --- TITANIUM DEMO MODE FALLBACK ---
+        if (!uid) {
+            console.warn("[Titanium] Demo Mode: Updating LocalStorage");
+            const stored = localStorage.getItem('demo_patients');
+            if (stored) {
+                const patients = JSON.parse(stored) as Patient[];
+                const patientIndex = patients.findIndex(p => String(p.id) === String(patientId));
+                if (patientIndex > -1) {
+                    const sessions = patients[patientIndex].sessions || [];
+                    const sessionIndex = sessions.findIndex(s => String(s.id) === String(sessionId));
+                    if (sessionIndex > -1) {
+                        sessions[sessionIndex] = { ...sessions[sessionIndex], ...data };
+                        patients[patientIndex].sessions = sessions;
+                        localStorage.setItem('demo_patients', JSON.stringify(patients));
+                    }
+                }
+            }
+            return;
+        }
+
         // TITANIUM UPGRADE: Transactional Sync for "Notes" & "Updates"
         // Ensures the legacy array (UI Cache) matches the Subcollection (Source of Truth)
         try {
@@ -213,6 +284,9 @@ export const SessionRepository = {
                     }
                 }
             });
+
+            // TITANIUM AUDIT: Log Activity
+            await AuditRepository.log('session', 'Sesión Actualizada', { type: 'session', sessionId, patientId });
         } catch (e) {
             console.error('[TitaniumUpdate] Transaction failed:', e);
             throw e;
@@ -220,6 +294,24 @@ export const SessionRepository = {
     },
 
     delete: async (patientId: string, sessionId: string): Promise<void> => {
+        const uid = auth.currentUser?.uid;
+
+        // --- TITANIUM DEMO MODE FALLBACK ---
+        if (!uid) {
+            console.warn("[Titanium] Demo Mode: Deleting from LocalStorage");
+            const stored = localStorage.getItem('demo_patients');
+            if (stored) {
+                const patients = JSON.parse(stored) as Patient[];
+                const patientIndex = patients.findIndex(p => String(p.id) === String(patientId));
+                if (patientIndex > -1) {
+                    const sessions = patients[patientIndex].sessions || [];
+                    patients[patientIndex].sessions = sessions.filter(s => String(s.id) !== String(sessionId));
+                    localStorage.setItem('demo_patients', JSON.stringify(patients));
+                }
+            }
+            return;
+        }
+
         // TITANIUM UPGRADE: Use Transaction for Atomic Consistency
         // Prevents Race Conditions on the Legacy Array
         try {
@@ -246,6 +338,9 @@ export const SessionRepository = {
                 // 4. Delete Subcollection Doc (Source of Truth)
                 transaction.delete(sessionRef);
             });
+
+            // TITANIUM AUDIT: Log Activity
+            await AuditRepository.log('delete', 'Sesión Eliminada', { type: 'delete', id: sessionId, entity: 'session' });
 
         } catch (e) {
             console.error('[TitaniumDelete] Transaction failed:', e);
@@ -295,7 +390,7 @@ export const SessionRepository = {
 
         if (updateCount > 0) {
             await batch.commit();
-            console.log(`[TitaniumHeal] Synced ${updateCount} sessions for patient ${patient.name}`);
+
         }
     }
 };

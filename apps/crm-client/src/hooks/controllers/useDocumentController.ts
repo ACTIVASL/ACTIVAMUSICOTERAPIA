@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { DocumentRepository } from '../../data/repositories/DocumentRepository';
+import { ClinicalDocument } from '@monorepo/shared';
 import { queryKeys } from '../../api/queryKeys';
 import { useActivityLog } from '../useActivityLog';
 import { useToast } from '../../context/ToastContext';
@@ -49,8 +50,7 @@ export const useDocumentController = (patientId?: string) => {
 
     // Delete Command
     const deleteMutation = useMutation({
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        mutationFn: async (document: any) => { // Relaxed type to ensure simple passing to repo
+        mutationFn: async (document: ClinicalDocument) => { // Typed strictly
             if (!patientId) throw new Error("No patient selected");
             return await DocumentRepository.delete(patientId, document);
         },
@@ -70,7 +70,13 @@ export const useDocumentController = (patientId?: string) => {
         isLoading,
         isError,
         uploadDocument: (file: File, category?: 'invoice' | 'consent' | 'report' | 'lab' | 'general' | 'other', metadata?: ForensicMetadata) =>
-            uploadMutation.mutateAsync({ file, metadata: { ...metadata, category: category || 'general' } as unknown as ForensicMetadata }),
+            uploadMutation.mutateAsync({
+                file,
+                metadata: {
+                    ...(metadata || {}),
+                    category: (category || 'general') as ForensicMetadata['category']
+                } as ForensicMetadata
+            }),
         isUploading: uploadMutation.isPending,
         deleteDocument: deleteMutation.mutateAsync,
         isDeleting: deleteMutation.isPending

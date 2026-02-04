@@ -33,7 +33,8 @@ export const LoginView = () => {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
+    const timer = setTimeout(() => setMounted(true), 50);
+    return () => clearTimeout(timer);
   }, []);
 
   // Validation Logic
@@ -136,22 +137,24 @@ export const LoginView = () => {
         {/* HEADER */}
         <div className="flex flex-col items-center text-center">
 
-          {/* PREMIUM CIRCULAR LOGO EFFECT */}
+          {/* STATIC PREMIUM LOGO (No Animation, High Fidelity) */}
           <div className="relative w-28 h-28 mb-6 group cursor-default">
-            {/* 1. Orbit Ring 1 (Pink) */}
-            <div className="absolute inset-0 rounded-full border-[2px] border-transparent border-t-[#EC008C] border-l-[#EC008C]/30 animate-[spin_4s_linear_infinite] opacity-60"></div>
-            {/* 2. Orbit Ring 2 (Turquoise - Clinical) */}
-            <div className="absolute inset-2 rounded-full border-[2px] border-transparent border-b-[#00B2A9] border-r-[#00B2A9]/30 animate-[spin_6s_linear_infinite_reverse] opacity-40"></div>
-            {/* 3. Outer Glow Pulse */}
-            <div className="absolute inset-0 rounded-full bg-[#EC008C] opacity-5 blur-xl group-hover:opacity-20 transition-all duration-700 animate-pulse"></div>
+            {/* 1. Static Gradient Glow (Back) */}
+            <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-[#EC008C] via-purple-500 to-[#00B2A9] opacity-30 blur-lg transform scale-110"></div>
 
-            {/* 4. The Logo Container */}
-            <div className="absolute inset-3 rounded-full bg-white shadow-xl flex items-center justify-center overflow-hidden ring-4 ring-white z-10 transform group-hover:scale-105 transition-transform duration-500">
+            {/* 2. Outer Ring (Static) */}
+            <div className="absolute inset-0 rounded-full border-[3px] border-white/50 shadow-sm"></div>
+
+            {/* 3. The Logo Container */}
+            <div className="absolute inset-2 rounded-full bg-white shadow-2xl flex items-center justify-center overflow-hidden ring-4 ring-white border border-slate-100">
               <img
                 src={logoCircular}
                 alt="Activa Logo"
                 className="w-full h-full object-cover"
               />
+
+              {/* 4. Glass Shine (Static Top Reflection) */}
+              <div className="absolute inset-0 rounded-full bg-gradient-to-b from-white/40 via-transparent to-transparent opacity-80 pointer-events-none"></div>
             </div>
           </div>
 
@@ -342,7 +345,7 @@ export const LoginView = () => {
               setEmailError('');
               setPasswordError('');
             }}
-            className="text-sm font-bold text-[#00B2A9] hover:text-[#EC008C] hover:underline transition-all uppercase tracking-wide"
+            className="text-sm font-bold text-slate-400 hover:text-slate-600 hover:underline transition-all uppercase tracking-wide"
           >
             {isRegistering
               ? '← Volver al Login'

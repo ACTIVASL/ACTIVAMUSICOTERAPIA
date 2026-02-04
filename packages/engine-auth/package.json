@@ -1,7 +1,7 @@
 {
     "name": "@monorepo/engine-auth",
     "version": "1.0.0",
-    "author": "ECONEURA S.L.",
+    "author": "ACTIVA S.L.",
     "license": "UNLICENSED",
     "private": true,
     "sideEffects": false,

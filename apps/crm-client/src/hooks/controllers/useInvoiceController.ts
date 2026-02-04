@@ -23,7 +23,12 @@ export const useInvoiceController = () => {
         onSuccess: (_data, variables) => {
             queryClient.invalidateQueries({ queryKey: ['invoices'] });
             queryClient.invalidateQueries({ queryKey: ['sessions'] }); // Refresh sessions to show paid status
-            logActivity('finance', `Nueva factura creada: ${variables.invoice.number} (${variables.invoice.total}€)`);
+            logActivity('finance', `Nueva factura creada: ${variables.invoice.number} (${variables.invoice.total}€)`, {
+                type: 'finance',
+                amount: variables.invoice.total,
+                invoiceId: variables.invoice.number,
+                status: 'pending'
+            });
         }
     });
 
@@ -33,9 +38,17 @@ export const useInvoiceController = () => {
         onSuccess: (_data, variables) => {
             queryClient.invalidateQueries({ queryKey: ['invoices'] });
             if (variables.status === 'PAID') {
-                logActivity('finance', `Factura cobrada: ${variables.id} (Método: ${variables.method || 'N/A'})`);
+                logActivity('finance', `Factura cobrada: ${variables.id} (Método: ${variables.method || 'N/A'})`, {
+                    type: 'finance',
+                    invoiceId: variables.id,
+                    status: 'paid'
+                });
             } else {
-                logActivity('finance', `Factura actualizada: ${variables.id} -> ${variables.status}`);
+                logActivity('finance', `Factura actualizada: ${variables.id} -> ${variables.status}`, {
+                    type: 'finance',
+                    invoiceId: variables.id,
+                    status: 'pending' // Or map other statuses
+                });
             }
         }
     });
@@ -44,7 +57,11 @@ export const useInvoiceController = () => {
         mutationFn: (id: string) => InvoiceRepository.delete(id),
         onSuccess: (_data, variables) => {
             queryClient.invalidateQueries({ queryKey: ['invoices'] });
-            logActivity('delete', `Factura eliminada: ${variables}`);
+            logActivity('delete', `Factura eliminada: ${variables}`, {
+                type: 'delete',
+                entity: 'invoice',
+                id: variables
+            });
         }
     });
 

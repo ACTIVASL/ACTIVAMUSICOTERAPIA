@@ -118,13 +118,17 @@ export const CognitiveScoresSchema = z.object({
   mmse: z.union([z.string(), z.number()]).optional(),
   gds: z.union([z.string(), z.number()]).optional(),
   date: z.string().optional(),
+  lastEvalDate: z.string().optional(), // TITANIUM LIFECYCLE
   mocaDetails: z.record(z.string(), z.number()).optional(), // Details are code:score
   mmseDetails: z.record(z.string(), z.number()).optional(),
   admissionChecks: z.object({
     safety: z.array(z.string()),
     prep: z.array(z.string()),
   }).optional(),
-});
+  functionalScores: z.array(z.number()).optional(),
+  childProfile: z.record(z.string(), z.any()).optional(),
+  childObs: z.string().optional(),
+}).catchall(z.unknown());
 
 export const ForensicMetadataSchema = z.object({
   timestamp: z.string().optional(),
@@ -158,6 +162,9 @@ export const PatientSchema = z.object({
   age: z.number().int().min(0).max(120),
   diagnosis: z.string().default('Sin diagnosticar'),
   pathologyType: z.union([PathologyTypeEnum, z.string()]).default('other'),
+  status: z.enum(['active', 'paused', 'archived']).default('active'), // TITANIUM LIFECYCLE
+  createdAt: z.string().optional(),
+  dischargeDate: z.string().optional(),
   photo: z.string().url().optional().or(z.literal('')),
 
   // Contact

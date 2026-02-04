@@ -8,6 +8,8 @@ import {
     collectionGroup
 } from 'firebase/firestore';
 import type { ClinicalReport } from '../../lib/types';
+import { AuditRepository } from './AuditRepository';
+
 
 // We don't have a shared schema for ClinicalReport yet, let's define a local strict one or trust the type.
 // For Titanium, we should really have a schema. I will assume types are sufficient for now to match interface, but add runtime check if possible.
@@ -69,6 +71,15 @@ export const ReportRepository = {
         };
 
         const docRef = await addDoc(collection(db, `patients/${patientId}/reports`), payload);
+
+        // TITANIUM AUDIT: Log Activity
+        await AuditRepository.log('report', 'Nuevo Informe Clínico Generado', {
+            type: 'report',
+            documentId: docRef.id,
+            format: 'pdf',
+            url: `/patients/${patientId}?tab=history`
+        });
+
         return { id: docRef.id, ...payload } as ClinicalReport;
     }
 };

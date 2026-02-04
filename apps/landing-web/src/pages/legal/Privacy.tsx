@@ -7,8 +7,8 @@ export const Privacy = () => {
         <>
             <SeoHead title="Política de Privacidad | Activa Musicoterapia" />
             <Navigation />
-            <main className="pt-32 pb-20 px-6 max-w-4xl mx-auto font-['Inter']">
-                <h1 className="text-4xl font-['Outfit'] font-bold mb-8 text-[#0A0F1D]">Política de Privacidad</h1>
+            <main className="pt-32 pb-20 px-6 max-w-4xl mx-auto font-sans">
+                <h1 className="text-4xl font-display font-bold mb-8 text-brand-dark">Política de Privacidad</h1>
                 <div className="prose prose-lg max-w-none text-gray-600">
                     <p>Última actualización: Enero 2026</p>
                     <p>En Activa Musicoterapia, nos comprometemos a proteger la privacidad y seguridad de sus datos personales, especialmente los datos de salud protegidos (PHI/GDPR).</p>

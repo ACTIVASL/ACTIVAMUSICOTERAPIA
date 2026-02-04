@@ -10,6 +10,7 @@ interface QuickAppointmentModalProps {
   patients: Patient[];
   onSave: (data: { date: string; time: string; name: string; mode: 'new' | 'existing'; patientId?: string | number }) => void;
   mode?: 'existing' | 'new';
+  initialPatientId?: string; // TITANIUM: Allow pre-selecting patient
 }
 
 export const QuickAppointmentModal: React.FC<QuickAppointmentModalProps> = ({
@@ -17,10 +18,11 @@ export const QuickAppointmentModal: React.FC<QuickAppointmentModalProps> = ({
   patients,
   onSave,
   mode = 'existing',
+  initialPatientId = ''
 }) => {
   // Mode prop added to auto-select tab
   const [currentMode, setCurrentMode] = useState(mode);
-  const [selectedPatientId, setSelectedPatientId] = useState('');
+  const [selectedPatientId, setSelectedPatientId] = useState(initialPatientId || '');
   const [newPatientName, setNewPatientName] = useState('');
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [time, setTime] = useState('10:00');

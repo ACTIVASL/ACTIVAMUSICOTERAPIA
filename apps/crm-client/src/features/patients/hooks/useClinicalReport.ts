@@ -7,7 +7,7 @@ export const useClinicalReport = () => {
 
     const generateReport = async (patient: Patient) => {
         try {
-            console.log("Starting PDF Generation for:", patient.name);
+
             const doc = new jsPDF();
             const pageWidth = doc.internal.pageSize.width;
             const pageHeight = doc.internal.pageSize.height;

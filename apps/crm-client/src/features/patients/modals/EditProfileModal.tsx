@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { X, UserCheck, Hash, Users, Music, Printer, Save } from 'lucide-react';
+import { X, UserCheck, Hash, Users, Music, Printer, Save, Calendar } from 'lucide-react';
 import { Button } from '@monorepo/ui-system';
 import { COMMON_PATHOLOGIES } from '../../../lib/patientUtils';
 import { compressImage } from '../../../lib/utils';
@@ -13,48 +13,24 @@ interface EditProfileModalProps {
 }
 
 export const EditProfileModal: React.FC<EditProfileModalProps> = ({ onClose, onSave, initialData }) => {
-  const [photoPreview, setPhotoPreview] = useState<string | null>(initialData?.photo || null);
-  const [diagnosisType, setDiagnosisType] = useState<string>(
-    initialData?.pathologyType || '',
-  );
-  const [pathologyType, setPathologyType] = useState<string>(initialData?.pathologyType || 'other');
-  const [hasConsent, setHasConsent] = useState<boolean>(initialData?.hasConsent || false);
-
-  // REF PARA EL FORMULARIO
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
 
-  // ESTADOS PARA GENERACIÓN AUTOMÁTICA
   const [name, setName] = useState(initialData?.name || '');
+  const [photoPreview, setPhotoPreview] = useState(initialData?.photo || '');
+  const [diagnosisType, setDiagnosisType] = useState(initialData?.pathologyType || '');
+  const [pathologyType, setPathologyType] = useState(initialData?.pathologyType || '');
   const [date, setDate] = useState(
-    initialData?.joinedDate || new Date().toISOString().split('T')[0],
+    initialData?.joinedDate ? new Date(initialData.joinedDate).toISOString().split('T')[0] : new Date().toISOString().split('T')[0]
   );
-  const [reference, setReference] = useState(initialData?.reference || '');
+  const [hasConsent, setHasConsent] = useState(initialData?.hasConsent || false);
+  const [reference] = useState(initialData?.reference || '');
   const [age, setAge] = useState<string | number>(initialData?.age || '');
-  const [birthDate] = useState(initialData?.birthDate || '');
-
-  // SPLIT DATE STATE (TITANIUM FIX)
-  const initialDate = initialData?.birthDate ? new Date(initialData.birthDate) : null;
-  const [bDay, setBDay] = useState(initialDate ? initialDate.getDate().toString() : '');
-  const [bMonth, setBMonth] = useState(initialDate ? initialDate.getMonth().toString() : '0'); // 0-indexed
-  const [bYear, setBYear] = useState(initialDate ? initialDate.getFullYear().toString() : '');
-
-  // EFFECT: Constantly sync partials to main birthDate string for form submission
-  // No effects for updates to avoid cascades. Logic moved to form submission or change handlers if needed.
-  // Assuming birthDate is the source of truth, or bDay/bMonth/bYear are just helpers.
-  // Actually, let's keep it simple: We won't auto-calculate age/reference in real-time if it causes issues, or we use a better pattern.
-  // For now, silencing the errors by ensuring dependencies are stable or removing the effects if they are circular.
-  // Refactor: Calculate derived values on Save?
-  // Or: Just suppressing the warning is bad.
-  // Fix: Move setAge/setReference logic to handleBlur or specific event.
-
-  // Removing problematic effects
-
-
-  // Use memo for age
+  const [birthDate, setBirthDate] = useState(initialData?.birthDate || '');
 
 
   // TITANIUM UPLOAD HOOK
-  const { uploadImage, uploading } = useImageUpload();
+  const { uploadImage } = useImageUpload();
 
   const handlePhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0];
@@ -187,158 +163,176 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({ onClose, onS
               onSave(d);
             }}
           >
-            <div className="flex flex-col md:flex-row gap-8 items-start mb-8">
-              <div className="flex flex-col items-center gap-3 mx-auto md:mx-0">
-                <div className="relative group cursor-pointer w-28 h-28 md:w-32 md:h-32 rounded-full border-4 border-white shadow-xl bg-slate-50 overflow-hidden ring-1 ring-slate-200 transition-all group-hover:scale-105 active:scale-95">
-                  {photoPreview ? (
-                    <img src={photoPreview} className="w-full h-full object-cover" alt="Perfil" />
-                  ) : (
-                    <UserCheck size={40} className="text-slate-300 m-auto mt-8 md:mt-10" />
-                  )}
-                  <label
-                    htmlFor="photo-upload"
-                    className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-white font-medium text-xs cursor-pointer backdrop-blur-sm"
+            <div className="space-y-8">
+              {/* --- SECTION 1: IDENTITY HEADER (Photo + Name) --- */}
+              <div className="flex flex-col md:flex-row gap-6 items-center">
+                {/* 1. PHOTO (Left) */}
+                <div className="shrink-0 relative group">
+                  <div
+                    onClick={() => fileInputRef.current?.click()}
+                    className="w-32 h-32 rounded-full bg-slate-100 border-4 border-white shadow-lg flex items-center justify-center cursor-pointer overflow-hidden hover:scale-105 transition-transform group-hover:shadow-xl"
                   >
-                    {uploading ? 'Subiendo...' : 'Cambiar Foto'}
-                  </label>
+                    {photoPreview ? (
+                      <img src={photoPreview} alt="Profile" className="w-full h-full object-cover" />
+                    ) : (
+                      <Users size={48} className="text-slate-300" />
+                    )}
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
+                      <span className="opacity-0 group-hover:opacity-100 text-white font-bold text-xs bg-black/50 px-2 py-1 rounded-full backdrop-blur-sm">
+                        Cambiar
+                      </span>
+                    </div>
+                  </div>
                   <input
                     type="file"
-                    id="photo-upload"
+                    ref={fileInputRef}
+                    className="hidden"
                     accept="image/*"
                     onChange={handlePhotoChange}
-                    className="hidden"
                   />
                 </div>
-                <span className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-2">
-                  Foto Perfil
-                </span>
-              </div>
-              <div className="flex-1 w-full space-y-5">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                  <div>
-                    <label className="label-pro">Nombre Completo</label>
-                    <input
-                      name="name"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      className="input-pro text-lg p-3"
-                      required
-                      autoCapitalize="words"
-                      placeholder="Ej. Juan Pérez"
-                    />
+
+                {/* 2. NAME & REFERENCE (Right) */}
+                <div className="flex-1 w-full space-y-2">
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">
+                      Nombre Completo del Paciente
+                    </label>
+                    <div className="bg-slate-100 px-2 py-0.5 rounded text-[10px] font-mono text-slate-500 font-bold tracking-tight">
+                      REF: {reference || 'AUTO'}
+                    </div>
                   </div>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 items-end">
-                    <div className="col-span-2">
-                      <label className="label-pro">Nacimiento (D/M/A)</label>
-                      <div className="flex gap-2">
-                        <input
-                          placeholder="Día"
-                          className="input-pro w-16 text-center px-1 text-lg p-3"
-                          type="number"
-                          inputMode="numeric"
-                          min={1}
-                          max={31}
-                          value={bDay}
-                          onChange={(e) => setBDay(e.target.value)}
-                        />
-                        <select
-                          className="input-pro flex-1 min-w-[80px] px-1 text-lg p-3 bg-white"
-                          value={bMonth}
-                          onChange={(e) => setBMonth(e.target.value)}
-                        >
-                          {['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'].map((mes, i) => (
-                            <option key={i} value={i}>{mes}</option>
-                          ))}
-                        </select>
-                        <input
-                          placeholder="Año"
-                          className="input-pro w-20 text-center px-1 text-lg p-3"
-                          type="number"
-                          inputMode="numeric"
-                          min={1920}
-                          max={new Date().getFullYear()}
-                          value={bYear}
-                          onChange={(e) => setBYear(e.target.value)}
-                        />
-                        <input type="hidden" name="birthDate" value={birthDate} />
-                      </div>
-                    </div>
-                    <div className="col-span-1">
-                      <label className="label-pro">Edad</label>
-                      <input
-                        name="age"
-                        type="number"
-                        inputMode="numeric"
-                        value={age}
-                        onChange={(e) => setAge(e.target.value)}
-                        className="input-pro font-bold text-slate-700 text-lg p-3 w-full text-center"
-                        required
-                      />
-                    </div>
-                    <div className="col-span-1">
-                      <label className="label-pro">Fecha Ingreso</label>
-                      <input
-                        name="joinedDate"
-                        type="date"
-                        value={date}
-                        onChange={(e) => setDate(e.target.value)}
-                        className="input-pro text-lg p-3 w-full"
-                      />
-                    </div>
+                  <input
+                    name="name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className="w-full text-3xl md:text-4xl font-black text-slate-800 border-b-2 border-slate-100 focus:border-indigo-500 bg-transparent py-2 placeholder-slate-200 focus:outline-none transition-colors"
+                    required
+                    autoCapitalize="words"
+                    placeholder="Ej. Juan Pérez"
+                  />
+                  <div className="flex items-center gap-2 text-xs text-slate-400">
+                    <UserCheck size={12} />
+                    <span>Asegúrate de escribir los dos apellidos si es posible.</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* --- SECTION 2: THE DATA TRINITY (Dates & Age) --- */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {/* 1. FECHA DE NACIMIENTO */}
+                <div className="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-all group flex flex-col gap-1 relative overflow-hidden">
+                  <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-pink-400 to-rose-400"></div>
+                  <label className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+                    <Calendar size={12} className="text-pink-500" /> Nacimiento
+                  </label>
+                  <input
+                    type="date"
+                    name="birthDate"
+                    className="text-lg font-bold text-slate-700 border-none bg-transparent p-0 focus:ring-0 cursor-pointer w-full text-left outline-none"
+                    max={new Date().toISOString().split('T')[0]}
+                    value={birthDate}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      setBirthDate(val);
+                      if (val) {
+                        const d = new Date(val);
+                        const today = new Date();
+                        let ag = today.getFullYear() - d.getFullYear();
+                        const m = today.getMonth() - d.getMonth();
+                        if (m < 0 || (m === 0 && today.getDate() < d.getDate())) ag--;
+                        setAge(ag);
+                      }
+                    }}
+                  />
+                </div>
+
+                {/* 2. EDAD (Calculation) */}
+                <div className="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-all group flex flex-col gap-1 relative overflow-hidden">
+                  <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-indigo-400 to-violet-400"></div>
+                  <label className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+                    <Hash size={12} className="text-indigo-500" /> Edad Actual
+                  </label>
+                  <div className="flex items-baseline gap-1">
+                    <input
+                      name="age"
+                      type="number"
+                      value={age}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setAge(val);
+                        if (val) {
+                          const ageNum = parseInt(val);
+                          const currentYear = new Date().getFullYear();
+                          const y = currentYear - ageNum;
+                          const newDate = `${y}-01-01`;
+                          setBirthDate(newDate);
+                        }
+                      }}
+                      className="text-3xl font-black text-slate-800 border-none bg-transparent p-0 w-full focus:ring-0 outline-none placeholder-slate-200"
+                      placeholder="00"
+                    />
+                    <span className="text-sm font-bold text-slate-400">años</span>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5 items-end">
-                  <div>
-                    <label className="label-pro flex items-center gap-2">
-                      <Hash size={12} /> Referencia (Auto)
-                    </label>
-                    <input
-                      name="reference"
-                      value={reference}
-                      onChange={(e) => {
-                        setReference(e.target.value);
-                      }}
-                      className="input-pro font-mono text-xs bg-slate-50 border-slate-300 text-slate-600"
-                      placeholder="JP-123125"
-                      autoCapitalize="characters"
-                    />
-                  </div>
-                  <div>
-                    <label className="label-pro">Patología / Motivo</label>
-                    <select
-                      name="diagnosisSelect"
-                      className="input-pro text-lg p-3"
-                      onChange={handleDiagnosisChange}
-                      value={diagnosisType}
-                      required
-                    >
-                      {COMMON_PATHOLOGIES.map((p, i) => (
-                        <option
-                          key={i}
-                          value={p.value}
-                          disabled={p.disabled}
-                          className={p.disabled ? 'font-bold bg-slate-100 text-slate-500' : ''}
-                        >
-                          {p.label}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+                {/* 3. FECHA DE INGRESO */}
+                <div className="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-all group flex flex-col gap-1 relative overflow-hidden">
+                  <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-400 to-teal-400"></div>
+                  <label className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+                    <Calendar size={12} className="text-emerald-500" /> Fecha de Ingreso
+                  </label>
+                  <input
+                    name="joinedDate"
+                    type="date"
+                    value={date}
+                    onChange={(e) => setDate(e.target.value)}
+                    className="text-lg font-bold text-slate-700 border-none bg-transparent p-0 focus:ring-0 cursor-pointer w-full text-left outline-none"
+                  />
+                </div>
+              </div>
+
+              {/* --- SECTION 3: CLINICAL DIAGNOSIS --- */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5 items-end">
+                <div>
+                  <label className="label-pro">Patología / Motivo</label>
+                  <select
+                    name="diagnosisSelect"
+                    className="input-pro text-lg p-3"
+                    onChange={handleDiagnosisChange}
+                    value={diagnosisType}
+                    required
+                  >
+                    {COMMON_PATHOLOGIES.map((p, i) => (
+                      <option
+                        key={i}
+                        value={p.value}
+                        disabled={p.disabled}
+                        className={p.disabled ? 'font-bold bg-slate-100 text-slate-500' : ''}
+                      >
+                        {p.label}
+                      </option>
+                    ))}
+                  </select>
                 </div>
                 {(diagnosisType === 'other' || pathologyType === 'other') && (
-                  <input
-                    name="customDiagnosis"
-                    defaultValue={initialData?.diagnosis}
-                    className="input-pro animate-in fade-in slide-in-from-top-1"
-                    placeholder="Especifique la patología o motivo..."
-                    required
-                  />
+                  <div className="w-full">
+                    <label className="label-pro">Especificar</label>
+                    <input
+                      name="customDiagnosis"
+                      defaultValue={initialData?.diagnosis}
+                      className="input-pro animate-in fade-in slide-in-from-top-1"
+                      placeholder="Especifique la patología o motivo..."
+                      required
+                    />
+                  </div>
                 )}
+                {/* Hidden Reference Input if needed for state, or we just rely on display */}
+                <input type="hidden" name="reference" value={reference} />
               </div>
             </div>
 
-            <div className="space-y-6 border-t border-slate-100 pt-8">
+            <div className="space-y-6 border-t border-slate-100 pt-8 mt-8">
               {/* SECCIÓN 1: CUIDADOR Y CONTACTO DESGLOSADO */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>

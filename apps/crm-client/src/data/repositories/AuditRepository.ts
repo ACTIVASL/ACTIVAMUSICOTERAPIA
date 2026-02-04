@@ -11,14 +11,24 @@ import {
 } from 'firebase/firestore';
 import { db, auth } from '@monorepo/engine-auth';
 
+export type AuditLogMetadata =
+    | { type: 'finance'; amount?: number; invoiceId?: string; status?: 'paid' | 'pending' | 'void' }
+    | { type: 'report'; documentId?: string; url?: string; format: 'pdf' }
+    | { type: 'session'; sessionId: string; patientId: string }
+    | { type: 'patient'; patientId: string; action: 'create' | 'update' | 'delete' }
+    | { type: 'settings'; setting: string }
+    | { type: 'system'; action: string }
+    | { type: 'security'; event: string }
+    | { type: 'delete'; entity: string; id: string };
+
 export interface AuditLogEntry {
     id: string;
-    type: 'patient' | 'settings' | 'session' | 'system' | 'report' | 'finance' | 'security' | 'delete';
+    type: AuditLogMetadata['type'];
     message: string;
     timestamp: string; // ISO String for UI
     createdAt: Timestamp | Date; // Server Timestamp for ordering/security
     userId: string;
-    metadata?: Record<string, unknown>;
+    metadata?: AuditLogMetadata;
 }
 
 const COLLECTION = 'activity_logs';
@@ -28,7 +38,7 @@ export const AuditRepository = {
      * Creates an immutable audit log entry.
      * Uses serverTimestamp() to ensure forensic validity.
      */
-    async log(type: AuditLogEntry['type'], message: string, metadata?: Record<string, unknown>): Promise<void> {
+    async log(type: AuditLogMetadata['type'], message: string, metadata?: AuditLogMetadata): Promise<void> {
         const user = auth.currentUser;
 
         if (!user) {
@@ -37,12 +47,15 @@ export const AuditRepository = {
         }
 
         try {
+            // TITANIUM SAFETY: Strip 'undefined' values which crash Firestore addDoc
+            const safeMetadata = metadata ? JSON.parse(JSON.stringify(metadata)) : null;
+
             await addDoc(collection(db, COLLECTION), {
                 type,
                 message,
                 timestamp: serverTimestamp(),
                 userId: user.uid,
-                metadata: metadata || null,
+                metadata: safeMetadata,
                 userAgent: navigator.userAgent
             });
         } catch (error) {

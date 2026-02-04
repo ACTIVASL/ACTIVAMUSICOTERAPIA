@@ -1,4 +1,4 @@
-import React, { useState, Suspense } from 'react';
+import React, { useState } from 'react';
 // Loader2 removed
 import { useNavigate, useLocation } from 'react-router-dom';
 
@@ -8,29 +8,27 @@ import { AppLayout } from '@/layout/AppLayout';
 import { ErrorBoundary, CommandMenu, OfflineIndicator } from '@monorepo/ui-system';
 
 // AUTH
-import { AnimatePresence } from 'framer-motion'; // TITANIUM ANIMATION
+// TITANIUM ANIMATION removed from here (moved to AppRouter)
 import { LoginView } from '@monorepo/engine-auth';
 import { useAuth } from './context/AuthContext';
 
 // ROUTES
-import { AppRoutes } from './routes/AppRoutes';
+import { AppRouter } from './routes/AppRouter';
 
 // MODALS
+import { GlobalModals } from './features/modals/GlobalModals';
 
-// MODALS
-import { QuickAppointmentModal } from './features/sessions/modals/QuickAppointmentModal';
-import { CreateGroupModal } from './features/patients/modals/CreateGroupModal';
-import { GroupSessionModal } from './features/sessions/modals/GroupSessionModal';
+// REPOSITORIES
 import { SessionRepository } from './data/repositories/SessionRepository';
+
 // STORES
 import { useUIStore } from './stores/useUIStore';
 
 // API & TYPES
 import { Patient, GroupSession, CalendarEvent, NavigationPayload, Session } from './lib/types';
 
-// Loading Spinner for Code Splitting Suspense
-
-const PageLoader = () => <div className="h-screen w-full flex items-center justify-center bg-slate-50"><div className="w-8 h-8 rounded-full border-4 border-slate-200 border-t-pink-500 animate-spin" /></div>;
+// Loading Spinner logic moved to AppRouter or unused in App
+// PageLoader definition removed
 
 // Main App Component
 import { usePatients, useCreatePatient, useUpdatePatient } from './api/queries';
@@ -73,6 +71,15 @@ function App() {
   const location = useLocation();
   const queryClient = useQueryClient();
 
+  // TITANIUM: Force Redirect to Dashboard on Login
+  React.useEffect(() => {
+    if (user || demoMode) {
+      if (location.pathname === '/' || location.pathname === '/auth/login') {
+        navigate('/dashboard', { replace: true });
+      }
+    }
+  }, [user, demoMode, location.pathname, navigate]);
+
   // GLOBAL STATE (Server State via React Query)
   const { data: patients = [] } = usePatients(demoMode || !user);
 
@@ -80,13 +87,9 @@ function App() {
   const createPatient = useCreatePatient(demoMode);
   const updatePatient = useUpdatePatient(demoMode);
 
-
-
   // UI STORE (ZUSTAND - TITANIUM ARCHITECTURE)
   const quickAppointment = useUIStore((state) => state.quickAppointment);
   const groupSession = useUIStore((state) => state.groupSession);
-
-  // isLoadingData removed (unused)
 
   // MODAL STATES
   const [groupSessions, setGroupSessions] = useState<GroupSession[]>([]);
@@ -268,6 +271,12 @@ function App() {
         case 'billing':
           navigate('/billing');
           break;
+        case 'quick-appointment': {
+          // TITANIUM: Global Quick Appointment Trigger from Dashboard
+          const payload = data as { mode: 'new' | 'existing' };
+          quickAppointment.open(payload?.mode || 'new');
+          break;
+        }
         default:
           navigate('/dashboard');
       }
@@ -287,19 +296,23 @@ function App() {
     });
   };
 
-  const handleNewPatient = async (newPatientData: Omit<Patient, 'id' | 'sessions' | 'clinicalFormulation' | 'reference'>) => {
+  const handleNewPatient = async (newPatientData: Partial<Patient>) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { id, ...rest } = newPatientData;
     const payload = {
-      ...newPatientData,
+      ...rest,
+      name: newPatientData.name || 'Paciente Sin Nombre',
       sessions: [],
       clinicalFormulation: {},
       reference: `REF-${Math.floor(Math.random() * 10000)}`,
       sessionsCompleted: 0,
+      status: 'active' as const,
       safetyProfile: DEFAULT_SAFETY_PROFILE,
       musicalIdentity: DEFAULT_MUSICAL_IDENTITY,
       socialContext: DEFAULT_SOCIAL_CONTEXT,
     };
 
-    createPatient.mutate(payload, {
+    createPatient.mutate(payload as Omit<Patient, 'id'>, {
       onSuccess: () => {
         logActivity('patient', `Nuevo paciente registrado: ${newPatientData.name}`);
       },
@@ -340,6 +353,7 @@ function App() {
         clinicalFormulation: {},
         reference: `REF-${Date.now().toString().slice(-4)}`,
         sessionsCompleted: 1,
+        status: 'active' as const,
         safetyProfile: DEFAULT_SAFETY_PROFILE,
         musicalIdentity: DEFAULT_MUSICAL_IDENTITY,
         socialContext: DEFAULT_SOCIAL_CONTEXT,
@@ -433,55 +447,26 @@ function App() {
         }}
         events={events}
       >
-        <Suspense fallback={<PageLoader />}>
-
-
-          <AnimatePresence mode="wait">
-            <AppRoutes
-              patients={patients}
-              groupSessions={groupSessions}
-              onNavigate={handleNavigate}
-              onUpdatePatient={handleUpdatePatient}
-              onNewPatient={handleNewPatient}
-              onNewGroup={() => setIsCreateGroupOpen(true)}
-              onOpenGroupModal={(mode, data) => groupSession.open(data ? undefined : undefined, mode, data)}
-              onOpenQuickAppointment={(mode) => quickAppointment.open(mode)}
-            />
-          </AnimatePresence>
-        </Suspense>
+        <AppRouter
+          patients={patients}
+          groupSessions={groupSessions}
+          onNavigate={handleNavigate}
+          onUpdatePatient={handleUpdatePatient}
+          onNewPatient={handleNewPatient}
+          setIsCreateGroupOpen={setIsCreateGroupOpen}
+        />
       </AppLayout>
 
       {/* GLOBAL MODALS */}
-      {quickAppointment.isOpen && (
-        <QuickAppointmentModal
-          mode={quickAppointment.mode}
-          patients={patients}
-          onClose={() => quickAppointment.close()}
-          onSave={handleQuickAppointment}
-        />
-      )}
-
-      {groupSession.isOpen && (
-        <GroupSessionModal
-          initialGroupName={groupSession.initialGroupName}
-          mode={groupSession.mode}
-          initialData={groupSession.data} // FIX: Pass the data to show Edit/Delete UI
-          patients={patients} // Pass Full Patient List
-          onClose={() => groupSession.close()}
-          onSave={handleSaveGroupSession}
-          onDelete={handleDeleteGroupSession}
-        />
-      )}
-
-      {isCreateGroupOpen && (
-        <CreateGroupModal
-          onClose={() => setIsCreateGroupOpen(false)}
-          onSave={(name) => {
-            setIsCreateGroupOpen(false);
-            navigate(`/groups/${encodeURIComponent(name)}`);
-          }}
-        />
-      )}
+      <GlobalModals
+        patients={patients}
+        groupSessions={groupSessions}
+        isCreateGroupOpen={isCreateGroupOpen}
+        setIsCreateGroupOpen={setIsCreateGroupOpen}
+        onSaveGroupSession={handleSaveGroupSession}
+        onDeleteGroupSession={handleDeleteGroupSession}
+        onQuickAppointment={handleQuickAppointment}
+      />
       <CommandMenu />
       <OfflineIndicator />
     </ErrorBoundary>

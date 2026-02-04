@@ -1,4 +1,4 @@
-import { Quote, Star } from 'lucide-react';
+import { Quote } from 'lucide-react';
 
 import { RevealSection } from '../ui/RevealSection';
 
@@ -19,10 +19,7 @@ export const Testimonials = () => {
                 {/* HEADLINE */}
                 <RevealSection>
                     <div className="text-center mb-20">
-                        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-gray-200 text-slate-500 mb-6 shadow-sm">
-                            <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-                            <span className="text-xs font-bold tracking-widest uppercase">EXCELENCIA CLÍNICA</span>
-                        </div>
+                        {/* Excellence Badge Removed */}
                         <h2 className="text-4xl md:text-6xl font-['Outfit'] font-black text-slate-900 leading-tight mb-6 tracking-tighter">
                             Historias de <br />
                             <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#EC008C] to-cyan-500">Vida y Superación</span>

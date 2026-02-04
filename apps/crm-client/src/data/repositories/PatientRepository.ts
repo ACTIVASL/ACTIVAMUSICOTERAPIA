@@ -9,7 +9,8 @@ import {
     arrayUnion,
     deleteDoc,
     runTransaction,
-    collection
+    collection,
+    writeBatch
 } from 'firebase/firestore';
 import {
     Patient,
@@ -17,6 +18,7 @@ import {
     Session,
     SessionSchema
 } from '@monorepo/shared';
+import { AuditRepository } from './AuditRepository';
 
 const COLLECTION = 'patients';
 
@@ -120,13 +122,17 @@ export class PatientRepository {
                 sessions: initialSessions // Write the header array (legacy mirror)
             };
 
-            // C. Prepare Audit Log
+            // C. Prepare Audit Log (Manual Construction for Atomicity)
+            // TITANIUM: Must match AuditLogEntry interface strictly
             const logRef = doc(collection(db, 'activity_logs'));
             const logData = {
+                id: logRef.id, // Ensure ID is present if schema requires
                 userId: uid,
                 type: 'patient',
                 message: `Paciente creado: ${patient.name}`,
-                timestamp: new Date().toISOString()
+                timestamp: new Date().toISOString(),
+                createdAt: new Date(), // Server Timestamp not allowed in Transaction object sometimes? No, it is. But let's use Date for consistency in this manual block
+                metadata: { type: 'patient', patientId: patientRef.id, action: 'create' }
             };
 
             // D. Execute Writes
@@ -158,7 +164,11 @@ export class PatientRepository {
 
     /**
      * Adds a session to the patient's history.
-     * strictly validates the session before writing.
+     * TITANIUM STANDARD: Dual-Write for consistency.
+     * 1. Writes to Subcollection (Source of Truth).
+     * 2. Updates Legacy Array in Patient Document (fast UI read).
+     * @param patientId ID of the patient.
+     * @param session Session object (will be validated).
      */
     static async addSession(patientId: string, session: Session): Promise<void> {
         // Validate Session
@@ -177,8 +187,6 @@ export class PatientRepository {
             createdAt: new Date().toISOString()
         };
 
-        // CORRECT FIX: Use modular writeBatch directly
-        const { writeBatch } = await import('firebase/firestore');
         const batchOp = writeBatch(db);
 
         // 1. Subcollection (Source of Truth)
@@ -200,5 +208,8 @@ export class PatientRepository {
     static async delete(id: string): Promise<void> {
         const docRef = doc(db, COLLECTION, id);
         await deleteDoc(docRef);
+
+        // TITANIUM AUDIT
+        await AuditRepository.log('patient', 'Paciente Eliminado', { type: 'delete', entity: 'patient', id });
     }
 }

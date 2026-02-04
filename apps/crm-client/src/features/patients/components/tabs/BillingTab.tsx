@@ -19,6 +19,7 @@ export const BillingTab: React.FC<BillingTabProps> = ({ patient, onUpdate, clini
         setShowInvoice,
         invoiceData,
         handlePrintGlobalInvoice,
+        handlePrintIndividualInvoice,
         togglePaymentStatus
     } = useBilling({ patient, onUpdate, activeSessions });
 
@@ -73,6 +74,13 @@ export const BillingTab: React.FC<BillingTabProps> = ({ patient, onUpdate, clini
                                             className={`px-3 py-1 rounded-full text-xs font-bold ${s.paid ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700 hover:bg-red-200'}`}
                                         >
                                             {s.paid ? 'PAGADO' : 'PENDIENTE'}
+                                        </button>
+                                        <button
+                                            onClick={() => handlePrintIndividualInvoice(s)}
+                                            className="ml-2 p-1 text-slate-400 hover:text-indigo-600 transition-colors"
+                                            title="Generar Factura Individual"
+                                        >
+                                            <FileText size={16} />
                                         </button>
                                     </td>
                                 </tr>

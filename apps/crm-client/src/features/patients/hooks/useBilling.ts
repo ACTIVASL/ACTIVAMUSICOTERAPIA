@@ -57,6 +57,17 @@ export const useBilling = ({ patient, onUpdate, activeSessions }: UseBillingProp
         }
     };
 
+    const handlePrintIndividualInvoice = (session: Session) => {
+        const defaultNum = `FACT-${Date.now().toString().slice(-6)}`;
+        setInvoiceData({
+            clientName: patient.name,
+            clientMeta: `Paciente Ref: ${patient.reference || '-'}`,
+            sessions: [session],
+            invoiceNumber: defaultNum,
+        });
+        setShowInvoice(true);
+    };
+
     return {
         activeSessions,
         totalDebt,
@@ -64,6 +75,7 @@ export const useBilling = ({ patient, onUpdate, activeSessions }: UseBillingProp
         setShowInvoice,
         invoiceData,
         handlePrintGlobalInvoice,
+        handlePrintIndividualInvoice,
         togglePaymentStatus
     };
 };

@@ -122,7 +122,7 @@ export function useUpdatePatient(demoMode: boolean) {
 
             // 3. Optimistically update to the new value
             queryClient.setQueryData(queryKeys.patients.all, (old: Patient[] | undefined) => {
-                return old ? old.map(p => p.id === newPatient.id ? { ...p, ...newPatient } : p) : [];
+                return old ? old.map(p => String(p.id) === String(newPatient.id) ? { ...p, ...newPatient } : p) : [];
             });
 
             // 4. Return a context object with the snapshotted value

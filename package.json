@@ -2,7 +2,7 @@
   "name": "monorepo-crm-activa",
   "version": "1.0.0",
   "description": "The Sovereign Clinical Operating System for Neurorehabilitation.",
-  "author": "ECONEURA / MÉTODO ACTIVA S.L.",
+  "author": "ACTIVA S.L.",
   "license": "UNLICENSED",
   "private": true,
   "scripts": {

@@ -29,8 +29,8 @@ export const useActivityLog = () => {
 
     // APPEND LOG (Write-Only to DB)
     const logMutation = useMutation({
-        mutationFn: async (payload: { type: ActivityLogItem['type']; message: string }) => {
-            await AuditRepository.log(payload.type, payload.message);
+        mutationFn: async (payload: { type: ActivityLogItem['type']; message: string; metadata?: ActivityLogItem['metadata'] }) => {
+            await AuditRepository.log(payload.type, payload.message, payload.metadata);
         },
         onSuccess: () => {
             // Invalidate to show new log immediately
@@ -39,8 +39,8 @@ export const useActivityLog = () => {
         }
     });
 
-    const logActivity = useCallback((type: ActivityLogItem['type'], message: string) => {
-        logMutation.mutate({ type, message });
+    const logActivity = useCallback((type: ActivityLogItem['type'], message: string, metadata?: ActivityLogItem['metadata']) => {
+        logMutation.mutate({ type, message, metadata });
     }, [logMutation]);
 
     return {

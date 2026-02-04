@@ -1,5 +1,6 @@
-import React, { lazy } from 'react';
+import React, { lazy, Suspense } from 'react';
 import { Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
+import { Loader } from '@monorepo/ui-system';
 import { PageTransition } from '../components/layout/PageTransition';
 import { Patient, GroupSession, NavigationPayload } from '../lib/types';
 
@@ -55,143 +56,139 @@ export const AppRoutes: React.FC<AppRoutesProps> = ({
     const navigate = useNavigate();
 
     return (
-        <Routes location={location} key={location.pathname}>
-            <Route path="/" element={<Navigate to="/dashboard" replace />} />
-            <Route
-                path="/dashboard"
-                element={
-                    <PageTransition>
-                        <DashboardView patients={patients} onViewChange={onNavigate} />
-                    </PageTransition>
-                }
-            />
+        <Suspense fallback={<div className="flex h-screen w-full items-center justify-center"><Loader /></div>}>
+            <Routes location={location} key={location.pathname}>
+                <Route path="/" element={<Navigate to="/dashboard" replace />} />
+                <Route
+                    path="/dashboard"
+                    element={
+                        <PageTransition>
+                            <DashboardView patients={patients} onViewChange={onNavigate} />
+                        </PageTransition>
+                    }
+                />
 
-            <Route
-                path="/patients"
-                element={
-                    <PageTransition>
+                <Route
+                    path="/patients"
+                    element={
+                        <PageTransition>
+                            <PatientsDirectory
+                                patients={patients}
+                                onSelectPatient={(p: Patient) => navigate(`/patients/${p.id}`)}
+                                onNewPatient={onNewPatient}
+                                initialFilter="all"
+                            />
+                        </PageTransition>
+                    }
+                />
+                <Route
+                    path="/patients/adults"
+                    element={
                         <PatientsDirectory
                             patients={patients}
-                            groupSessions={groupSessions}
                             onSelectPatient={(p: Patient) => navigate(`/patients/${p.id}`)}
-                            onSelectGroup={(gName: string) => navigate(`/groups/${encodeURIComponent(gName)}`)}
-                            onNewPatient={onNewPatient}
-                            initialFilter="all"
+                            onNewPatient={onNewPatient as (p: Partial<Patient>) => void}
+                            initialFilter="adults"
                         />
-                    </PageTransition>
-                }
-            />
-            <Route
-                path="/patients/adults"
-                element={
-                    <PatientsDirectory
-                        patients={patients}
-                        groupSessions={groupSessions}
-                        onSelectPatient={(p: Patient) => navigate(`/patients/${p.id}`)}
-                        onNewPatient={onNewPatient as (p: Partial<Patient>) => void}
-                        initialFilter="adults"
-                        onSelectGroup={(gName: string) => navigate(`/groups/${encodeURIComponent(gName)}`)}
-                    />
-                }
-            />
-            <Route
-                path="/patients/kids"
-                element={
-                    <PatientsDirectory
-                        patients={patients}
-                        groupSessions={groupSessions}
-                        onSelectPatient={(p: Patient) => navigate(`/patients/${p.id}`)}
-                        onNewPatient={onNewPatient as (p: Partial<Patient>) => void}
-                        initialFilter="kids"
-                        onSelectGroup={(gName: string) => navigate(`/groups/${encodeURIComponent(gName)}`)}
-                    />
-                }
-            />
-
-            <Route
-                path="/patients/:id"
-                element={
-                    <PageTransition>
-                        <PatientDetailWrapper
+                    }
+                />
+                <Route
+                    path="/patients/kids"
+                    element={
+                        <PatientsDirectory
                             patients={patients}
-                            onBack={() => navigate('/patients')}
-                            onUpdate={onUpdatePatient}
+                            onSelectPatient={(p: Patient) => navigate(`/patients/${p.id}`)}
+                            onNewPatient={onNewPatient as (p: Partial<Patient>) => void}
+                            initialFilter="kids"
                         />
-                    </PageTransition>
-                }
-            />
+                    }
+                />
 
-            <Route
-                path="/groups/:groupName"
-                element={
-                    <GroupDetailView
-                        groupSessions={groupSessions}
-                        onBack={() => navigate('/patients')}
-                    />
-                }
-            />
+                <Route
+                    path="/patients/:id"
+                    element={
+                        <PageTransition>
+                            <PatientDetailWrapper
+                                patients={patients}
+                                onBack={() => navigate('/patients')}
+                                onUpdate={onUpdatePatient}
+                            />
+                        </PageTransition>
+                    }
+                />
 
-            <Route
-                path="/groups"
-                element={
-                    <GroupsDirectory
-                        groupSessions={groupSessions}
-                        onSelectGroup={(gName) => navigate(`/groups/${encodeURIComponent(gName)}`)}
-                        onNewGroup={onNewGroup}
-                    />
-                }
-            />
-            <Route
-                path="/sessions"
-                element={
-                    <SessionsManager
-                        patients={patients}
-                        onUpdatePatient={onUpdatePatient}
-                        filterMode="individual"
-                    />
-                }
-            />
-            <Route
-                path="/sessions/group"
-                element={
-                    <SessionsManager
-                        patients={patients}
-                        groupSessions={groupSessions}
-                        onUpdatePatient={onUpdatePatient}
-                        filterMode="group"
-                    />
-                }
-            />
-            <Route
-                path="/sessions/group-history"
-                element={<GroupSessionsHistory sessions={groupSessions} />}
-            />
+                <Route
+                    path="/groups/:groupName"
+                    element={
+                        <GroupDetailView
+                            groupSessions={groupSessions}
+                            onBack={() => navigate('/patients')}
+                        />
+                    }
+                />
 
-            <Route
-                path="/calendar"
-                element={
-                    <PageTransition>
-                        <CalendarView
+                <Route
+                    path="/groups"
+                    element={
+                        <GroupsDirectory
+                            groupSessions={groupSessions}
+                            onSelectGroup={(gName) => navigate(`/groups/${encodeURIComponent(gName)}`)}
+                            onNewGroup={onNewGroup}
+                        />
+                    }
+                />
+                <Route
+                    path="/sessions"
+                    element={
+                        <SessionsManager
+                            patients={patients}
+                            onUpdatePatient={onUpdatePatient}
+                            filterMode="individual"
+                        />
+                    }
+                />
+                <Route
+                    path="/sessions/group"
+                    element={
+                        <SessionsManager
                             patients={patients}
                             groupSessions={groupSessions}
-                            onNavigate={onNavigate}
-                            onOpenGroupModal={onOpenGroupModal}
-                            onOpenSessionModal={() => { }}
-                            onOpenQuickAppointment={onOpenQuickAppointment}
+                            onUpdatePatient={onUpdatePatient}
+                            filterMode="group"
                         />
-                    </PageTransition>
-                }
-            />
+                    }
+                />
+                <Route
+                    path="/sessions/group-history"
+                    element={<GroupSessionsHistory sessions={groupSessions} />}
+                />
 
-            <Route path="/settings" element={<SettingsView />} />
-            <Route path="/resources" element={<DocumentationCenter />} />
-            <Route path="/reports" element={<ReportsView />} />
-            <Route path="/audit" element={<AuditView />} />
-            <Route path="/billing" element={<BillingView />} />
+                <Route
+                    path="/calendar"
+                    element={
+                        <PageTransition>
+                            <CalendarView
+                                patients={patients}
+                                groupSessions={groupSessions}
+                                onNavigate={onNavigate}
+                                onOpenGroupModal={onOpenGroupModal}
+                                onOpenSessionModal={() => { }}
+                                onOpenQuickAppointment={onOpenQuickAppointment}
+                            />
+                        </PageTransition>
+                    }
+                />
 
-            {/* CATCH-ALL & LEGACY ROUTES */}
-            <Route path="/auth/login" element={<Navigate to="/dashboard" replace />} />
-            <Route path="*" element={<Navigate to="/dashboard" replace />} />
-        </Routes>
+                <Route path="/settings" element={<SettingsView />} />
+                <Route path="/resources" element={<DocumentationCenter />} />
+                <Route path="/reports" element={<ReportsView />} />
+                <Route path="/audit" element={<AuditView />} />
+                <Route path="/billing" element={<BillingView />} />
+
+                {/* CATCH-ALL & LEGACY ROUTES */}
+                <Route path="/auth/login" element={<Navigate to="/dashboard" replace />} />
+                <Route path="*" element={<Navigate to="/dashboard" replace />} />
+            </Routes>
+        </Suspense>
     );
 };

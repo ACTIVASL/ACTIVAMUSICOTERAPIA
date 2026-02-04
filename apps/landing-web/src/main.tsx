@@ -8,3 +8,12 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         <App />
     </React.StrictMode>,
 )
+// NUCLEAR CACHE BUST: Unregister any existing service workers
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.getRegistrations().then(function (registrations) {
+        for (const registration of registrations) {
+            registration.unregister();
+            console.log('Service Worker Unregistered (Nuclear Cache Bust)');
+        }
+    });
+}

@@ -1,0 +1,23 @@
+
+> crm-client@5.2.0 lint
+> eslint . --ext ts,tsx --max-warnings 0
+
+
+C:\Users\Usuario\.gemini\antigravity\scratch\monorepo-crm-activa\apps\crm-client\src\App.tsx
+  276:11  error  Unexpected lexical declaration in case block  no-case-declarations
+
+C:\Users\Usuario\.gemini\antigravity\scratch\monorepo-crm-activa\apps\crm-client\src\features\modals\GlobalModals.tsx
+  19:32  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Usuario\.gemini\antigravity\scratch\monorepo-crm-activa\apps\crm-client\src\routes\AppRouter.tsx
+  19:36  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+Ô£û 3 problems (3 errors, 0 warnings)
+
+npm error Lifecycle script `lint` failed with error:
+npm error code 1
+npm error path C:\Users\Usuario\.gemini\antigravity\scratch\monorepo-crm-activa\apps\crm-client
+npm error workspace crm-client@5.2.0
+npm error location C:\Users\Usuario\.gemini\antigravity\scratch\monorepo-crm-activa\apps\crm-client
+npm error command failed
+npm error command C:\WINDOWS\system32\cmd.exe /d /s /c eslint . --ext ts,tsx --max-warnings 0

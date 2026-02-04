@@ -14,6 +14,7 @@ import {
 } from 'firebase/firestore';
 import { db, auth } from '@monorepo/engine-auth';
 import { Invoice } from '@monorepo/shared';
+import { AuditRepository } from './AuditRepository';
 
 const COLLECTION = 'invoices';
 
@@ -56,6 +57,16 @@ export const InvoiceRepository = {
             updatedAt: new Date().toISOString()
         };
         await setDoc(docRef, data, { merge: true });
+
+        // TITANIUM AUDIT: Log Invoice Save
+        const isDraft = invoice.status === 'DRAFT';
+        const auditStatus = invoice.status === 'PAID' ? 'paid' : (invoice.status === 'PENDING' ? 'pending' : 'void');
+
+        await AuditRepository.log(
+            'finance',
+            isDraft ? 'Borrador de Factura Guardado' : 'Factura Emitida',
+            { type: 'finance', invoiceId: invoice.id, amount: invoice.total, status: isDraft ? 'pending' : auditStatus }
+        );
     },
 
     async updateStatus(id: string, status: Invoice['status'], paidAt?: string, method?: Invoice['paymentMethod']): Promise<void> {
@@ -65,10 +76,21 @@ export const InvoiceRepository = {
         if (method) updates.paymentMethod = method;
 
         await updateDoc(docRef, updates);
+
+        // TITANIUM AUDIT: Log Status Change
+        const auditStatus = status === 'PAID' ? 'paid' : (status === 'PENDING' ? 'pending' : 'void');
+
+        await AuditRepository.log(
+            'finance',
+            `Factura marcada como ${status}`,
+            { type: 'finance', invoiceId: id, status: auditStatus }
+        );
     },
 
     async delete(id: string): Promise<void> {
         await deleteDoc(doc(db, COLLECTION, id));
+        // TITANIUM AUDIT
+        await AuditRepository.log('finance', 'Factura Eliminada', { type: 'finance', invoiceId: id, status: 'void' });
     },
 
     // --- ATOMIC SEQUENCE HANLDING ---

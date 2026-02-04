@@ -6,6 +6,7 @@ interface NeonIconProps {
     color?: string; // Tailwind text color class, e.g., 'text-[#EC008C]'
     glowColor?: string; // Hex color for shadow, e.g., '#EC008C'
     size?: 'sm' | 'md' | 'lg';
+    bgClass?: string;
     className?: string;
 }
 
@@ -14,6 +15,7 @@ export const NeonIcon: React.FC<NeonIconProps> = ({
     color = 'text-cyan-400',
     glowColor = '#22d3ee',
     size = 'md',
+    bgClass = 'bg-[#0A0F1E]',
     className = ''
 }) => {
 
@@ -40,7 +42,7 @@ export const NeonIcon: React.FC<NeonIconProps> = ({
             ></div>
 
             {/* 2. Metallic/Glass Base Container */}
-            <div className={`relative w-full h-full rounded-full bg-[#0A0F1E] border border-white/10 flex items-center justify-center shadow-[0_0_15px_-3px_rgba(0,0,0,0.5)] group-hover:border-white/30 transition-all duration-500 overflow-hidden`}>
+            <div className={`relative w-full h-full rounded-full ${bgClass} border border-white/10 flex items-center justify-center shadow-[0_0_15px_-3px_rgba(0,0,0,0.5)] group-hover:border-white/30 transition-all duration-500 overflow-hidden`}>
 
                 {/* Internal Shine/Gradient */}
                 <div className="absolute inset-0 bg-gradient-to-tr from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>

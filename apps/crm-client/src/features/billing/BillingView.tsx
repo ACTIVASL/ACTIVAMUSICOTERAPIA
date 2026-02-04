@@ -1,13 +1,14 @@
 import { useState, useMemo, useRef, useLayoutEffect } from 'react';
 import { format } from 'date-fns';
 import { useWindowVirtualizer, VirtualItem } from '@tanstack/react-virtual';
-import { Euro, TrendingUp, AlertCircle, CheckCircle, Clock, Plus, Trash2, FileText, Search } from 'lucide-react';
+import { Euro, TrendingUp, AlertCircle, CheckCircle, Clock, Plus, Trash2, FileText, Search, Download } from 'lucide-react';
 import { Card, Button, Skeleton } from '@monorepo/ui-system';
 import { useInvoiceController } from '../../hooks/controllers/useInvoiceController';
 import { Invoice, InvoiceStatus } from '@monorepo/shared';
 import { useSettingsController } from '../../hooks/controllers/useSettingsController';
 import { PdfGenerator } from '../../lib/PdfGenerator';
 import { InvoiceWizardModal } from './InvoiceWizardModal';
+import { BatchBillingModal } from './components/BatchBillingModal';
 
 import { useTranslation } from 'react-i18next';
 import { TFunction } from 'i18next';
@@ -20,6 +21,7 @@ export const BillingView = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState<InvoiceStatus | 'ALL'>('ALL');
     const [isWizardOpen, setIsWizardOpen] = useState(false);
+    const [isBatchOpen, setIsBatchOpen] = useState(false); // NEW STATE
 
     // Calc KPIs
     const stats = useMemo(() => {
@@ -46,47 +48,53 @@ export const BillingView = () => {
 
     return (
         <div className="max-w-7xl mx-auto space-y-8 animate-in fade-in pb-20">
-            <header className="flex justify-between items-center">
+            <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
                     <h1 className="text-3xl font-black text-slate-900 tracking-tight">{t('sidebar.billing.title')}</h1>
                     <p className="text-slate-500">{t('sidebar.billing.subtitle')}</p>
                 </div>
-                <Button onClick={() => setIsWizardOpen(true)} icon={Plus}>{t('sidebar.billing.actions.new_invoice')}</Button>
+                <div className="flex gap-2 w-full md:w-auto">
+                    <Button onClick={() => setIsBatchOpen(true)} icon={TrendingUp} variant="secondary" className="flex-1 md:flex-none bg-indigo-50 text-indigo-600 hover:bg-indigo-100 border-indigo-200">
+                        Piloto Automático
+                    </Button>
+                    <Button onClick={() => setIsWizardOpen(true)} icon={Plus} className="flex-1 md:flex-none text-center justify-center">{t('sidebar.billing.actions.new_invoice')}</Button>
+                </div>
             </header>
 
             {/* KPIs */}
             {/* KPIs - MOBILE: HORIZONTAL SCROLL / DESKTOP: GRID */}
-            <div className="flex overflow-x-auto snap-x snap-mandatory pt-2 pb-4 gap-4 -mx-4 px-4 md:grid md:grid-cols-3 md:gap-6 md:mx-0 md:px-0 md:overflow-visible hide-scrollbar">
-                <Card className="min-w-[85vw] snap-center md:min-w-0 p-6 border-l-4 border-emerald-500 shadow-sm md:shadow-md">
+            {/* KPIs - CORPORATE FINANCIAL STYLE */}
+            <div className="grid grid-cols-1 gap-3 md:grid-cols-3 md:gap-6">
+                <Card className="p-6 border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
                     <div className="flex justify-between items-start">
                         <div>
-                            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">{t('sidebar.billing.kpis.revenue_year')}</p>
-                            <p className="text-3xl font-black text-emerald-600 tracking-tighter">{stats.totalRevenue.toFixed(2)}€</p>
+                            <p className="text-sm font-medium text-slate-500 mb-1">{t('sidebar.billing.kpis.revenue_year')}</p>
+                            <p className="text-3xl font-bold text-slate-900 tracking-tight">{stats.totalRevenue.toFixed(2)}€</p>
                         </div>
-                        <div className="p-3 bg-emerald-50 rounded-xl text-emerald-600">
-                            <TrendingUp size={24} />
+                        <div className="p-2 bg-emerald-50/50 rounded-lg text-emerald-600 border border-emerald-100">
+                            <TrendingUp size={20} />
                         </div>
                     </div>
                 </Card>
-                <Card className="min-w-[85vw] snap-center md:min-w-0 p-6 border-l-4 border-amber-500 shadow-sm md:shadow-md">
+                <Card className="p-6 border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
                     <div className="flex justify-between items-start">
                         <div>
-                            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">{t('sidebar.billing.kpis.pending')}</p>
-                            <p className="text-3xl font-black text-amber-600 tracking-tighter">{stats.pendingAmount.toFixed(2)}€</p>
+                            <p className="text-sm font-medium text-slate-500 mb-1">{t('sidebar.billing.kpis.pending')}</p>
+                            <p className="text-3xl font-bold text-slate-900 tracking-tight">{stats.pendingAmount.toFixed(2)}€</p>
                         </div>
-                        <div className="p-3 bg-amber-50 rounded-xl text-amber-600">
-                            <AlertCircle size={24} />
+                        <div className="p-2 bg-amber-50/50 rounded-lg text-amber-600 border border-amber-100">
+                            <AlertCircle size={20} />
                         </div>
                     </div>
                 </Card>
-                <Card className="min-w-[85vw] snap-center md:min-w-0 p-6 border-l-4 border-indigo-500 shadow-sm md:shadow-md">
+                <Card className="p-6 border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
                     <div className="flex justify-between items-start">
                         <div>
-                            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">{t('sidebar.billing.kpis.month')}</p>
-                            <p className="text-3xl font-black text-indigo-600 tracking-tighter">{stats.currentMonthRevenue.toFixed(2)}€</p>
+                            <p className="text-sm font-medium text-slate-500 mb-1">{t('sidebar.billing.kpis.month')}</p>
+                            <p className="text-3xl font-bold text-slate-900 tracking-tight">{stats.currentMonthRevenue.toFixed(2)}€</p>
                         </div>
-                        <div className="p-3 bg-indigo-50 rounded-xl text-indigo-600">
-                            <Euro size={24} />
+                        <div className="p-2 bg-indigo-50/50 rounded-lg text-indigo-600 border border-indigo-100">
+                            <Euro size={20} />
                         </div>
                     </div>
                 </Card>
@@ -156,6 +164,7 @@ export const BillingView = () => {
             </Card>
 
             <InvoiceWizardModal isOpen={isWizardOpen} onClose={() => setIsWizardOpen(false)} />
+            <BatchBillingModal isOpen={isBatchOpen} onClose={() => setIsBatchOpen(false)} />
         </div>
     );
 };
@@ -199,7 +208,7 @@ const BillingListVirtualizer = ({ invoices, onMarkPaid, onDelete, settings, t }:
                     return (
                         <div
                             key={inv.id}
-                            className="absolute top-0 left-0 w-full bg-white border border-slate-200 rounded-xl p-4 shadow-sm active:scale-[0.99] transition-transform"
+                            className="absolute top-0 left-0 w-full bg-white border border-slate-200 rounded-lg p-4 shadow-sm active:scale-[0.99] transition-transform"
                             style={{
                                 height: `${virtualRow.size}px`,
                                 transform: `translateY(${virtualRow.start - virtualizer.options.scrollMargin}px)`,
@@ -212,13 +221,13 @@ const BillingListVirtualizer = ({ invoices, onMarkPaid, onDelete, settings, t }:
                                     <p className="text-xs text-slate-400">{format(new Date(inv.date), 'dd/MM/yyyy')}</p>
                                 </div>
                                 <div className="text-right">
-                                    <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-black uppercase tracking-wide border ${inv.status === 'PAID' ? 'bg-emerald-100 text-emerald-700 border-emerald-200' :
-                                        inv.status === 'PENDING' ? 'bg-amber-100 text-amber-700 border-amber-200' :
+                                    <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-[11px] font-bold uppercase tracking-wider border ${inv.status === 'PAID' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
+                                        inv.status === 'PENDING' ? 'bg-amber-50 text-amber-700 border-amber-200' :
                                             'bg-slate-100 text-slate-600 border-slate-200'
                                         }`}>
                                         {inv.status === 'PAID' && <CheckCircle size={10} />}
                                         {inv.status === 'PENDING' && <Clock size={10} />}
-                                        {inv.status}
+                                        {inv.status === 'PAID' ? 'PAGADO' : inv.status === 'PENDING' ? 'PENDIENTE' : inv.status}
                                     </span>
                                     <p className="text-xl font-black text-slate-900 mt-1">{inv.total.toFixed(2)}€</p>
                                 </div>
@@ -226,8 +235,15 @@ const BillingListVirtualizer = ({ invoices, onMarkPaid, onDelete, settings, t }:
 
                             {/* ACTIONS PRE-RENDERED FOR PERF */}
                             <div className="flex justify-between gap-2 mt-2 pt-2 border-t border-slate-50">
-                                <button onClick={() => settings && PdfGenerator.generateInvoice(inv, settings, settings.billing?.logoUrl)} className="text-xs text-blue-600 font-bold">{t('sidebar.billing.actions.pdf') || 'PDF'}</button>
-                                {inv.status === 'PENDING' && <button onClick={() => onMarkPaid(inv)} className="text-xs text-emerald-600 font-bold">{t('sidebar.billing.actions.charge') || 'COBRAR'}</button>}
+                                <button
+                                    onClick={() => settings && PdfGenerator.generateInvoice(inv, settings, settings.billing?.logoUrl)}
+                                    className="flex items-center justify-center gap-2 text-slate-600 px-3 py-3 rounded-lg border border-slate-200 hover:bg-slate-50 font-bold text-xs active:scale-95 transition-transform touch-manipulation min-h-[44px]"
+                                >
+                                    <Download size={16} />
+                                    {t('sidebar.billing.actions.pdf') || 'PDF'}
+                                </button>
+                                {inv.status === 'PENDING' && <button onClick={() => onMarkPaid(inv)} className="flex-1 text-xs text-center bg-emerald-600 text-white font-bold py-3 rounded-lg shadow-sm active:scale-95 transition-transform touch-manipulation min-h-[44px]">{t('sidebar.billing.actions.charge') || 'COBRAR'}</button>}
+                                <button onClick={() => onDelete(inv.id)} className="text-red-400 p-3 rounded-md active:bg-red-50 min-h-[44px] min-w-[44px] flex items-center justify-center" title="Eliminar"><Trash2 size={20} /></button>
                             </div>
                         </div>
                     );
@@ -261,22 +277,28 @@ const BillingListVirtualizer = ({ invoices, onMarkPaid, onDelete, settings, t }:
                                     }}
                                 >
                                     <td className="px-6 py-4 w-32">
-                                        <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wide border ${inv.status === 'PAID' ? 'bg-emerald-100 text-emerald-700 border-emerald-200' :
-                                            inv.status === 'PENDING' ? 'bg-amber-100 text-amber-700 border-amber-200' :
-                                                'bg-slate-100 text-slate-600 border-slate-200'
+                                        <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wide shadow-sm ${inv.status === 'PAID' ? 'bg-emerald-500 text-white border border-emerald-600' :
+                                            inv.status === 'PENDING' ? 'bg-amber-400 text-amber-900 border border-amber-500' :
+                                                'bg-slate-200 text-slate-600 border border-slate-300'
                                             }`}>
-                                            {inv.status}
+                                            {inv.status === 'PAID' ? 'PAGADO' : inv.status === 'PENDING' ? 'PENDIENTE' : inv.status}
                                         </span>
                                     </td>
                                     <td className="px-6 py-4 font-mono font-bold text-slate-700 w-32">{inv.number}</td>
                                     <td className="px-6 py-4 font-medium text-slate-900 w-64 truncate">{inv.patientName}</td>
                                     <td className="px-6 py-4 text-slate-500 w-32">{format(new Date(inv.date), 'dd/MM/yyyy')}</td>
                                     <td className="px-6 py-4 text-right font-black text-slate-900 w-32">{inv.total.toFixed(2)}€</td>
-                                    <td className="px-6 py-4 text-center flex justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity w-40">
-                                        {/* Actions... shortened for brevity in virtualization render */}
-                                        <button onClick={() => settings && PdfGenerator.generateInvoice(inv, settings, settings.billing?.logoUrl)} className="text-blue-600"><FileText size={16} /></button>
-                                        {inv.status === 'PENDING' && <button onClick={() => onMarkPaid(inv)} className="text-emerald-600"><CheckCircle size={16} /></button>}
-                                        <button onClick={() => onDelete(inv.id)} className="text-red-600"><Trash2 size={16} /></button>
+                                    <td className="px-6 py-4 text-center flex justify-center gap-2 w-40">
+                                        {/* Actions Always Visible */}
+                                        <button onClick={() => settings && PdfGenerator.generateInvoice(inv, settings, settings.billing?.logoUrl)} className="text-blue-600 hover:bg-blue-50 p-2 rounded-lg transition-colors" title={t('sidebar.billing.actions.pdf') || 'Descargar'}><FileText size={18} /></button>
+
+                                        {inv.status === 'PENDING' ? (
+                                            <button onClick={() => onMarkPaid(inv)} className="text-emerald-600 hover:bg-emerald-50 p-2 rounded-lg transition-colors" title={t('sidebar.billing.actions.charge') || 'Cobrar'}><CheckCircle size={18} /></button>
+                                        ) : inv.status === 'PAID' ? (
+                                            <div className="text-emerald-300 p-2" title="Cobrado"><CheckCircle size={18} /></div>
+                                        ) : null}
+
+                                        <button onClick={() => onDelete(inv.id)} className="text-red-400 hover:text-red-600 hover:bg-red-50 p-2 rounded-lg transition-colors" title="Eliminar"><Trash2 size={18} /></button>
                                     </td>
                                 </tr>
                             );

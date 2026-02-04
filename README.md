@@ -1,130 +1,111 @@
 <div align="center">
-  <h1>MÉTODO ACTIVA™</h1>
-  <p><strong>SOVEREIGN CLINICAL OPERATING SYSTEM</strong></p>
 
-  <!-- STANDARD BADGES -->
-  <p>
-    <img src="https://img.shields.io/badge/TITANIUM-STANDARD-0f172a?style=for-the-badge&logo=shield&logoColor=38bdf8" />
-    <img src="https://img.shields.io/badge/SECURITY-PASSED-b91c1c?style=for-the-badge&logo=fortinet&logoColor=white" />
-    <img src="https://img.shields.io/badge/GOOGLE_PLAY-LIVE-10b981?style=for-the-badge&logo=google-play&logoColor=white" />
-    <img src="https://img.shields.io/badge/APP_STORE-IN_PROGRESS-orange?style=for-the-badge&logo=apple&logoColor=white" />
-  </p>
+# 🏥 ACTIVA S.L.
 
-  <p>
-    <a href="https://activamusicoterapia.com"><strong>OFFICIAL SITE</strong></a> •
-    <a href="https://webycrm-activa.web.app"><strong>LIVE PLATFORM</strong></a> •
-    <a href="mailto:info@activamusicoterapia.com"><strong>CONTACT</strong></a>
-  </p>
+### TITANIUM™ CLINICAL OPERATING SYSTEM
+
+[![Status](https://img.shields.io/badge/system-OPERATIONAL-success?style=for-the-badge)](https://app-activamusicoterapia.web.app)
+[![Version](https://img.shields.io/badge/release-V2.0_TITANIUM-EC008C?style=for-the-badge)](https://github.com/ACTIVASL/ACTIVA-MUSICOTERAPIA/releases)
+[![Security](https://img.shields.io/badge/security-FORENSIC_AUDIT-blue?style=for-the-badge)](./docs/SECURITY.md)
+[![Compliance](https://img.shields.io/badge/legal-GDPR%20%2F%20LOPD-lightgrey?style=for-the-badge)](./docs/LEGAL.md)
+
+**[🌐 Portal Corporativo](https://www.activamusicoterapia.com)** • **[🔐 Acceso Clínico](https://app-activamusicoterapia.web.app)** • **[📄 Documentación Técnica](./docs)**
+
 </div>
 
 ---
 
-## 🏛️ THE MANIFESTO: Why Sovereignty Matters
+## 🏢 Sobre ACTIVA S.L.
 
-**Método Activa COS (Clinical Operating System)** represents a paradigm shift in medical infrastructure. Unlike fragmented SaaS tools that rent you their software, Activa is a **Vertical Sovereign Infrastructure**.
+**ACTIVA S.L.** (Sociedad Limitada) es la entidad líder en innovación clínica y musicoterapia avanzada. Este repositorio aloja el código fuente de nuestro **Sistema Operativo Clínico Propietario (Titanium OS)**, una plataforma de gestión integral desarrollada in-house para garantizar la máxima calidad asistencial, seguridad del dato y eficiencia operativa.
 
-We observed a critical flaw in the market: Clinics were dependent on third-party CRMs that owned their patient data, charged per-seat licenses, and failed during internet outages.
-
-**Activa solves this trinity of problems:**
-1.  **Financial Sovereignty (Zero Rent):** We own the Intellectual Property. We do not pay monthly license fees per therapist. The infrastructure cost is purely based on utility (Google Cloud), reducing OpEx by ~85%.
-2.  **Data Sovereignty (Zero Leakage):** Patient profiles, clinical notes, and financial data reside in a private, encrypted cloud instance (Firestore). No data brokers, no "middle-man" SaaS access.
-3.  **Operational Sovereignty (Zero Latency):** Through our "Bunker Mode" architecture, the clinical dashboard and patient app operate fully offline. A network outage never stops a therapy session.
-
-> *"We don't rent our tools. We forge them."*
+No utilizamos software de terceros. Creamos nuestra propia tecnología para controlar cada píxel de la experiencia del paciente.
 
 ---
 
-## 📸 PRODUCT SHOWCASE
+## 💎 Estándar TITANIUM™ (V2026)
 
-### 1. THE COMMAND CENTER (CRM)
-Real-time clinical dashboard.
+El sello **Titanium** certifica que este software cumple con los estándares más rigurosos de la industria del desarrollo de software clínico:
 
-<div align="center">
-  <img src="docs/showcase/dashboard_preview.jpg" alt="CRM Dashboard" />
-</div>
+### 1. 👁️ Auditoría Forense ("God Mode")
+Cada interacción en el sistema deja una huella inmutable y trazable.
+- **Sesiones & Citas**: Registro exacto de creación, modificación y cancelación.
+- **Historia Clínica**: Control de versiones de informes y evolutivos.
+- **Facturación**: Trazabilidad financiera completa (Emisión, Cobro, Anulación).
+- **Ciclo de Vida del Paciente**: Registro de altas, bajas y reingresos.
 
-<br/>
+### 2. 🛡️ Seguridad Zero-Trust
+- Arquitectura **Serverless** sobre Google Cloud (Firebase).
+- Reglas de seguridad estrictas a nivel de base de datos.
+- **Content Security Policy (CSP)** de grado militar anti-XSS.
+- Encriptación en tránsito y en reposo.
 
-### 2. PATIENT COMPANION (Mobile App)
-*Continuity of Care, Anywhere.*
-
-A bridge between the clinic and the patient's home. This application allows families to track progress, access resources, and communicate with therapists.
-*   **Status:** **Live on Google Play Store**. (iOS App Store Deployment in Roadmap).
-*   **Hybrid Architecture:** Built as a High-Performance PWA with Native capabilities.
-    *   **Offline-First:** Works without signal (e.g., elevators, rural areas).
-    *   **Zero-Install:** Can be installed instantly without store friction if needed.
-    *   **Biometric Ready:** Prepared for TouchID/FaceID integration.
-
-<div align="center">
-  <img src="docs/showcase/mobile_preview_dark.jpg" width="400" alt="Mobile App" style="border-radius: 24px;" />
-</div>
-
-<br/>
-
-### 3. THE CORPORATE PORTAL
-*High-Conversion Patient Acquisition.*
-
-Most clinical websites are static digital brochures. Activa's portal is a **Funnel-Optimized Application**.
-*   **Performance:** 100/100 Google Lighthouse Score (SEO Dominance).
-*   **Integration:** Leads captured here appear instantly in the CRM Command Center.
-*   **Visuals:** Premium "Glassmorphism" design system tailored for high-ticket medical services.
-
-<div align="center">
-  <img src="docs/showcase/web_landing.jpg" alt="Web Landing" />
-</div>
+### 3. 🎨 Experiencia de Usuario "Premium"
+- Interfaz **Glassmorphism** propietaria diseñada para reducir la fatiga cognitiva clínica.
+- **Mobile First**: Aplicación Web Progresiva (PWA) instalable como nativa en iOS y Android.
+- Tiempos de carga < 100ms (Optimizaciones Titanium).
 
 ---
 
-## 💎 TITANIUM ENGINEERING PROTOCOL
+## 🏗️ Arquitectura del Sistema
 
-This asset was not built; it was engineered. We follow the **Titanium Standard** for software durability.
+Este proyecto es un **Monorepo** moderno que centraliza toda nuestra tecnología:
 
-| PILLAR | TECHNOLOGY | COMMERCIAL BENEFIT |
+```
+ACTIVA-SL-CORE/
+├── apps/
+│   ├── crm-client/       # 🚀 Titanium CRM (Herramienta Clínica del Terapeuta)
+│   │   ├── src/features/ # Módulos: Pacientes, Agenda, Facturación, Informes
+│   │   └── src/data/     # Capa de Datos con Auditoría Integrada
+│   ├── landing-web/      # 🌐 Web Corporativa (Captación de Pacientes)
+├── packages/
+│   ├── shared/           # 🧬 Lógica Compartida (Tipos, Validaciones Zod)
+│   ├── ui-system/        # 🎨 Sistema de Diseño "Activa UI"
+│   └── engine-auth/      # 🔐 Núcleo de Autenticación
+└── ...
+```
+
+### Stack Tecnológico
+
+Utilizamos una pila tecnológica de vanguardia para garantizar estabilidad a largo plazo:
+
+| Capa | Tecnología | Propósito |
 | :--- | :--- | :--- |
-| **Type Safety** | TypeScript (Strict) | **Reliability.** Eliminates 95% of runtime crashes. |
-| **Monorepo** | TurboRepo | **Agility.** One codebase manages Web, App, and Backend. |
-| **Cloud Native** | Google Cloud Platform | **Scale.** Autoscales from 1 to 1M users. |
-| **Offline Core** | IndexedDB + Workers | **Resilience.** Clinical operations continue offline. |
+| **Frontend** | React 18 + Vite | Rendimiento extremo y reactividad. |
+| **Lenguaje** | TypeScript 5.6 | Seguridad de tipos y mantenibilidad. |
+| **Database** | Cloud Firestore | Base de datos NoSQL en tiempo real. |
+| **Auth** | Identity Platform | Gestión de identidad segura. |
+| **Hosting** | Firebase Global CDN | Entrega de contenido milimétrica. |
+| **Audit** | Titanium Logger | Sistema de registro forense propietario. |
 
 ---
 
-## 🏗️ SYSTEM ARCHITECTURE
+## 🚀 Despliegue y Operaciones
 
-```mermaid
-graph TD
-    subgraph CLOUD [Google Sovereign Cloud]
-        DB("Firestore NoSQL")
-        Auth("Identity Platform")
-        Edge("Global CDN")
-    end
+El sistema utiliza **CI/CD** (Integración y Despliegue Continuo) para asegurar que cada línea de código en producción ha sido verificada.
 
-    subgraph APPS [Client Layer]
-        Web("Corporate Web")
-        CRM("Clinical Dashboard")
-        Mobile("Patient App")
-    end
+### Comandos de Ingeniería
 
-    Web --> Edge
-    CRM --> Edge
-    Mobile --> Edge
-    
-    Edge <--> Auth
-    Edge <--> DB
+```bash
+# Instalación del Entorno
+npm install
+
+# Iniciar Sistema en Desarrollo
+npm run dev
+
+# Compilación "Titanium Build" (Optimized)
+npm run build
+
+# Despliegue a Producción (Requiere Credenciales de Admin)
+firebase deploy
 ```
 
 ---
 
-## 🛡️ FORENSIC AUDIT (JAN 2026)
+## ⚖️ Legal y Propiedad Intelectual
 
-*   **Architecture**: Monorepo (Turbo + Vite)
-*   **Type Safety**: TypeScript Strict Mode
-*   **Security**: Row-Level Security (RLS) Enforced
-*   **Status**: Golden Release (Production Ready)
+**Copyright © 2026 ACTIVA S.L.** Todos los derechos reservados.
 
----
+El código fuente contenido en este repositorio es **PROPIEDAD INTELECTUAL PRIVADA** de ACTIVA S.L. Queda estrictamente prohibida su copia, distribución, modificación o uso no autorizado sin el consentimiento expreso y por escrito de la dirección de la empresa.
 
-<div align="center">
-  <p><strong>MÉTODO ACTIVA S.L.</strong><br/>
-  Strictly Confidential. Commercial Asset.</p>
-  <a href="mailto:info@activamusicoterapia.com">info@activamusicoterapia.com</a>
-</div>
+*Desarrollado por la división de tecnología de Activa S.L.*

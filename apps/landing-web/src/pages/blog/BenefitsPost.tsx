@@ -32,7 +32,7 @@ export const BenefitsPost = () => {
     };
 
     return (
-        <div className="bg-[#020617] min-h-screen font-['Inter'] text-slate-300 selection:bg-[#EC008C] selection:text-white">
+        <div className="bg-slate-950 min-h-screen font-sans text-slate-300 selection:bg-brand-primary selection:text-white">
             <Helmet>
                 <title>Beneficios de la Musicoterapia | Método Activa</title>
                 <meta name="description" content="Análisis profundo sobre los beneficios clínicos de la musicoterapia en trastornos neurológicos, emocionales y del desarrollo." />
@@ -47,8 +47,9 @@ export const BenefitsPost = () => {
 
                 {/* ARTICLE HEADER */}
                 <article className="max-w-4xl mx-auto px-6 lg:px-12">
+                    {/* SPLIT HEADER: Title is Revealed, Image is INSTANT (LCP Optimization) */}
                     <RevealSection>
-                        <Link to="/" className="inline-flex items-center text-[#EC008C] hover:text-white transition-colors mb-8 group">
+                        <Link to="/" className="inline-flex items-center text-brand-primary hover:text-white transition-colors mb-8 group">
                             <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" />
                             Volver al inicio
                         </Link>
@@ -59,24 +60,27 @@ export const BenefitsPost = () => {
                             <span className="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-cyan-400 text-xs uppercase tracking-wider">Divulgación</span>
                         </div>
 
-                        <h1 className="text-4xl md:text-6xl font-['Outfit'] font-black text-white leading-tight mb-8">
+                        <h1 className="text-4xl md:text-6xl font-display font-black text-white leading-tight mb-8">
                             Beneficios de la <br />
-                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#EC008C] to-cyan-400">Musicoterapia Clínica</span>
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-primary to-cyan-400">Musicoterapia Clínica</span>
                         </h1>
-
-                        {/* Featured Image */}
-                        <div className="w-full aspect-video rounded-3xl border border-white/10 mb-12 flex items-center justify-center overflow-hidden relative group shadow-2xl">
-                            <div className="absolute inset-0 bg-[#EC008C]/10 blur-[50px] opacity-40"></div>
-                            <img
-                                src={blogHeader}
-                                alt="Representación artística de Nano-tecnología musical y cerebro humano"
-                                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                            />
-                        </div>
                     </RevealSection>
 
+                    {/* Featured Image - EAGER LOAD (No Reveal Animation for LCP) */}
+                    <div className="w-full aspect-video rounded-3xl border border-white/10 mb-12 flex items-center justify-center overflow-hidden relative group shadow-2xl bg-slate-900">
+                        <div className="absolute inset-0 bg-brand-primary/10 blur-[50px] opacity-40"></div>
+                        <img
+                            src={blogHeader}
+                            alt="Representación artística de Nano-tecnología musical y cerebro humano"
+                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                            fetchPriority="high"
+                            loading="eager"
+                            decoding="sync"
+                        />
+                    </div>
+
                     {/* ARTICLE CONTENT */}
-                    <div className="prose prose-invert prose-lg max-w-none prose-headings:font-['Outfit'] prose-headings:font-bold prose-headings:text-white prose-p:text-slate-300 prose-a:text-[#EC008C] prose-li:text-slate-300 prose-strong:text-white">
+                    <div className="prose prose-invert prose-lg max-w-none prose-headings:font-display prose-headings:font-bold prose-headings:text-white prose-p:text-slate-300 prose-a:text-brand-primary prose-li:text-slate-300 prose-strong:text-white">
                         <RevealSection delay={200}>
                             <p className="lead text-xl leading-relaxed text-slate-200">
                                 Que la música y el entretenimiento están estrechamente ligadas es algo que no da lugar a demasiado debate. Sin embargo, no hay que olvidar los <strong>beneficios de la musicoterapia</strong> para tratar ciertos trastornos.
@@ -89,7 +93,7 @@ export const BenefitsPost = () => {
                                 Además, la música se constituye junto a la arquitectura, pintura, escultura, danza, literatura y cine, como uno de los 7 artes clásicos. La cual destaca por una combinación de ritmo, armonía y melodía de sonidos instrumentales y vocales.
                             </p>
 
-                            <div className="p-8 my-8 bg-[#0A0F1D] border-l-4 border-[#EC008C] rounded-r-xl">
+                            <div className="p-8 my-8 bg-brand-dark border-l-4 border-brand-primary rounded-r-xl">
                                 <p className="italic text-lg text-white m-0">
                                     "Sin embargo, la música no se queda ahí, y va mucho más allá del propio entretenimiento y del arte. Ya que si se utiliza como es debido, es capaz de ayudar a resolver problemas físicos, sociales, psicológicos o emocionales de las personas… ¡Gracias a los beneficios de la musicoterapia!"
                                 </p>
@@ -148,11 +152,11 @@ export const BenefitsPost = () => {
 
                             <div className="grid md:grid-cols-2 gap-6 my-8 not-prose">
                                 <div className="p-6 rounded-2xl bg-[#1A2035] border border-white/5 hover:border-cyan-400/30 transition-colors">
-                                    <h4 className="text-xl font-bold text-white mb-2 font-['Outfit']">Musicoterapia receptiva</h4>
+                                    <h4 className="text-xl font-bold text-white mb-2 font-display">Musicoterapia receptiva</h4>
                                     <p className="text-sm text-slate-300">En este caso el paciente se limita a escuchar los sonidos musicales de la sesión que ha preparado el terapeuta. Este tipo de terapia favorece sobre todo la motivación y el estado anímico, es relajante y reduce los niveles de nerviosismo y ansiedad.</p>
                                 </div>
-                                <div className="p-6 rounded-2xl bg-[#1A2035] border border-white/5 hover:border-[#EC008C]/30 transition-colors">
-                                    <h4 className="text-xl font-bold text-white mb-2 font-['Outfit']">Musicoterapia activa</h4>
+                                <div className="p-6 rounded-2xl bg-[#1A2035] border border-white/5 hover:border-brand-primary/30 transition-colors">
+                                    <h4 className="text-xl font-bold text-white mb-2 font-display">Musicoterapia activa</h4>
                                     <p className="text-sm text-slate-300">Esta modalidad por su parte, implica mucho más al paciente, el cual debe interactuar con la música ya sea de forma vocal, instrumental y también corporal (danza). Esta terapia se considera más efectiva en casos complejos.</p>
                                 </div>
                             </div>
@@ -180,7 +184,7 @@ export const BenefitsPost = () => {
                                     Mejora la capacidad de aprendizaje, la orientación, la atención, el desarrollo del cerebro, la concentración, las capacidad comunicativas y el lenguaje y expresión oral.
                                 </div>
                                 <div>
-                                    <strong className="text-[#EC008C] block mb-1">Beneficios físicos:</strong>
+                                    <strong className="text-brand-primary block mb-1">Beneficios físicos:</strong>
                                     Articulaciones más fuertes y flexibles, mejora de la musculatura, relajación corporal, mejor coordinación del sistema locomotor.
                                 </div>
                                 <div>
@@ -221,11 +225,11 @@ export const BenefitsPost = () => {
 
                     {/* COMMENTS SECTION UI */}
                     <div className="mt-20 border-t border-white/10 pt-16">
-                        <h3 className="text-2xl font-bold font-['Outfit'] text-white mb-8">Comentarios (1)</h3>
+                        <h3 className="text-2xl font-bold font-display text-white mb-8">Comentarios (1)</h3>
 
                         {/* Existing Comment */}
                         <div className="flex gap-4 mb-12">
-                            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#EC008C] to-cyan-400 flex items-center justify-center font-bold text-white text-lg shrink-0">
+                            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-brand-primary to-cyan-400 flex items-center justify-center font-bold text-white text-lg shrink-0">
                                 MV
                             </div>
                             <div>
@@ -233,7 +237,7 @@ export const BenefitsPost = () => {
                                     <span className="font-bold text-white">Musica Viva</span>
                                     <span className="text-xs text-slate-500">12 diciembre, 2022 12:37 pm</span>
                                 </div>
-                                <p className="text-slate-300 text-sm leading-relaxed bg-[#0A0F1D] p-4 rounded-xl border border-white/5">
+                                <p className="text-slate-300 text-sm leading-relaxed bg-brand-dark p-4 rounded-xl border border-white/5">
                                     Gracias por compartir esta información, la verdad que es de gran valor poder disfrutar de la música, que nos ayuda a mejorar nuestro bienestar y algunas habilidades como la creatividad.
                                 </p>
                                 <button className="text-cyan-400 text-xs font-bold uppercase tracking-wider mt-2 hover:text-cyan-300">Responder</button>
@@ -241,34 +245,34 @@ export const BenefitsPost = () => {
                         </div>
 
                         {/* Leave a Comment Form */}
-                        <div className="bg-[#0A0F1D] p-8 rounded-3xl border border-white/5">
+                        <div className="bg-brand-dark p-8 rounded-3xl border border-white/5">
                             <h4 className="text-xl font-bold text-white mb-1">Dejar una respuesta</h4>
                             <p className="text-slate-500 text-sm mb-6">Tu dirección de correo electrónico no será publicada. Los campos obligatorios están marcados con *</p>
 
                             <form className="space-y-6">
                                 <div>
                                     <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Comentario *</label>
-                                    <textarea rows={4} className="w-full bg-[#020617] border border-white/10 rounded-xl p-4 text-white focus:border-[#EC008C] focus:ring-1 focus:ring-[#EC008C] transition-all outline-none resize-none"></textarea>
+                                    <textarea rows={4} className="w-full bg-slate-950 border border-white/10 rounded-xl p-4 text-white focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all outline-none resize-none"></textarea>
                                 </div>
                                 <div className="grid md:grid-cols-3 gap-6">
                                     <div>
                                         <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Nombre *</label>
-                                        <input type="text" className="w-full bg-[#020617] border border-white/10 rounded-xl p-3 text-white focus:border-[#EC008C] outline-none transition-all" />
+                                        <input type="text" className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 text-white focus:border-brand-primary outline-none transition-all" />
                                     </div>
                                     <div>
                                         <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Correo *</label>
-                                        <input type="email" className="w-full bg-[#020617] border border-white/10 rounded-xl p-3 text-white focus:border-[#EC008C] outline-none transition-all" />
+                                        <input type="email" className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 text-white focus:border-brand-primary outline-none transition-all" />
                                     </div>
                                     <div>
                                         <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Web</label>
-                                        <input type="text" className="w-full bg-[#020617] border border-white/10 rounded-xl p-3 text-white focus:border-[#EC008C] outline-none transition-all" />
+                                        <input type="text" className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 text-white focus:border-brand-primary outline-none transition-all" />
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                    <input type="checkbox" id="privacy" className="rounded bg-[#020617] border-white/10 text-[#EC008C] focus:ring-[#EC008C]" />
+                                    <input type="checkbox" id="privacy" className="rounded bg-slate-950 border-white/10 text-brand-primary focus:ring-brand-primary" />
                                     <label htmlFor="privacy" className="text-sm text-slate-400">He leído y acepto la <span className="text-cyan-400 cursor-pointer hover:underline">Política de privacidad</span> *</label>
                                 </div>
-                                <button type="button" className="px-8 py-3 bg-[#EC008C] hover:bg-[#D6007F] text-white font-bold rounded-full transition-colors shadow-lg shadow-[#EC008C]/20">
+                                <button type="button" className="px-8 py-3 bg-brand-primary hover:bg-[#D6007F] text-white font-bold rounded-full transition-colors shadow-lg shadow-brand-primary/20">
                                     Publicar Comentario
                                 </button>
                             </form>

@@ -2,7 +2,7 @@
   "name": "@monorepo/shared",
   "private": true,
   "description": "Core Logic & Type Definitions for Método Activa Ecosystem.",
-  "author": "ECONEURA S.L.",
+  "author": "ACTIVA S.L.",
   "license": "UNLICENSED",
   "sideEffects": false,
   "repository": {

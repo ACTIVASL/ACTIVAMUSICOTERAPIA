@@ -7,8 +7,8 @@ export const Terms = () => {
         <>
             <SeoHead title="Términos de Servicio | Activa Musicoterapia" />
             <Navigation />
-            <main className="pt-32 pb-20 px-6 max-w-4xl mx-auto font-['Inter']">
-                <h1 className="text-4xl font-['Outfit'] font-bold mb-8 text-[#0A0F1D]">Términos de Servicio</h1>
+            <main className="pt-32 pb-20 px-6 max-w-4xl mx-auto font-sans">
+                <h1 className="text-4xl font-display font-bold mb-8 text-brand-dark">Términos de Servicio</h1>
                 <div className="prose prose-lg max-w-none text-gray-600">
                     <p>Al utilizar los servicios de Activa Musicoterapia, usted acepta los siguientes términos.</p>
 

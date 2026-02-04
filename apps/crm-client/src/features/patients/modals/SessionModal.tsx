@@ -42,8 +42,7 @@ export interface ExtendedSession extends Partial<Session> {
 interface SessionModalProps {
   isOpen?: boolean;
   onClose: () => void;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  onSave: (data: ExtendedSession) => Promise<any> | void;
+  onSave: (data: ExtendedSession) => Promise<void> | void;
   onDelete?: (id: string | number) => void;
   initialData?: ExtendedSession;
   patientType: string;
@@ -282,7 +281,6 @@ export const SessionModal: React.FC<SessionModalProps> = ({
                         <label className="text-[10px] uppercase font-bold text-indigo-700 block mb-1">Frecuencia</label>
                         <select
                           value={recurrenceFreq}
-                          // eslint-disable-next-line @typescript-eslint/no-explicit-any
                           onChange={e => setRecurrenceFreq(e.target.value as 'WEEKLY' | 'BIWEEKLY')}
                           className="w-full text-xs p-1.5 rounded-lg border border-indigo-200 bg-white text-indigo-900 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                         >

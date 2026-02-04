@@ -3,7 +3,7 @@ import { Shield, PlusCircle, Search } from 'lucide-react';
 import { Button } from '@monorepo/ui-system';
 import { Patient, NavigationPayload } from '../../lib/types';
 import { useAuth } from '../../context/AuthContext';
-import { SystemActivity } from './widgets/SystemActivity';
+import { TitaniumActivityFeed } from './widgets/TitaniumActivityFeed';
 import { useActivityLog } from '../../hooks/useActivityLog';
 import { DailyAgendaWidget } from './widgets/DailyAgendaWidget';
 import { PostItWidget } from './widgets/PostItWidget';
@@ -43,7 +43,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ patients, onViewCh
   }, [patients]);
 
   return (
-    <div className="h-[calc(100vh-100px)] min-h-[600px] animate-in fade-in max-w-[1800px] mx-auto pb-4 flex flex-col gap-6">
+    <div className="md:h-[calc(100vh-100px)] min-h-[600px] animate-in fade-in max-w-[1800px] mx-auto pb-4 flex flex-col gap-6">
 
       {/* COMPACT HEADER */}
       {/* COMPACT HEADER (RESPONSIVE) */}
@@ -99,7 +99,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ patients, onViewCh
               }}
               selectedDate={selectedDate}
               onDateChange={setSelectedDate}
-              onNewAppointment={() => onViewChange('patients')}
+              onNewAppointment={() => onViewChange('quick-appointment', { mode: 'new' })}
             />
           </div>
 
@@ -113,7 +113,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ patients, onViewCh
 
             {/* Activity Log (SECONDARY) */}
             <div className="flex-1 min-h-[300px] overflow-hidden">
-              <SystemActivity activities={latestActivities} isLoading={isLogLoading} />
+              <TitaniumActivityFeed activities={latestActivities} isLoading={isLogLoading} />
             </div>
 
           </div>

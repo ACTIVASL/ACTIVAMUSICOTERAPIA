@@ -2,6 +2,7 @@
 import jsPDF from 'jspdf';
 import { Invoice } from '@monorepo/shared';
 import { ClinicSettings } from './types';
+import { AuditRepository } from '../data/repositories/AuditRepository';
 
 export const PdfGenerator = {
     generateInvoice: async (invoice: Invoice, settings: ClinicSettings, logoUrl?: string) => {
@@ -191,6 +192,18 @@ export const PdfGenerator = {
         doc.setTextColor(203, 213, 225); // Slate 300
         doc.text("Generado por Activa Musicoterapia CRM", pageWidth / 2, pageHeight - 10, { align: 'center' });
 
-        doc.save(`Factura_${invoice.number}.pdf`);
+        // Sanitize filename
+        const safeNumber = invoice.number.replace(/[^a-zA-Z0-9-_]/g, '-');
+        doc.save(`Factura_${safeNumber}.pdf`);
+
+        try {
+            await AuditRepository.log('report', `Documento generado: Factura ${invoice.number}`, {
+                type: 'report',
+                documentId: invoice.number,
+                format: 'pdf'
+            });
+        } catch (e) {
+            console.warn("Audit Log Failed", e);
+        }
     }
 };
