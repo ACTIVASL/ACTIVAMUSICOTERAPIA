@@ -9,7 +9,14 @@ export const SensitivityLevelEnum = z.enum(['low', 'medium', 'high']);
 export const RecurrenceFrequencyEnum = z.enum(['WEEKLY', 'BIWEEKLY', 'MONTHLY']);
 export const WaitlistPriorityEnum = z.enum(['LOW', 'MEDIUM', 'HIGH']);
 // TITANIUM MEMORY CORE
-export const DocumentCategoryEnum = z.enum(['invoice', 'consent', 'report', 'lab', 'general', 'other']);
+export const DocumentCategoryEnum = z.enum([
+  'invoice',
+  'consent',
+  'report',
+  'lab',
+  'general',
+  'other',
+]);
 
 // --- RECURRENCE ENGINE ---
 export const RecurrenceRuleSchema = z.object({
@@ -73,13 +80,15 @@ export const FormulationDataSchema = z.object({
   text: z.string(),
 });
 
-export const ClinicalFormulationSchema = z.object({
-  synthesis: z.union([FormulationDataSchema, z.string()]).optional(),
-  preserved: z.union([FormulationDataSchema, z.string()]).optional(),
-  difficulties: z.union([FormulationDataSchema, z.string()]).optional(),
-  regulators: z.union([FormulationDataSchema, z.string()]).optional(),
-  hypothesis: z.union([FormulationDataSchema, z.string()]).optional(),
-}).catchall(z.unknown()); // Allow unknown legacy fields but type them as unknown
+export const ClinicalFormulationSchema = z
+  .object({
+    synthesis: z.union([FormulationDataSchema, z.string()]).optional(),
+    preserved: z.union([FormulationDataSchema, z.string()]).optional(),
+    difficulties: z.union([FormulationDataSchema, z.string()]).optional(),
+    regulators: z.union([FormulationDataSchema, z.string()]).optional(),
+    hypothesis: z.union([FormulationDataSchema, z.string()]).optional(),
+  })
+  .catchall(z.unknown()); // Allow unknown legacy fields but type them as unknown
 
 export const ClinicalSafetyProfileSchema = z.object({
   // Red Lights (Risks)
@@ -113,31 +122,37 @@ export const PsychosocialContextSchema = z.object({
   occupation: z.string().optional(),
 });
 
-export const CognitiveScoresSchema = z.object({
-  moca: z.union([z.string(), z.number()]).optional(), // Allow flexible input, sanitize later
-  mmse: z.union([z.string(), z.number()]).optional(),
-  gds: z.union([z.string(), z.number()]).optional(),
-  date: z.string().optional(),
-  lastEvalDate: z.string().optional(), // TITANIUM LIFECYCLE
-  mocaDetails: z.record(z.string(), z.number()).optional(), // Details are code:score
-  mmseDetails: z.record(z.string(), z.number()).optional(),
-  admissionChecks: z.object({
-    safety: z.array(z.string()),
-    prep: z.array(z.string()),
-  }).optional(),
-  functionalScores: z.array(z.number()).optional(),
-  childProfile: z.record(z.string(), z.any()).optional(),
-  childObs: z.string().optional(),
-}).catchall(z.unknown());
+export const CognitiveScoresSchema = z
+  .object({
+    moca: z.union([z.string(), z.number()]).optional(), // Allow flexible input, sanitize later
+    mmse: z.union([z.string(), z.number()]).optional(),
+    gds: z.union([z.string(), z.number()]).optional(),
+    date: z.string().optional(),
+    lastEvalDate: z.string().optional(), // TITANIUM LIFECYCLE
+    mocaDetails: z.record(z.string(), z.number()).optional(), // Details are code:score
+    mmseDetails: z.record(z.string(), z.number()).optional(),
+    admissionChecks: z
+      .object({
+        safety: z.array(z.string()),
+        prep: z.array(z.string()),
+      })
+      .optional(),
+    functionalScores: z.array(z.number()).optional(),
+    childProfile: z.record(z.string(), z.any()).optional(),
+    childObs: z.string().optional(),
+  })
+  .catchall(z.unknown());
 
-export const ForensicMetadataSchema = z.object({
-  timestamp: z.string().optional(),
-  userAgent: z.string().optional(),
-  screenResolution: z.string().optional(),
-  devicePixelRatio: z.number().optional().or(z.string().optional()), // Allow string "1" or number 1
-  platform: z.string().optional(),
-  category: DocumentCategoryEnum.optional(), // TITANIUM: Added for Metadata persistence
-}).catchall(z.union([z.string(), z.number(), z.boolean()]));
+export const ForensicMetadataSchema = z
+  .object({
+    timestamp: z.string().optional(),
+    userAgent: z.string().optional(),
+    screenResolution: z.string().optional(),
+    devicePixelRatio: z.number().optional().or(z.string().optional()), // Allow string "1" or number 1
+    platform: z.string().optional(),
+    category: DocumentCategoryEnum.optional(), // TITANIUM: Added for Metadata persistence
+  })
+  .catchall(z.union([z.string(), z.number(), z.boolean()]));
 
 export const DocumentSchema = z.object({
   id: z.string().uuid().or(z.string().min(1)),
@@ -158,7 +173,7 @@ export const PatientSchema = z.object({
   // Identity
   id: z.union([z.string(), z.number()]),
   userId: z.string().optional(),
-  name: z.string().min(1, "El nombre es obligatorio"),
+  name: z.string().min(1, 'El nombre es obligatorio'),
   age: z.number().int().min(0).max(120),
   diagnosis: z.string().default('Sin diagnosticar'),
   pathologyType: z.union([PathologyTypeEnum, z.string()]).default('other'),

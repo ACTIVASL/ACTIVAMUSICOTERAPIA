@@ -73,8 +73,14 @@ export const DocumentationCenter: React.FC = () => {
             </h4>
             <div className="space-y-3">
               {[
-                { title: 'Pubmed: Music Therapy & Dementia', url: 'https://pubmed.ncbi.nlm.nih.gov/?term=music+therapy+dementia' },
-                { title: 'Asociación Española de Musicoterapia (ADIMTE)', url: 'https://www.adimte.org/' },
+                {
+                  title: 'Pubmed: Music Therapy & Dementia',
+                  url: 'https://pubmed.ncbi.nlm.nih.gov/?term=music+therapy+dementia',
+                },
+                {
+                  title: 'Asociación Española de Musicoterapia (ADIMTE)',
+                  url: 'https://www.adimte.org/',
+                },
                 { title: 'World Federation of Music Therapy', url: 'https://wfmt.info' },
               ].map((link, i) => (
                 <a
@@ -88,7 +94,10 @@ export const DocumentationCenter: React.FC = () => {
                     <span className="text-sm font-medium text-slate-700 group-hover:text-emerald-800">
                       {link.title}
                     </span>
-                    <ExternalLink size={12} className="text-slate-300 group-hover:text-emerald-600" />
+                    <ExternalLink
+                      size={12}
+                      className="text-slate-300 group-hover:text-emerald-600"
+                    />
                   </div>
                 </a>
               ))}

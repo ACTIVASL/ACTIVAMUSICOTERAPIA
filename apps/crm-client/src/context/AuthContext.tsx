@@ -24,7 +24,6 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 // import { useFirebaseAuthState } from '@monorepo/engine-auth'; // DISABLED: Using local version to fix Context
 import { useFirebaseAuthState } from '../hooks/useFirebaseAuthState'; // INLINED FOR STABILITY
 
-
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const auth = useFirebaseAuthState();
 
@@ -39,7 +38,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // Role Switching Logic
   const login = (newRole: UserRole) => {
     setRole(newRole);
-
   };
 
   const logout = () => {
@@ -70,7 +68,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         isPremium,
         demoMode: auth.demoMode,
         upgradeToPremium,
-        user: auth.user // Expose real user for Repositories
+        user: auth.user, // Expose real user for Repositories
       }}
     >
       {children}

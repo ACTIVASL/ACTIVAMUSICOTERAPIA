@@ -1,5 +1,3 @@
-
-
 interface PatientAvatarProps {
   photo?: string;
   name?: string;
@@ -14,7 +12,10 @@ export const PatientAvatar = ({ photo, name, size = 'md' }: PatientAvatarProps) 
     xl: 'w-32 h-32 text-4xl',
   };
   // TITANIUM FIX: Allow both Base64 (data:image) AND URL paths (/assets or http)
-  const isImage = photo && photo.length > 5 && (photo.includes('data:image') || photo.startsWith('/assets') || photo.startsWith('http'));
+  const isImage =
+    photo &&
+    photo.length > 5 &&
+    (photo.includes('data:image') || photo.startsWith('/assets') || photo.startsWith('http'));
 
   return (
     <div

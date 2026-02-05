@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import {
   onAuthStateChanged,
@@ -39,18 +38,21 @@ export function useFirebaseAuthState() {
         }
 
         // Real Firestore Listener for Customers
-        unsubscribeProfile = onSnapshot(doc(db, 'users', currentUser.uid), (docSnapshot) => {
-          const data = docSnapshot.data();
-          // Check for 'premium' status (case insensitive)
-          const status = data?.subscriptionStatus?.toLowerCase();
-          setIsPremium(status === 'premium' || status === 'lifetime');
-          setLoading(false);
-        }, (err) => {
-          console.error('Error fetching profile:', err);
-          setIsPremium(false); // Default to free on error
-          setLoading(false);
-        });
-
+        unsubscribeProfile = onSnapshot(
+          doc(db, 'users', currentUser.uid),
+          (docSnapshot) => {
+            const data = docSnapshot.data();
+            // Check for 'premium' status (case insensitive)
+            const status = data?.subscriptionStatus?.toLowerCase();
+            setIsPremium(status === 'premium' || status === 'lifetime');
+            setLoading(false);
+          },
+          (err) => {
+            console.error('Error fetching profile:', err);
+            setIsPremium(false); // Default to free on error
+            setLoading(false);
+          },
+        );
       } else {
         // Logged out
         setIsPremium(false);
@@ -106,12 +108,13 @@ export function useFirebaseAuthState() {
     setLoading(true);
     setError(null);
     try {
-      const { GoogleAuthProvider, signInWithPopup, setPersistence, browserLocalPersistence } = await import('firebase/auth');
+      const { GoogleAuthProvider, signInWithPopup, setPersistence, browserLocalPersistence } =
+        await import('firebase/auth');
       const provider = new GoogleAuthProvider();
 
       // FORCE ACCOUNT SELECTION (Prevents "Stuck" login)
       provider.setCustomParameters({
-        prompt: 'select_account'
+        prompt: 'select_account',
       });
 
       // FORCE PERSISTENCE: local (survives browser close)

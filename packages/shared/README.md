@@ -7,19 +7,25 @@ This package defines the contract between the database, the backend (Functions),
 ## Contents
 
 ### 1. Schemas (Zod)
+
 Runtime validation for critical data structures.
+
 - `PatientSchema`
 - `SessionSchema`
 - `InvoiceSchema`
 
 ### 2. Types (TypeScript)
+
 Static types inferred from Zod schemas or defined manually for legacy support.
+
 - `Patient`, `ClinicalRecord`
 - `Session`, `GroupSession`
 - `Invoice`, `Transaction`
 
 ### 3. Utils
+
 Shared logic that must behave identically everywhere.
+
 - `deepSanitize()`: Removes `undefined` values for Firestore compatibility.
 - `cn()`: Class merging utility (if moved here).
 

@@ -22,7 +22,9 @@ const checkPrerequisites = () => {
     // Check Project ID
     const currentProject = runCommand('gcloud config get-value project');
     if (currentProject !== PROJECT_ID) {
-      console.warn(`[⚠️] WARNING: Switched execution context from ${currentProject} to ${PROJECT_ID}`);
+      console.warn(
+        `[⚠️] WARNING: Switched execution context from ${currentProject} to ${PROJECT_ID}`,
+      );
     }
   } catch (e) {
     console.error('[❌] GCloud Auth Missing. Run `gcloud auth login` first.');
@@ -60,7 +62,9 @@ const restoreFirestore = async () => {
   console.log(`\n[🚨] TITANIUM RESTORE PROTOCOL INITIATED`);
   console.log(`[🎯] Target Project: ${PROJECT_ID}`);
   console.log(`[📂] Source: ${backupPath}`);
-  console.log(`[⚠️] WARNING: This is a DESTRUCTIVE operation. It imports data into the active database.`);
+  console.log(
+    `[⚠️] WARNING: This is a DESTRUCTIVE operation. It imports data into the active database.`,
+  );
 
   const confirmed = await askConfirmation('\n[❓] Are you sure you want to proceed? (y/N): ');
 

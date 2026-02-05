@@ -6,84 +6,84 @@ import { Eraser, Check } from 'lucide-react';
 import type { ForensicMetadata } from '@monorepo/shared';
 
 export interface ForensicSignature {
-    dataUrl: string;
-    metadata: ForensicMetadata;
+  dataUrl: string;
+  metadata: ForensicMetadata;
 }
 
 interface SignaturePadProps {
-    onSave: (signature: ForensicSignature) => void;
-    onClear?: () => void;
+  onSave: (signature: ForensicSignature) => void;
+  onClear?: () => void;
 }
 
 export const SignaturePad = ({ onSave, onClear }: SignaturePadProps) => {
-    const sigCanvas = useRef<ReactSignatureCanvas>(null);
-    const [isEmpty, setIsEmpty] = useState(true);
+  const sigCanvas = useRef<ReactSignatureCanvas>(null);
+  const [isEmpty, setIsEmpty] = useState(true);
 
-    const clear = () => {
-        sigCanvas.current?.clear();
-        setIsEmpty(true);
-        onClear?.();
-    };
+  const clear = () => {
+    sigCanvas.current?.clear();
+    setIsEmpty(true);
+    onClear?.();
+  };
 
-    const save = () => {
-        if (sigCanvas.current && !sigCanvas.current.isEmpty()) {
-            const dataUrl = sigCanvas.current.getTrimmedCanvas().toDataURL('image/png');
+  const save = () => {
+    if (sigCanvas.current && !sigCanvas.current.isEmpty()) {
+      const dataUrl = sigCanvas.current.getTrimmedCanvas().toDataURL('image/png');
 
-            // CAPTURE FORENSIC MISC DATA
-            const metadata = {
-                timestamp: new Date().toISOString(),
-                userAgent: navigator.userAgent,
-                screenResolution: `${window.screen.width}x${window.screen.height}`,
-                devicePixelRatio: window.devicePixelRatio || 1,
-                platform: navigator.platform
-            };
+      // CAPTURE FORENSIC MISC DATA
+      const metadata = {
+        timestamp: new Date().toISOString(),
+        userAgent: navigator.userAgent,
+        screenResolution: `${window.screen.width}x${window.screen.height}`,
+        devicePixelRatio: window.devicePixelRatio || 1,
+        platform: navigator.platform,
+      };
 
-            onSave({ dataUrl, metadata });
-        }
-    };
+      onSave({ dataUrl, metadata });
+    }
+  };
 
-    return (
-        <div className="space-y-4">
-            <div className="border-2 border-slate-200 border-dashed rounded-xl overflow-hidden bg-slate-50 relative group hover:border-pink-300 transition-colors">
-                <ReactSignatureCanvas
-                    ref={sigCanvas}
-                    penColor="black"
-                    canvasProps={{
-                        className: 'w-full h-48 cursor-crosshair',
-                        style: { width: '100%', height: '200px' }
-                    }}
-                    onEnd={() => {
-                        if (sigCanvas.current) {
-                            setIsEmpty(sigCanvas.current.isEmpty());
-                        }
-                    }}
-                />
-                {isEmpty && (
-                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none text-slate-400 font-bold text-sm uppercase tracking-widest">
-                        Firme Aquí
-                    </div>
-                )}
-            </div>
-            <div className="flex justify-end gap-2">
-                <Button variant="ghost" size="sm" icon={Eraser} onClick={clear}>
-                    Borrar
-                </Button>
-                <Button
-                    variant="primary"
-                    size="sm"
-                    icon={Check}
-                    onClick={() => {
-                        if (isEmpty) {
-                            alert("Por favor, firme en el recuadro antes de guardar.");
-                            return;
-                        }
-                        save();
-                    }}
-                    disabled={isEmpty}
-                >
-                    Guardar Firma
-                </Button>
-            </div>
-        </div>
-    );
+  return (
+    <div className="space-y-4">
+      <div className="border-2 border-slate-200 border-dashed rounded-xl overflow-hidden bg-slate-50 relative group hover:border-pink-300 transition-colors">
+        <ReactSignatureCanvas
+          ref={sigCanvas}
+          penColor="black"
+          canvasProps={{
+            className: 'w-full h-48 cursor-crosshair',
+            style: { width: '100%', height: '200px' },
+          }}
+          onEnd={() => {
+            if (sigCanvas.current) {
+              setIsEmpty(sigCanvas.current.isEmpty());
+            }
+          }}
+        />
+        {isEmpty && (
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none text-slate-400 font-bold text-sm uppercase tracking-widest">
+            Firme Aquí
+          </div>
+        )}
+      </div>
+      <div className="flex justify-end gap-2">
+        <Button variant="ghost" size="sm" icon={Eraser} onClick={clear}>
+          Borrar
+        </Button>
+        <Button
+          variant="primary"
+          size="sm"
+          icon={Check}
+          onClick={() => {
+            if (isEmpty) {
+              alert('Por favor, firme en el recuadro antes de guardar.');
+              return;
+            }
+            save();
+          }}
+          disabled={isEmpty}
+        >
+          Guardar Firma
+        </Button>
+      </div>
+    </div>
+  );
 };

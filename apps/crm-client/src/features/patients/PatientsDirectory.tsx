@@ -51,7 +51,7 @@ export const PatientsDirectory: React.FC<PatientsDirectoryProps> = ({
     const params = new URLSearchParams(location.search);
     if (params.get('action') === 'new') {
       setIsAdmissionOpen(true);
-      // Optional: Clear param to avoid re-opening on refresh? 
+      // Optional: Clear param to avoid re-opening on refresh?
       // For now, keep it simple. User might want to refresh if it failed.
     }
   }, [location.search]);
@@ -84,11 +84,6 @@ export const PatientsDirectory: React.FC<PatientsDirectoryProps> = ({
     });
   }, [patients, search, filterPathology, initialFilter]);
 
-
-
-
-
-
   // VIRTUALIZATION LOGIC
   // VIRTUALIZATION LOGIC
   // moved to top
@@ -99,9 +94,12 @@ export const PatientsDirectory: React.FC<PatientsDirectoryProps> = ({
     useEffect(() => {
       const handleResize = () => {
         const width = window.innerWidth;
-        if (width >= 1280) setCols(4); // xl
-        else if (width >= 1024) setCols(3); // lg
-        else if (width >= 768) setCols(2); // md
+        if (width >= 1280)
+          setCols(4); // xl
+        else if (width >= 1024)
+          setCols(3); // lg
+        else if (width >= 768)
+          setCols(2); // md
         else setCols(1);
       };
       handleResize();
@@ -130,7 +128,9 @@ export const PatientsDirectory: React.FC<PatientsDirectoryProps> = ({
       {/* Header */}
       <div className="flex flex-col md:flex-row gap-4 justify-between items-start md:items-center">
         <div>
-          <h1 className="text-3xl font-black text-slate-900 tracking-tight">Directorio de Pacientes</h1>
+          <h1 className="text-3xl font-black text-slate-900 tracking-tight">
+            Directorio de Pacientes
+          </h1>
           <p className="text-slate-500 font-medium">Gestión clínica y administrativa</p>
         </div>
         <div className="flex gap-2">
@@ -145,12 +145,14 @@ export const PatientsDirectory: React.FC<PatientsDirectoryProps> = ({
         <div className="flex flex-col md:flex-row gap-4 p-2">
           {/* Main Tabs */}
 
-
           <div className="h-8 w-px bg-slate-200 hidden md:block self-center" />
 
           {/* Search */}
           <div className="flex-1 relative group">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-pink-500 transition-colors" size={18} />
+            <Search
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-pink-500 transition-colors"
+              size={18}
+            />
             <input
               type="text"
               placeholder="Buscar por nombre, diagnóstico..."

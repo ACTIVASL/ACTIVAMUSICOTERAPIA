@@ -20,15 +20,14 @@ export const GroupSessionModal: React.FC<GroupSessionModalProps> = ({
   onDelete, // Destructure here to fix 'Cannot find name'
   initialGroupName = '',
   mode = 'evolution',
-  initialData
+  initialData,
 }) => {
   // Store full participant objects { name, id? }
   // On load, if initialData has names but no IDs, treat as guests
   const [participants, setParticipants] = useState<{ name: string; id?: string }[]>(
     // initialData?.participants is not in Type, rely on participantNames or passed props
     // initialData?.participants is strict typed now
-    initialData?.participants?.map(p => ({ name: p.name, id: p.id })) ||
-    []
+    initialData?.participants?.map((p) => ({ name: p.name, id: p.id })) || [],
   );
 
   const [selectedPatientId, setSelectedPatientId] = useState('');
@@ -44,7 +43,9 @@ export const GroupSessionModal: React.FC<GroupSessionModalProps> = ({
   // METRICS
   const [engagementScore, setEngagementScore] = useState(initialData?.engagementScore || 5);
   const [cohesionScore, setCohesionScore] = useState(initialData?.cohesionScore || 5);
-  const [energyLevel, setEnergyLevel] = useState<'High' | 'Medium' | 'Low'>(initialData?.energyLevel || 'Medium');
+  const [energyLevel, setEnergyLevel] = useState<'High' | 'Medium' | 'Low'>(
+    initialData?.energyLevel || 'Medium',
+  );
 
   useEffect(() => {
     if (initialGroupName && !groupName) setGroupName(initialGroupName);
@@ -53,9 +54,9 @@ export const GroupSessionModal: React.FC<GroupSessionModalProps> = ({
   const handleAddParticipant = () => {
     // 1. Try add Real Patient
     if (selectedPatientId) {
-      const patient = patients.find(p => p.id === selectedPatientId);
+      const patient = patients.find((p) => p.id === selectedPatientId);
       if (patient) {
-        if (!participants.some(p => p.id === patient.id)) {
+        if (!participants.some((p) => p.id === patient.id)) {
           setParticipants([...participants, { name: patient.name, id: String(patient.id) }]);
         }
         setSelectedPatientId('');
@@ -65,7 +66,7 @@ export const GroupSessionModal: React.FC<GroupSessionModalProps> = ({
 
     // 2. Try add Guest
     if (guestName.trim()) {
-      if (!participants.some(p => p.name.toLowerCase() === guestName.trim().toLowerCase())) {
+      if (!participants.some((p) => p.name.toLowerCase() === guestName.trim().toLowerCase())) {
         setParticipants([...participants, { name: guestName.trim() }]);
       }
       setGuestName('');
@@ -82,8 +83,9 @@ export const GroupSessionModal: React.FC<GroupSessionModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-slate-900/60 z-50 flex items-center justify-center p-4">
-      <div className={`bg-white w-full ${isScheduleMode ? 'max-w-md' : 'max-w-5xl'} rounded-2xl shadow-3d p-6 animate-in fade-in zoom-in-95 flex flex-col max-h-[90vh] transition-all duration-300 relative`}>
-
+      <div
+        className={`bg-white w-full ${isScheduleMode ? 'max-w-md' : 'max-w-5xl'} rounded-2xl shadow-3d p-6 animate-in fade-in zoom-in-95 flex flex-col max-h-[90vh] transition-all duration-300 relative`}
+      >
         {/* CONFIG MENU DROPDOWN */}
         {showConfigMenu && (
           <div className="absolute top-16 right-6 bg-white rounded-xl shadow-xl border border-slate-100 p-2 z-50 min-w-[200px] animate-in slide-in-from-top-2">
@@ -104,13 +106,17 @@ export const GroupSessionModal: React.FC<GroupSessionModalProps> = ({
                 const sessionId = initialData?.id || initialData?.groupId;
 
                 if (!sessionId) {
-                  alert("Error: ID de sesión no encontrado.");
+                  alert('Error: ID de sesión no encontrado.');
                   return;
                 }
 
                 if (onDelete) {
                   // Use the prop provided by parent (App.tsx) which handles state + log
-                  if (confirm('¿Estás seguro de eliminar esta sesión y todos sus registros asociados? (Acción irreversible)')) {
+                  if (
+                    confirm(
+                      '¿Estás seguro de eliminar esta sesión y todos sus registros asociados? (Acción irreversible)',
+                    )
+                  ) {
                     onDelete(String(sessionId));
                     // Close handled by parent or state change, but we can close menu
                     setShowConfigMenu(false);
@@ -119,7 +125,8 @@ export const GroupSessionModal: React.FC<GroupSessionModalProps> = ({
                   // Fallback for standalone usage (unlikely but safe)
                   if (confirm('¿Estás seguro de eliminar esta sesión?')) {
                     try {
-                      const { GroupSessionRepository } = await import('../../../data/repositories/GroupSessionRepository');
+                      const { GroupSessionRepository } =
+                        await import('../../../data/repositories/GroupSessionRepository');
                       await GroupSessionRepository.delete(String(sessionId));
                       alert('Sesión eliminada.');
                       onClose();
@@ -156,7 +163,11 @@ export const GroupSessionModal: React.FC<GroupSessionModalProps> = ({
               <button
                 type="button"
                 onClick={() => {
-                  if (confirm('⚠️ ¿Eliminar Definitivamente este Grupo?\n\nSe borrará del calendario.')) {
+                  if (
+                    confirm(
+                      '⚠️ ¿Eliminar Definitivamente este Grupo?\n\nSe borrará del calendario.',
+                    )
+                  ) {
                     onDelete(String(initialData.id));
                   }
                 }}
@@ -175,7 +186,10 @@ export const GroupSessionModal: React.FC<GroupSessionModalProps> = ({
               <Settings size={16} />
               Configurar
             </button>
-            <button onClick={onClose} className="p-2 hover:bg-slate-100 rounded-full transition-colors h-fit text-slate-400 hover:text-slate-600">
+            <button
+              onClick={onClose}
+              className="p-2 hover:bg-slate-100 rounded-full transition-colors h-fit text-slate-400 hover:text-slate-600"
+            >
               <X size={24} />
             </button>
           </div>
@@ -188,7 +202,7 @@ export const GroupSessionModal: React.FC<GroupSessionModalProps> = ({
             try {
               const formData = new FormData(e.target as HTMLFormElement);
               if (!groupName?.trim()) {
-                alert("Es obligatorio el Nombre del Grupo.");
+                alert('Es obligatorio el Nombre del Grupo.');
                 return;
               }
 
@@ -200,10 +214,10 @@ export const GroupSessionModal: React.FC<GroupSessionModalProps> = ({
                 activities: ['Dinámica'], // Default or derive from form
                 location: formData.get('location') as string,
                 // type: 'group', // Removed: Not in Schema
-                participants: participants.map(p => ({
+                participants: participants.map((p) => ({
                   id: p.id || crypto.randomUUID(),
                   name: p.name,
-                  attendance: 'present' as const
+                  attendance: 'present' as const,
                 })),
                 price: sessionPrice, // Use state variable
                 paid: false, // Default
@@ -211,32 +225,34 @@ export const GroupSessionModal: React.FC<GroupSessionModalProps> = ({
                 status: 'scheduled',
                 patientIds: [], // REQUIRED: Defaults to empty for groups
                 groupName: groupName.trim(), // Use state variable
-                methodology: formData.get('methodology') as string || '',
-                observations: formData.get('observations') as string || '',
+                methodology: (formData.get('methodology') as string) || '',
+                observations: (formData.get('observations') as string) || '',
                 engagementScore: engagementScore,
                 cohesionScore: cohesionScore,
-                energyLevel: energyLevel
+                energyLevel: energyLevel,
               };
 
               if (!sessionData.time || !sessionData.location) {
-                alert("Por favor completa hora y lugar");
+                alert('Por favor completa hora y lugar');
                 return;
               }
 
               // Await the save to catch async errors from App.tsx/Repositories
               const res = onSave(sessionData);
               if (res instanceof Promise) await res;
-
             } catch (err) {
-              console.error("ERROR AL GUARDAR GRUPO:", err);
-              alert("Error al guardar sesión: " + (err instanceof Error ? err.message : String(err)));
+              console.error('ERROR AL GUARDAR GRUPO:', err);
+              alert(
+                'Error al guardar sesión: ' + (err instanceof Error ? err.message : String(err)),
+              );
             }
           }}
         >
           <div className={`grid grid-cols-1 ${isScheduleMode ? 'gap-4' : 'lg:grid-cols-12 gap-8'}`}>
-
             {/* LEFT: Context & Participants */}
-            <div className={`${isScheduleMode ? 'col-span-1' : 'lg:col-span-4 border-r border-slate-100 pr-4'} space-y-6`}>
+            <div
+              className={`${isScheduleMode ? 'col-span-1' : 'lg:col-span-4 border-r border-slate-100 pr-4'} space-y-6`}
+            >
               <div>
                 <label className="label-pro text-pink-600">Nombre del Grupo</label>
                 <input
@@ -252,16 +268,34 @@ export const GroupSessionModal: React.FC<GroupSessionModalProps> = ({
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="label-pro">Fecha</label>
-                  <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="input-pro" required />
+                  <input
+                    type="date"
+                    value={date}
+                    onChange={(e) => setDate(e.target.value)}
+                    className="input-pro"
+                    required
+                  />
                 </div>
                 <div>
                   <label className="label-pro">Hora</label>
-                  <input type="time" name="time" defaultValue={initialData?.time || "10:00"} className="input-pro" required />
+                  <input
+                    type="time"
+                    name="time"
+                    defaultValue={initialData?.time || '10:00'}
+                    className="input-pro"
+                    required
+                  />
                 </div>
               </div>
               <div>
                 <label className="label-pro">Ubicación</label>
-                <input name="location" defaultValue={initialData?.location} className="input-pro" placeholder="Sala..." required />
+                <input
+                  name="location"
+                  defaultValue={initialData?.location}
+                  className="input-pro"
+                  placeholder="Sala..."
+                  required
+                />
               </div>
 
               {!isScheduleMode && (
@@ -298,8 +332,10 @@ export const GroupSessionModal: React.FC<GroupSessionModalProps> = ({
                         }}
                       >
                         <option value="">-- Seleccionar Paciente --</option>
-                        {patients.map(p => (
-                          <option key={p.id} value={p.id}>{p.name}</option>
+                        {patients.map((p) => (
+                          <option key={p.id} value={p.id}>
+                            {p.name}
+                          </option>
                         ))}
                       </select>
 
@@ -313,10 +349,16 @@ export const GroupSessionModal: React.FC<GroupSessionModalProps> = ({
                           setGuestName(e.target.value);
                           setSelectedPatientId('');
                         }}
-                        onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddParticipant())}
+                        onKeyDown={(e) =>
+                          e.key === 'Enter' && (e.preventDefault(), handleAddParticipant())
+                        }
                       />
 
-                      <Button type="button" onClick={handleAddParticipant} icon={Plus} size="sm"
+                      <Button
+                        type="button"
+                        onClick={handleAddParticipant}
+                        icon={Plus}
+                        size="sm"
                         disabled={!selectedPatientId && !guestName.trim()}
                       >
                         Añadir
@@ -326,13 +368,23 @@ export const GroupSessionModal: React.FC<GroupSessionModalProps> = ({
                     {/* LIST */}
                     <div className="flex flex-wrap gap-2 max-h-[150px] overflow-y-auto content-start">
                       {participants.map((p, i) => (
-                        <span key={i} className={`inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-bold shadow-sm ${p.id
-                          ? 'bg-pink-100 text-pink-700 border border-pink-200' // Real Patient
-                          : 'bg-slate-100 text-slate-500 border border-slate-200' // Guest
-                          }`}>
+                        <span
+                          key={i}
+                          className={`inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-bold shadow-sm ${
+                            p.id
+                              ? 'bg-pink-100 text-pink-700 border border-pink-200' // Real Patient
+                              : 'bg-slate-100 text-slate-500 border border-slate-200' // Guest
+                          }`}
+                        >
                           {p.id && <Users size={10} />}
                           {p.name}
-                          <button type="button" onClick={() => handleRemoveParticipant(i)} className="hover:text-red-500 ml-1 opacity-60 hover:opacity-100"><X size={12} /></button>
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveParticipant(i)}
+                            className="hover:text-red-500 ml-1 opacity-60 hover:opacity-100"
+                          >
+                            <X size={12} />
+                          </button>
                         </span>
                       ))}
                     </div>
@@ -357,7 +409,6 @@ export const GroupSessionModal: React.FC<GroupSessionModalProps> = ({
             {/* RIGHT: Evolution & Metrics (HIDDEN IN SCHEDULE MODE) */}
             {!isScheduleMode && (
               <div className="lg:col-span-8 space-y-6 pl-4">
-
                 {/* METRICS PANEL */}
                 <div className="bg-gradient-to-r from-slate-50 to-white p-5 rounded-2xl border border-slate-200 grid grid-cols-1 md:grid-cols-3 gap-6 shadow-sm">
                   {/* Engagement */}
@@ -367,7 +418,10 @@ export const GroupSessionModal: React.FC<GroupSessionModalProps> = ({
                     </div>
                     <div className="relative pt-1">
                       <input
-                        type="range" min="0" max="10" step="1"
+                        type="range"
+                        min="0"
+                        max="10"
+                        step="1"
                         value={engagementScore}
                         onChange={(e) => setEngagementScore(Number(e.target.value))}
                         className="w-full accent-blue-500 cursor-pointer"
@@ -387,7 +441,10 @@ export const GroupSessionModal: React.FC<GroupSessionModalProps> = ({
                     </div>
                     <div className="relative pt-1">
                       <input
-                        type="range" min="0" max="10" step="1"
+                        type="range"
+                        min="0"
+                        max="10"
+                        step="1"
                         value={cohesionScore}
                         onChange={(e) => setCohesionScore(Number(e.target.value))}
                         className="w-full accent-pink-500 cursor-pointer"
@@ -411,10 +468,15 @@ export const GroupSessionModal: React.FC<GroupSessionModalProps> = ({
                           key={level}
                           type="button"
                           onClick={() => setEnergyLevel(level as 'High' | 'Medium' | 'Low')}
-                          className={`px-3 py-1 text-xs font-bold rounded-lg border transition-all ${energyLevel === level
-                            ? (level === 'High' ? 'bg-amber-100 border-amber-300 text-amber-700' : level === 'Medium' ? 'bg-slate-100 border-slate-300 text-slate-700' : 'bg-slate-50 border-slate-200 text-slate-400')
-                            : 'bg-white border-slate-100 text-slate-400 hover:border-slate-300'
-                            } ${energyLevel === level ? 'ring-2 ring-offset-1 ring-amber-100' : ''}`}
+                          className={`px-3 py-1 text-xs font-bold rounded-lg border transition-all ${
+                            energyLevel === level
+                              ? level === 'High'
+                                ? 'bg-amber-100 border-amber-300 text-amber-700'
+                                : level === 'Medium'
+                                  ? 'bg-slate-100 border-slate-300 text-slate-700'
+                                  : 'bg-slate-50 border-slate-200 text-slate-400'
+                              : 'bg-white border-slate-100 text-slate-400 hover:border-slate-300'
+                          } ${energyLevel === level ? 'ring-2 ring-offset-1 ring-amber-100' : ''}`}
                         >
                           {level === 'Low' ? 'Baja' : level === 'Medium' ? 'Media' : 'Alta'}
                         </button>
@@ -436,7 +498,9 @@ export const GroupSessionModal: React.FC<GroupSessionModalProps> = ({
                 <div>
                   <label className="label-pro flex justify-between">
                     <span>Evolución Cualitativa</span>
-                    <span className="text-xs font-normal text-slate-400">Detalles clínicos y observaciones</span>
+                    <span className="text-xs font-normal text-slate-400">
+                      Detalles clínicos y observaciones
+                    </span>
                   </label>
                   <textarea
                     name="observations"
@@ -445,7 +509,6 @@ export const GroupSessionModal: React.FC<GroupSessionModalProps> = ({
                     placeholder="Describe la dinámica, hitos alcanzados y anécdotas relevantes..."
                   />
                 </div>
-
               </div>
             )}
           </div>
@@ -453,12 +516,10 @@ export const GroupSessionModal: React.FC<GroupSessionModalProps> = ({
             <Button variant="ghost" onClick={onClose} type="button">
               Cancelar
             </Button>
-            <Button type="submit">
-              {isScheduleMode ? 'Agendar Cita' : 'Guardar Evolución'}
-            </Button>
+            <Button type="submit">{isScheduleMode ? 'Agendar Cita' : 'Guardar Evolución'}</Button>
           </div>
         </form>
       </div>
-    </div >
+    </div>
   );
 };

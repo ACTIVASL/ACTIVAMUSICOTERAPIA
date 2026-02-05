@@ -1,6 +1,16 @@
 import React, { useState } from 'react';
 import { SessionTimer, Button, Badge, Card } from '@monorepo/ui-system';
-import { X, ClipboardCheck, Lightbulb, CheckSquare, Save, ClipboardList, Trash2, AlarmClock, Repeat } from 'lucide-react';
+import {
+  X,
+  ClipboardCheck,
+  Lightbulb,
+  CheckSquare,
+  Save,
+  ClipboardList,
+  Trash2,
+  AlarmClock,
+  Repeat,
+} from 'lucide-react';
 
 import {
   CLINICAL_GUIDES,
@@ -157,7 +167,11 @@ export const SessionModal: React.FC<SessionModalProps> = ({
             const formData = new FormData(e.target as HTMLFormElement);
 
             if (!notes.trim()) {
-              alert(isAbsent ? "Indique el motivo de la ausencia." : "Las notas de la sesión son obligatorias.");
+              alert(
+                isAbsent
+                  ? 'Indique el motivo de la ausencia.'
+                  : 'Las notas de la sesión son obligatorias.',
+              );
               return;
             }
 
@@ -196,11 +210,13 @@ export const SessionModal: React.FC<SessionModalProps> = ({
                 price,
                 paid: isPaid,
                 isAbsent,
-                recurrence: isRecurring ? {
-                  frequency: recurrenceFreq,
-                  occurrences: recurrenceCount,
-                  daysOfWeek: [adjustedDay]
-                } : undefined
+                recurrence: isRecurring
+                  ? {
+                      frequency: recurrenceFreq,
+                      occurrences: recurrenceCount,
+                      daysOfWeek: [adjustedDay],
+                    }
+                  : undefined,
               };
 
               // AWAIT THE RESULT
@@ -209,7 +225,7 @@ export const SessionModal: React.FC<SessionModalProps> = ({
               // If it failed, it throws and we catch.
             } catch (err) {
               console.error(err);
-              alert("Error al guardar: " + String(err));
+              alert('Error al guardar: ' + String(err));
               setIsSaving(false); // Unlock only on error
             }
           }}
@@ -264,24 +280,32 @@ export const SessionModal: React.FC<SessionModalProps> = ({
                   <div className="flex justify-between items-center mb-2">
                     <div className="flex items-center gap-2">
                       <Repeat className="text-indigo-500" size={18} />
-                      <span className="text-xs font-bold text-indigo-900 uppercase tracking-wide">Repetir Sesión</span>
+                      <span className="text-xs font-bold text-indigo-900 uppercase tracking-wide">
+                        Repetir Sesión
+                      </span>
                     </div>
                     <button
                       type="button"
                       onClick={() => setIsRecurring(!isRecurring)}
                       className={`w-10 h-5 rounded-full relative transition-colors ${isRecurring ? 'bg-indigo-500' : 'bg-slate-300'}`}
                     >
-                      <div className={`w-3 h-3 bg-white rounded-full absolute top-1 transition-all ${isRecurring ? 'left-6' : 'left-1'}`} />
+                      <div
+                        className={`w-3 h-3 bg-white rounded-full absolute top-1 transition-all ${isRecurring ? 'left-6' : 'left-1'}`}
+                      />
                     </button>
                   </div>
 
                   {isRecurring && (
                     <div className="flex gap-3 animate-in fade-in slide-in-from-top-2">
                       <div className="flex-1">
-                        <label className="text-[10px] uppercase font-bold text-indigo-700 block mb-1">Frecuencia</label>
+                        <label className="text-[10px] uppercase font-bold text-indigo-700 block mb-1">
+                          Frecuencia
+                        </label>
                         <select
                           value={recurrenceFreq}
-                          onChange={e => setRecurrenceFreq(e.target.value as 'WEEKLY' | 'BIWEEKLY')}
+                          onChange={(e) =>
+                            setRecurrenceFreq(e.target.value as 'WEEKLY' | 'BIWEEKLY')
+                          }
                           className="w-full text-xs p-1.5 rounded-lg border border-indigo-200 bg-white text-indigo-900 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                         >
                           <option value="WEEKLY">Semanal (7 días)</option>
@@ -289,10 +313,12 @@ export const SessionModal: React.FC<SessionModalProps> = ({
                         </select>
                       </div>
                       <div className="flex-1">
-                        <label className="text-[10px] uppercase font-bold text-indigo-700 block mb-1">Total Sesiones</label>
+                        <label className="text-[10px] uppercase font-bold text-indigo-700 block mb-1">
+                          Total Sesiones
+                        </label>
                         <select
                           value={recurrenceCount}
-                          onChange={e => setRecurrenceCount(Number(e.target.value))}
+                          onChange={(e) => setRecurrenceCount(Number(e.target.value))}
                           className="w-full text-xs p-1.5 rounded-lg border border-indigo-200 bg-white text-indigo-900 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                         >
                           <option value={2}>2 sesiones</option>
@@ -305,7 +331,6 @@ export const SessionModal: React.FC<SessionModalProps> = ({
                   )}
                 </div>
               )}
-
             </div>
             <div className="flex flex-col w-1/3">
               <label className="label-pro">Estado Asistencia</label>
@@ -332,7 +357,7 @@ export const SessionModal: React.FC<SessionModalProps> = ({
                     type="button"
                     onClick={() => {
                       const willCharge = price === 0;
-                      setPrice(willCharge ? (initialData?.price || 50) : 0);
+                      setPrice(willCharge ? initialData?.price || 50 : 0);
                     }}
                     className={`text-xs px-2 py-1 rounded font-bold transition-all ${price > 0 ? 'bg-red-100 text-red-700 ring-1 ring-red-200' : 'bg-slate-100 text-slate-400'}`}
                   >
@@ -528,7 +553,13 @@ export const SessionModal: React.FC<SessionModalProps> = ({
                 Eliminar
               </Button>
             )}
-            <Button type="submit" icon={Save} className="shadow-lg hover:shadow-xl px-8" isLoading={isSaving} disabled={isSaving}>
+            <Button
+              type="submit"
+              icon={Save}
+              className="shadow-lg hover:shadow-xl px-8"
+              isLoading={isSaving}
+              disabled={isSaving}
+            >
               {isSaving ? 'Guardando...' : 'Guardar Sesión'}
             </Button>
           </div>

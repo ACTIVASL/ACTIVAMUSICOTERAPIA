@@ -44,7 +44,9 @@ const enforceRetentionPolicy = () => {
       runCommand(`gsutil lifecycle set infra/gcs-lifecycle.json ${BUCKET_NAME}`);
     }
   } catch (e) {
-    console.warn('[⚠️] Retention policy check skipped (Bucket access issue). Manual cleanup required.');
+    console.warn(
+      '[⚠️] Retention policy check skipped (Bucket access issue). Manual cleanup required.',
+    );
   }
 };
 
@@ -62,7 +64,7 @@ const backupFirestore = () => {
     execSync(`gcloud firestore export ${backupPath} --project=${PROJECT_ID}`, { stdio: 'inherit' });
 
     // 2. Enforce Retention (Placeholder for future implementation or lifecycle hook)
-    // enforceRetentionPolicy(); 
+    // enforceRetentionPolicy();
 
     console.log(`\n[✅] BACKUP SUCCESSFUL`);
     console.log(`[🔗] URI: ${backupPath}`);

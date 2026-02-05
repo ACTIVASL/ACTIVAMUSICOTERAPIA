@@ -64,7 +64,7 @@ export const compressImage = (file: File): Promise<string> => {
   return new Promise((resolve, reject) => {
     // 1. Validate File Type
     if (!file.type.match(/image.*/)) {
-      return reject(new Error("File is not an image"));
+      return reject(new Error('File is not an image'));
     }
 
     const reader = new FileReader();
@@ -103,7 +103,7 @@ export const compressImage = (file: File): Promise<string> => {
         canvas.height = height;
 
         const ctx = canvas.getContext('2d');
-        if (!ctx) return reject(new Error("Canvas Context missing"));
+        if (!ctx) return reject(new Error('Canvas Context missing'));
 
         // Smooth scaling
         ctx.imageSmoothingEnabled = true;
@@ -123,9 +123,9 @@ export const compressImage = (file: File): Promise<string> => {
         }
       };
 
-      img.onerror = (_err) => reject(new Error("Image Load Failed"));
+      img.onerror = (_err) => reject(new Error('Image Load Failed'));
     };
 
-    reader.onerror = (_err) => reject(new Error("File Read Failed"));
+    reader.onerror = (_err) => reject(new Error('File Read Failed'));
   });
 };

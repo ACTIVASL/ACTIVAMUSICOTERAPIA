@@ -17,10 +17,10 @@ export const SettingsView: React.FC = () => {
 
   // Sync form when settings load
   useEffect(() => {
-    if (settings && !formData) { // Only set if formData is empty
+    if (settings && !formData) {
+      // Only set if formData is empty
 
       setFormData(settings);
-
     }
   }, [settings]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -30,16 +30,17 @@ export const SettingsView: React.FC = () => {
       await updateSettings(formData);
       toastSuccess('Configuración guardada correctamente');
     } catch (err) {
-      console.error("Failed to save", err);
-      toastError("Error al guardar configuración.");
+      console.error('Failed to save', err);
+      toastError('Error al guardar configuración.');
     }
   };
 
-  if (isLoading) return (
-    <div className="flex h-96 items-center justify-center">
-      <Loader2 className="animate-spin text-slate-400" size={32} />
-    </div>
-  );
+  if (isLoading)
+    return (
+      <div className="flex h-96 items-center justify-center">
+        <Loader2 className="animate-spin text-slate-400" size={32} />
+      </div>
+    );
 
   return (
     <div className="max-w-4xl mx-auto animate-in fade-in space-y-6">
@@ -48,7 +49,9 @@ export const SettingsView: React.FC = () => {
           <h1 className="text-3xl font-black text-slate-900 tracking-tight">
             Configuración Clínica
           </h1>
-          <p className="text-slate-500 mt-1">Datos de facturación y perfil profesional (Titanium Powered)</p>
+          <p className="text-slate-500 mt-1">
+            Datos de facturación y perfil profesional (Titanium Powered)
+          </p>
         </div>
       </header>
 
@@ -103,11 +106,17 @@ export const SettingsView: React.FC = () => {
                 variant="secondary"
                 className="w-full"
                 onClick={async () => {
-                  if (!confirm('¿Descargar copia de seguridad de todos los pacientes? Esto puede tardar unos segundos.')) return;
+                  if (
+                    !confirm(
+                      '¿Descargar copia de seguridad de todos los pacientes? Esto puede tardar unos segundos.',
+                    )
+                  )
+                    return;
 
                   try {
                     // TITANIUM REAL EXPORT
-                    const { PatientRepository } = await import('../../data/repositories/PatientRepository');
+                    const { PatientRepository } =
+                      await import('../../data/repositories/PatientRepository');
                     const realPatients = await PatientRepository.getAll();
 
                     if (realPatients.length === 0) {
@@ -116,7 +125,15 @@ export const SettingsView: React.FC = () => {
                     }
 
                     // Generate Header
-                    const headers = ['ID', 'Nombre', 'Edad', 'Diagnostico', 'Telefono', 'Email', 'Fecha_Alta'];
+                    const headers = [
+                      'ID',
+                      'Nombre',
+                      'Edad',
+                      'Diagnostico',
+                      'Telefono',
+                      'Email',
+                      'Fecha_Alta',
+                    ];
                     const csvRows = [headers.join(',')];
 
                     // Generate Rows
@@ -128,7 +145,7 @@ export const SettingsView: React.FC = () => {
                         `"${p.diagnosis}"`,
                         p.contact || '',
                         p.email || '',
-                        p.joinedDate
+                        p.joinedDate,
                       ];
                       csvRows.push(row.join(','));
                     }
@@ -147,10 +164,9 @@ export const SettingsView: React.FC = () => {
                     document.body.appendChild(link);
                     link.click();
                     document.body.removeChild(link);
-
                   } catch (err) {
-                    console.error("Export Failed", err);
-                    toastError("Error al generar el backup. Inténtelo de nuevo.");
+                    console.error('Export Failed', err);
+                    toastError('Error al generar el backup. Inténtelo de nuevo.');
                   }
                 }}
                 icon={Save}
@@ -159,8 +175,6 @@ export const SettingsView: React.FC = () => {
               </Button>
             </div>
           </Card>
-
-
 
           {/* Legal & Invoice Data (Billing Object) */}
           <div className="space-y-6">
@@ -180,10 +194,12 @@ export const SettingsView: React.FC = () => {
                     />
                     <button
                       type="button"
-                      onClick={() => setFormData({
-                        ...formData,
-                        billing: { ...formData.billing!, logoUrl: '' }
-                      })}
+                      onClick={() =>
+                        setFormData({
+                          ...formData,
+                          billing: { ...formData.billing!, logoUrl: '' },
+                        })
+                      }
                       className="absolute -top-2 -right-2 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-sm"
                     >
                       <Shield size={12} className="rotate-45" /> {/* X icon replacement */}
@@ -195,7 +211,9 @@ export const SettingsView: React.FC = () => {
                       <Building size={24} />
                     </div>
                     <p className="text-sm font-medium text-slate-600">Logo de la Empresa</p>
-                    <p className="text-xs text-slate-400">Circular en el PDF (Máx 10MB - Auto-ajuste)</p>
+                    <p className="text-xs text-slate-400">
+                      Circular en el PDF (Máx 10MB - Auto-ajuste)
+                    </p>
                     <label className="cursor-pointer">
                       <span className="text-xs font-bold text-indigo-600 hover:text-indigo-700 bg-indigo-50 px-3 py-1.5 rounded-full transition-colors">
                         Subir Logo
@@ -207,8 +225,9 @@ export const SettingsView: React.FC = () => {
                         onChange={(e) => {
                           const file = e.target.files?.[0];
                           if (file) {
-                            if (file.size > 10 * 1024 * 1024) { // 10MB Limit
-                              toastError("El archivo es demasiado pesado (Máx 10MB).");
+                            if (file.size > 10 * 1024 * 1024) {
+                              // 10MB Limit
+                              toastError('El archivo es demasiado pesado (Máx 10MB).');
                               return;
                             }
 
@@ -250,8 +269,8 @@ export const SettingsView: React.FC = () => {
                                     logoUrl: dataUrl,
                                     legalName: formData.billing?.legalName || '',
                                     nif: formData.billing?.nif || '',
-                                    address: formData.billing?.address || ''
-                                  }
+                                    address: formData.billing?.address || '',
+                                  },
                                 });
                               };
                               img.src = event.target?.result as string;
@@ -271,16 +290,18 @@ export const SettingsView: React.FC = () => {
                   <input
                     className="input-pro"
                     value={formData.billing?.legalName || ''}
-                    onChange={(e) => setFormData({
-                      ...formData,
-                      billing: {
-                        ...formData.billing,
-                        legalName: e.target.value,
-                        nif: formData.billing?.nif || '',
-                        address: formData.billing?.address || '',
-                        logoUrl: formData.billing?.logoUrl || ''
-                      }
-                    })}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        billing: {
+                          ...formData.billing,
+                          legalName: e.target.value,
+                          nif: formData.billing?.nif || '',
+                          address: formData.billing?.address || '',
+                          logoUrl: formData.billing?.logoUrl || '',
+                        },
+                      })
+                    }
                     placeholder="Ej: Juan Pérez S.L."
                   />
                 </div>
@@ -289,16 +310,18 @@ export const SettingsView: React.FC = () => {
                   <input
                     className="input-pro font-mono"
                     value={formData.billing?.nif || ''}
-                    onChange={(e) => setFormData({
-                      ...formData,
-                      billing: {
-                        ...formData.billing,
-                        nif: e.target.value,
-                        legalName: formData.billing?.legalName || '',
-                        address: formData.billing?.address || '',
-                        logoUrl: formData.billing?.logoUrl || ''
-                      }
-                    })}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        billing: {
+                          ...formData.billing,
+                          nif: e.target.value,
+                          legalName: formData.billing?.legalName || '',
+                          address: formData.billing?.address || '',
+                          logoUrl: formData.billing?.logoUrl || '',
+                        },
+                      })
+                    }
                     placeholder="B-12345678"
                   />
                 </div>
@@ -307,16 +330,18 @@ export const SettingsView: React.FC = () => {
                   <textarea
                     className="input-pro min-h-[60px]"
                     value={formData.billing?.address || ''}
-                    onChange={(e) => setFormData({
-                      ...formData,
-                      billing: {
-                        ...formData.billing,
-                        address: e.target.value,
-                        legalName: formData.billing?.legalName || '',
-                        nif: formData.billing?.nif || '',
-                        logoUrl: formData.billing?.logoUrl || ''
-                      }
-                    })}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        billing: {
+                          ...formData.billing,
+                          address: e.target.value,
+                          legalName: formData.billing?.legalName || '',
+                          nif: formData.billing?.nif || '',
+                          logoUrl: formData.billing?.logoUrl || '',
+                        },
+                      })
+                    }
                     placeholder="Dirección completa para la factura..."
                   />
                 </div>
@@ -328,9 +353,9 @@ export const SettingsView: React.FC = () => {
                   onClick={async () => {
                     try {
                       await updateSettings(formData);
-                      toastSuccess("Datos de Facturación y Logo guardados correctamente.");
+                      toastSuccess('Datos de Facturación y Logo guardados correctamente.');
                     } catch {
-                      toastError("Error al guardar.");
+                      toastError('Error al guardar.');
                     }
                   }}
                   isLoading={isUpdating}
@@ -355,8 +380,6 @@ export const SettingsView: React.FC = () => {
               </div>
             </Card>
           </div>
-
-
 
           {/* Notificaciones (Feature 15) */}
           <Card className="p-6">
@@ -384,14 +407,19 @@ export const SettingsView: React.FC = () => {
         </div>
 
         <div className="mt-8 flex justify-end">
-          <Button type="submit" className="w-full md:w-auto px-8" icon={Save} isLoading={isUpdating}>
+          <Button
+            type="submit"
+            className="w-full md:w-auto px-8"
+            icon={Save}
+            isLoading={isUpdating}
+          >
             Guardar Cambios
           </Button>
         </div>
-      </form >
+      </form>
 
       {/* DANGER ZONE (GDPR - Delete Account) */}
-      < Card className="p-8 border-red-200 bg-red-50 mt-8" >
+      <Card className="p-8 border-red-200 bg-red-50 mt-8">
         <h3 className="font-bold text-red-700 flex items-center gap-2 mb-4">
           <Shield size={20} /> Zona de Peligro
         </h3>
@@ -407,23 +435,43 @@ export const SettingsView: React.FC = () => {
             variant="secondary"
             className="border-red-200 text-red-700 hover:bg-red-100"
             onClick={() => {
-              if (window.confirm('¿ESTÁS SEGURO? Esto borrará tu cuenta y todos tus pacientes permanentemente.')) {
+              if (
+                window.confirm(
+                  '¿ESTÁS SEGURO? Esto borrará tu cuenta y todos tus pacientes permanentemente.',
+                )
+              ) {
                 // In a real implementation this would call deleteUser(user)
-                alert('Por seguridad, contacta a soporte@activamusicoterapia.com para confirmar la baja definitiva GDPR.');
+                alert(
+                  'Por seguridad, contacta a soporte@activamusicoterapia.com para confirmar la baja definitiva GDPR.',
+                );
               }
             }}
           >
             Eliminar Cuenta
           </Button>
         </div>
-      </Card >
+      </Card>
 
       {/* LEGAL FOOTER */}
-      < div className="text-center text-xs text-slate-400 py-8 flex justify-center gap-6" >
-        <a href="https://activamusicoterapia.com/legal/terms" target="_blank" rel="noreferrer" className="hover:text-slate-600 transition-colors">Términos de Servicio</a>
-        <a href="https://activamusicoterapia.com/legal/privacy" target="_blank" rel="noreferrer" className="hover:text-slate-600 transition-colors">Política de Privacidad</a>
+      <div className="text-center text-xs text-slate-400 py-8 flex justify-center gap-6">
+        <a
+          href="https://activamusicoterapia.com/legal/terms"
+          target="_blank"
+          rel="noreferrer"
+          className="hover:text-slate-600 transition-colors"
+        >
+          Términos de Servicio
+        </a>
+        <a
+          href="https://activamusicoterapia.com/legal/privacy"
+          target="_blank"
+          rel="noreferrer"
+          className="hover:text-slate-600 transition-colors"
+        >
+          Política de Privacidad
+        </a>
         <span>© 2026 Activa Musicoterapia</span>
-      </div >
-    </div >
+      </div>
+    </div>
   );
 };

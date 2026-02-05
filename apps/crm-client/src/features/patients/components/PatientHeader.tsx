@@ -9,188 +9,174 @@ import { PATHOLOGY_MAP } from '../../../lib/patientUtils';
 import { Toast } from '@monorepo/ui-system';
 
 interface PatientHeaderProps {
-    patient: Patient;
-    onBack: () => void;
-    onEdit: () => void;
-    onDelete: () => void;
-    isDeleting: boolean;
-    canDelete: boolean;
-    onNewSession: () => void;
-    onShowReport: () => void;
-    onShowGuide: () => void;
-    onExport?: () => void; // TITANIUM: New Feature
-    onSign?: () => void;   // TITANIUM: New Feature (Signature)
-    onShowRecycleBin?: () => void; // TITANIUM: Recycle Bin
-    recycleBinCount?: number;
+  patient: Patient;
+  onBack: () => void;
+  onEdit: () => void;
+  onDelete: () => void;
+  isDeleting: boolean;
+  canDelete: boolean;
+  onNewSession: () => void;
+  onShowReport: () => void;
+  onShowGuide: () => void;
+  onExport?: () => void; // TITANIUM: New Feature
+  onSign?: () => void; // TITANIUM: New Feature (Signature)
+  onShowRecycleBin?: () => void; // TITANIUM: Recycle Bin
+  recycleBinCount?: number;
 }
 
 export const PatientHeader: React.FC<PatientHeaderProps> = ({
-    patient,
-    onBack,
-    onEdit,
-    onDelete,
-    isDeleting,
-    canDelete,
-    onNewSession,
-    onShowReport,
-    onShowGuide,
-    onExport,
-    onSign,
-    onShowRecycleBin,
-    recycleBinCount = 0
+  patient,
+  onBack,
+  onEdit,
+  onDelete,
+  isDeleting,
+  canDelete,
+  onNewSession,
+  onShowReport,
+  onShowGuide,
+  onExport,
+  onSign,
+  onShowRecycleBin,
+  recycleBinCount = 0,
 }) => {
-    // const { logActivity } = useActivityLog(); // Calling disabled
-    const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const [toast, setToast] = useState<{ msg: string; type: 'error' } | null>(null);
+  // const { logActivity } = useActivityLog(); // Calling disabled
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [toast, setToast] = useState<{ msg: string; type: 'error' } | null>(null);
 
-    return (
-        <div className="space-y-6">
-            {toast && (
-                <Toast
-                    message={toast.msg}
-                    type={toast.type}
-                    onClose={() => setToast(null)}
-                />
-            )}
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                <button
-                    className="flex items-center gap-2 text-slate-500 font-bold text-sm hover:text-slate-800 transition-colors"
-                    onClick={onBack}
-                >
-                    <ArrowLeft size={18} /> VOLVER AHORA
-                </button>
-                <div className="flex gap-2 flex-wrap">
-                    <Button
-                        variant="primary"
-                        size="sm"
-                        icon={CalendarPlus}
-                        className="bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-200"
-                        onClick={onNewSession}
-                    >
-                        AGENDAR CITA
-                    </Button>
+  return (
+    <div className="space-y-6">
+      {toast && <Toast message={toast.msg} type={toast.type} onClose={() => setToast(null)} />}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <button
+          className="flex items-center gap-2 text-slate-500 font-bold text-sm hover:text-slate-800 transition-colors"
+          onClick={onBack}
+        >
+          <ArrowLeft size={18} /> VOLVER AHORA
+        </button>
+        <div className="flex gap-2 flex-wrap">
+          <Button
+            variant="primary"
+            size="sm"
+            icon={CalendarPlus}
+            className="bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-200"
+            onClick={onNewSession}
+          >
+            AGENDAR CITA
+          </Button>
 
-                    {onExport && (
-                        <Button
-                            variant="secondary"
-                            size="sm"
-                            icon={FileDown}
-                            onClick={onExport}
-                            className="border-pink-200 text-pink-700 hover:bg-pink-50"
-                        >
-                            Exportar
-                        </Button>
-                    )}
+          {onExport && (
+            <Button
+              variant="secondary"
+              size="sm"
+              icon={FileDown}
+              onClick={onExport}
+              className="border-pink-200 text-pink-700 hover:bg-pink-50"
+            >
+              Exportar
+            </Button>
+          )}
 
-                    {onSign && (
-                        <Button
-                            variant="primary"
-                            size="sm"
-                            icon={Edit}
-                            onClick={onSign}
-                            className="bg-slate-800 text-white hover:bg-slate-700"
-                        >
-                            Firmar
-                        </Button>
-                    )}
+          {onSign && (
+            <Button
+              variant="primary"
+              size="sm"
+              icon={Edit}
+              onClick={onSign}
+              className="bg-slate-800 text-white hover:bg-slate-700"
+            >
+              Firmar
+            </Button>
+          )}
 
-                    <Button
-                        variant="secondary"
-                        size="sm"
-                        icon={FileText}
-                        onClick={onShowReport}
-                    >
-                        Informe
-                    </Button>
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        icon={Lightbulb}
-                        onClick={onShowGuide}
-                    >
-                        Guía
-                    </Button>
+          <Button variant="secondary" size="sm" icon={FileText} onClick={onShowReport}>
+            Informe
+          </Button>
+          <Button variant="ghost" size="sm" icon={Lightbulb} onClick={onShowGuide}>
+            Guía
+          </Button>
 
-                    {/* TITANIUM PHONE RECORD (READ ONLY) */}
-                    {(patient.contact || patient.caregiverPhone) && (
-                        <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-100 rounded-lg border border-slate-200 text-slate-600 font-mono text-xs select-all cursor-text">
-                            <span className="font-bold text-slate-400 text-[10px] uppercase tracking-wider">TEL:</span>
-                            {patient.contact || patient.caregiverPhone}
-                        </div>
-                    )}
-
-
-
-                    {canDelete && (
-                        <Button
-                            variant="danger"
-                            size="sm"
-                            icon={Trash2}
-                            onClick={() => setShowDeleteModal(true)}
-                            disabled={isDeleting}
-                        >
-                            Eliminar Paciente
-                        </Button>
-                    )}
-                    {recycleBinCount > 0 && onShowRecycleBin && (
-                        <Button
-                            variant="secondary"
-                            size="sm"
-                            icon={Trash2}
-                            onClick={onShowRecycleBin}
-                            className="bg-slate-100 text-slate-500 border-slate-200 hover:bg-red-50 hover:text-red-500 hover:border-red-200"
-                            title={`Papelera (${recycleBinCount})`}
-                        >
-                            {recycleBinCount}
-                        </Button>
-                    )}
-                </div>
+          {/* TITANIUM PHONE RECORD (READ ONLY) */}
+          {(patient.contact || patient.caregiverPhone) && (
+            <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-100 rounded-lg border border-slate-200 text-slate-600 font-mono text-xs select-all cursor-text">
+              <span className="font-bold text-slate-400 text-[10px] uppercase tracking-wider">
+                TEL:
+              </span>
+              {patient.contact || patient.caregiverPhone}
             </div>
+          )}
 
-            <ConfirmationModal
-                isOpen={showDeleteModal}
-                onClose={() => setShowDeleteModal(false)}
-                onConfirm={onDelete}
-                title="¿Eliminar Paciente?"
-                message={`Esta acción eliminará permanentemente a ${patient.name} y todo su historial clínico, sesiones y documentos. Esta acción NO se puede deshacer.`}
-                confirmLabel={isDeleting ? 'Eliminando...' : 'Sí, Eliminar Definitivamente'}
-                isLoading={isDeleting}
-            />
-
-            <Card noPadding className="overflow-hidden">
-                <div className="h-24 bg-gradient-to-r from-slate-800 to-slate-900"></div>
-                <div className="px-4 md:px-8 pb-8">
-                    <div className="flex flex-col md:flex-row gap-4 md:gap-6 items-center md:items-end -mt-10 text-center md:text-left">
-                        <div className="relative">
-                            <div className="p-1.5 bg-white rounded-full">
-                                <PatientAvatar photo={patient.photo} name={patient.name} size="xl" />
-                            </div>
-                        </div>
-                        <div className="flex-1 pb-2">
-                            <h1 className="text-3xl font-bold text-slate-900 flex items-center gap-3">
-                                {patient.name}
-                                <button
-                                    onClick={onEdit}
-                                    className="text-slate-400 hover:text-pink-600 transition-colors"
-                                >
-                                    <Edit size={20} />
-                                </button>
-                            </h1>
-                            <p className="text-slate-500 font-medium">{PATHOLOGY_MAP[patient.diagnosis] || patient.diagnosis}</p>
-                        </div>
-                        <div className="flex gap-4 pb-4">
-                            <div className="text-right">
-                                <p className="text-xs font-bold text-slate-400 uppercase">Edad</p>
-                                <p className="text-sm font-bold text-slate-700">{patient.age} años</p>
-                            </div>
-                            <div className="text-right">
-                                <p className="text-xs font-bold text-slate-400 uppercase">Ingreso</p>
-                                <p className="text-sm font-bold text-slate-700">{patient.joinedDate}</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </Card>
+          {canDelete && (
+            <Button
+              variant="danger"
+              size="sm"
+              icon={Trash2}
+              onClick={() => setShowDeleteModal(true)}
+              disabled={isDeleting}
+            >
+              Eliminar Paciente
+            </Button>
+          )}
+          {recycleBinCount > 0 && onShowRecycleBin && (
+            <Button
+              variant="secondary"
+              size="sm"
+              icon={Trash2}
+              onClick={onShowRecycleBin}
+              className="bg-slate-100 text-slate-500 border-slate-200 hover:bg-red-50 hover:text-red-500 hover:border-red-200"
+              title={`Papelera (${recycleBinCount})`}
+            >
+              {recycleBinCount}
+            </Button>
+          )}
         </div>
-    );
+      </div>
+
+      <ConfirmationModal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={onDelete}
+        title="¿Eliminar Paciente?"
+        message={`Esta acción eliminará permanentemente a ${patient.name} y todo su historial clínico, sesiones y documentos. Esta acción NO se puede deshacer.`}
+        confirmLabel={isDeleting ? 'Eliminando...' : 'Sí, Eliminar Definitivamente'}
+        isLoading={isDeleting}
+      />
+
+      <Card noPadding className="overflow-hidden">
+        <div className="h-24 bg-gradient-to-r from-slate-800 to-slate-900"></div>
+        <div className="px-4 md:px-8 pb-8">
+          <div className="flex flex-col md:flex-row gap-4 md:gap-6 items-center md:items-end -mt-10 text-center md:text-left">
+            <div className="relative">
+              <div className="p-1.5 bg-white rounded-full">
+                <PatientAvatar photo={patient.photo} name={patient.name} size="xl" />
+              </div>
+            </div>
+            <div className="flex-1 pb-2">
+              <h1 className="text-3xl font-bold text-slate-900 flex items-center gap-3">
+                {patient.name}
+                <button
+                  onClick={onEdit}
+                  className="text-slate-400 hover:text-pink-600 transition-colors"
+                >
+                  <Edit size={20} />
+                </button>
+              </h1>
+              <p className="text-slate-500 font-medium">
+                {PATHOLOGY_MAP[patient.diagnosis] || patient.diagnosis}
+              </p>
+            </div>
+            <div className="flex gap-4 pb-4">
+              <div className="text-right">
+                <p className="text-xs font-bold text-slate-400 uppercase">Edad</p>
+                <p className="text-sm font-bold text-slate-700">{patient.age} años</p>
+              </div>
+              <div className="text-right">
+                <p className="text-xs font-bold text-slate-400 uppercase">Ingreso</p>
+                <p className="text-sm font-bold text-slate-700">{patient.joinedDate}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Card>
+    </div>
+  );
 };

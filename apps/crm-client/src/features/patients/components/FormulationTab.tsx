@@ -15,13 +15,15 @@ export const FormulationTab: React.FC<FormulationTabProps> = ({ data, isEditing,
   const getText = (field: string) => {
     const val = data ? data[field as keyof FormulationData] : undefined;
     if (typeof val === 'string') return val;
-    if (typeof val === 'object' && val !== null && 'text' in val) return (val as { text: string }).text || '';
+    if (typeof val === 'object' && val !== null && 'text' in val)
+      return (val as { text: string }).text || '';
     return '';
   };
 
   const getSelected = (field: string): string[] => {
     const val = data[field as keyof ClinicalFormulation];
-    if (typeof val === 'object' && val !== null && 'selected' in val) return (val as { selected: string[] }).selected;
+    if (typeof val === 'object' && val !== null && 'selected' in val)
+      return (val as { selected: string[] }).selected;
     return [];
   };
 
@@ -60,10 +62,11 @@ export const FormulationTab: React.FC<FormulationTabProps> = ({ data, isEditing,
                         : [...currentSelections, opt];
                       onChange(key, { text: textVal, selected: newSel });
                     }}
-                    className={`px-3 py-1 rounded-full text-[10px] font-bold border transition-all ${currentSelections.includes(opt)
-                      ? 'bg-slate-800 text-white border-slate-800'
-                      : 'bg-white text-slate-500 border-slate-200 hover:border-slate-400'
-                      }`}
+                    className={`px-3 py-1 rounded-full text-[10px] font-bold border transition-all ${
+                      currentSelections.includes(opt)
+                        ? 'bg-slate-800 text-white border-slate-800'
+                        : 'bg-white text-slate-500 border-slate-200 hover:border-slate-400'
+                    }`}
                   >
                     {opt}
                   </button>

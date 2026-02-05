@@ -180,7 +180,7 @@ export const ADMISSION_CHECKS = {
 
 import { ClinicalGuide } from './types';
 
-// ... (other constants remain the same, I will use precise ranges to avoid deleting them) 
+// ... (other constants remain the same, I will use precise ranges to avoid deleting them)
 
 export const CLINICAL_GUIDES: Record<string, ClinicalGuide> = {
   dementia: {
@@ -278,7 +278,12 @@ export const ADULT_DEV_DOMAINS = [
     title: 'Sensorial y Físico',
     icon: Activity,
     color: 'pink',
-    items: ['Procesamiento Auditivo', 'Estimulación Sensorial', 'Movimiento / Motricidad', 'Conciencia Corporal'],
+    items: [
+      'Procesamiento Auditivo',
+      'Estimulación Sensorial',
+      'Movimiento / Motricidad',
+      'Conciencia Corporal',
+    ],
   },
   {
     id: 'cognitive',
@@ -339,11 +344,26 @@ export const CHILD_LEVELS = [
 // --- EVALUATION AREAS MAPPING ---
 // Must match items in ADULT_DEV_DOMAINS for index mapping
 export const EVALUATION_AREAS_ADULT = [
-  'Procesamiento Auditivo', 'Estimulación Sensorial', 'Movimiento / Motricidad', 'Conciencia Corporal',
-  'Atención', 'Orientación', 'Memoria', 'Funciones Ejecutivas',
-  'Reg. Emocional', 'Exp. Emocional', 'Iniciativa', 'Autoestima',
-  'Com. Verbal', 'Com. No Verbal', 'Social', 'Participación',
-  'Ritmo', 'Melodía / Canto', 'Conexión Emocional', 'Respuesta Sonora'
+  'Procesamiento Auditivo',
+  'Estimulación Sensorial',
+  'Movimiento / Motricidad',
+  'Conciencia Corporal',
+  'Atención',
+  'Orientación',
+  'Memoria',
+  'Funciones Ejecutivas',
+  'Reg. Emocional',
+  'Exp. Emocional',
+  'Iniciativa',
+  'Autoestima',
+  'Com. Verbal',
+  'Com. No Verbal',
+  'Social',
+  'Participación',
+  'Ritmo',
+  'Melodía / Canto',
+  'Conexión Emocional',
+  'Respuesta Sonora',
 ];
 export const EVALUATION_AREAS_CHILD = [
   'Sensoriomotor',

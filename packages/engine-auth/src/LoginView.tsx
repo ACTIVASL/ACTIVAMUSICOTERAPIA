@@ -1,7 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useFirebaseAuthState } from './useAuth';
 import { useNavigate, Link } from 'react-router-dom';
-import { Loader2, ArrowRight, AlertCircle, ShieldCheck, CheckCircle2, XCircle, Eye, EyeOff } from 'lucide-react';
+import {
+  Loader2,
+  ArrowRight,
+  AlertCircle,
+  ShieldCheck,
+  CheckCircle2,
+  XCircle,
+  Eye,
+  EyeOff,
+} from 'lucide-react';
 import logoCircular from './assets/logo-alpha.png';
 import loginBg from './assets/login-bg-premium.png';
 
@@ -114,7 +123,6 @@ export const LoginView = () => {
 
   return (
     <div className="min-h-screen w-full flex items-center justify-center relative overflow-hidden font-sans">
-
       {/* 1. BACKGROUND: USER PROVIDED PREMIUM IMAGE (ZOOMED 125%) */}
       <div className="absolute inset-0 z-0">
         <img
@@ -127,16 +135,17 @@ export const LoginView = () => {
       </div>
 
       {/* 2. MAIN CARD: PREMIUM SPEC (Gradient + Blur + High Opacity) */}
-      <div className={`relative z-10 w-full max-w-sm space-y-6 p-8 md:p-10 rounded-[2.5rem] shadow-[0_35px_60px_-15px_rgba(0,0,0,0.3)] ring-1 ring-[#00B2A9]/30 border border-white/80 transition-all duration-1000 ease-out transform ${mounted ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-8 scale-95'}`}
+      <div
+        className={`relative z-10 w-full max-w-sm space-y-6 p-8 md:p-10 rounded-[2.5rem] shadow-[0_35px_60px_-15px_rgba(0,0,0,0.3)] ring-1 ring-[#00B2A9]/30 border border-white/80 transition-all duration-1000 ease-out transform ${mounted ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-8 scale-95'}`}
         style={{
-          background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(248, 249, 251, 0.96) 100%)',
+          background:
+            'linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(248, 249, 251, 0.96) 100%)',
           backdropFilter: 'blur(12px)',
-          WebkitBackdropFilter: 'blur(12px)'
-        }}>
-
+          WebkitBackdropFilter: 'blur(12px)',
+        }}
+      >
         {/* HEADER */}
         <div className="flex flex-col items-center text-center">
-
           {/* STATIC PREMIUM LOGO (No Animation, High Fidelity) */}
           <div className="relative w-28 h-28 mb-6 group cursor-default">
             {/* 1. Static Gradient Glow (Back) */}
@@ -147,11 +156,7 @@ export const LoginView = () => {
 
             {/* 3. The Logo Container */}
             <div className="absolute inset-2 rounded-full bg-white shadow-2xl flex items-center justify-center overflow-hidden ring-4 ring-white border border-slate-100">
-              <img
-                src={logoCircular}
-                alt="Activa Logo"
-                className="w-full h-full object-cover"
-              />
+              <img src={logoCircular} alt="Activa Logo" className="w-full h-full object-cover" />
 
               {/* 4. Glass Shine (Static Top Reflection) */}
               <div className="absolute inset-0 rounded-full bg-gradient-to-b from-white/40 via-transparent to-transparent opacity-80 pointer-events-none"></div>
@@ -159,7 +164,10 @@ export const LoginView = () => {
           </div>
 
           <h2 className="text-3xl font-black text-slate-800 tracking-tighter drop-shadow-sm">
-            MÉTODO <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#EC008C] to-pink-600">ACTIVA</span>
+            MÉTODO{' '}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#EC008C] to-pink-600">
+              ACTIVA
+            </span>
           </h2>
           <p className="mt-1 text-[10px] font-bold text-slate-500 uppercase tracking-[0.25em]">
             Clinical Operating System
@@ -176,10 +184,12 @@ export const LoginView = () => {
 
         {/* FORM */}
         <form className="mt-2 space-y-5" onSubmit={handleSubmit}>
-
           {/* EMAIL INPUT (TURQUOISE FOCUS) */}
           <div className="group relative">
-            <label htmlFor="email" className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5 ml-1 transition-colors group-focus-within:text-[#00B2A9]">
+            <label
+              htmlFor="email"
+              className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5 ml-1 transition-colors group-focus-within:text-[#00B2A9]"
+            >
               ID Profesional
             </label>
             <div className="relative">
@@ -191,16 +201,19 @@ export const LoginView = () => {
                 onChange={handleEmailChange}
                 onBlur={handleBlurEmail}
                 className={`block w-full px-5 py-4 bg-white border-2 text-slate-900 rounded-2xl focus:outline-none transition-all duration-200 font-bold text-sm placeholder:text-slate-400 shadow-sm
-                  ${emailError
-                    ? 'border-red-400 focus:border-red-500 focus:shadow-[0_0_0_4px_rgba(239,68,68,0.1)]'
-                    : 'border-slate-200 hover:border-slate-300 focus:border-[#00B2A9] focus:shadow-[0_0_0_4px_rgba(0,178,169,0.15)]'
+                  ${
+                    emailError
+                      ? 'border-red-400 focus:border-red-500 focus:shadow-[0_0_0_4px_rgba(239,68,68,0.1)]'
+                      : 'border-slate-200 hover:border-slate-300 focus:border-[#00B2A9] focus:shadow-[0_0_0_4px_rgba(0,178,169,0.15)]'
                   }
                 `}
                 placeholder="usuario@clinica.com"
               />
               {/* Validation Icon */}
               <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none transition-opacity duration-300">
-                {isEmailValid && !emailError && <CheckCircle2 className="w-5 h-5 text-emerald-500 animate-in zoom-in" />}
+                {isEmailValid && !emailError && (
+                  <CheckCircle2 className="w-5 h-5 text-emerald-500 animate-in zoom-in" />
+                )}
                 {emailError && <XCircle className="w-5 h-5 text-red-500 animate-in zoom-in" />}
               </div>
             </div>
@@ -214,21 +227,25 @@ export const LoginView = () => {
 
           {/* PASSWORD INPUT (TURQUOISE FOCUS) */}
           <div className="group relative">
-            <label htmlFor="password" className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5 ml-1 transition-colors group-focus-within:text-[#00B2A9]">
+            <label
+              htmlFor="password"
+              className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5 ml-1 transition-colors group-focus-within:text-[#00B2A9]"
+            >
               Contraseña
             </label>
             <div className="relative">
               <input
                 id="password"
-                type={showPassword ? "text" : "password"}
+                type={showPassword ? 'text' : 'password'}
                 required
                 value={password}
                 onChange={handlePasswordChange}
                 onBlur={handleBlurPassword}
                 className={`block w-full px-5 py-4 bg-white border-2 text-slate-900 rounded-2xl focus:outline-none transition-all duration-200 font-bold text-sm placeholder:text-slate-400 shadow-sm pr-12
-                  ${passwordError
-                    ? 'border-red-400 focus:border-red-500 focus:shadow-[0_0_0_4px_rgba(239,68,68,0.1)]'
-                    : 'border-slate-200 hover:border-slate-300 focus:border-[#00B2A9] focus:shadow-[0_0_0_4px_rgba(0,178,169,0.15)]'
+                  ${
+                    passwordError
+                      ? 'border-red-400 focus:border-red-500 focus:shadow-[0_0_0_4px_rgba(239,68,68,0.1)]'
+                      : 'border-slate-200 hover:border-slate-300 focus:border-[#00B2A9] focus:shadow-[0_0_0_4px_rgba(0,178,169,0.15)]'
                   }
                 `}
                 placeholder="••••••••"
@@ -253,11 +270,18 @@ export const LoginView = () => {
           {!isRegistering && (
             <div className="flex items-center justify-between px-1">
               {/* Checkbox */}
-              <div className="flex items-center group cursor-pointer" onClick={() => setRememberMe(!rememberMe)}>
-                <div className={`w-4 h-4 rounded border transition-colors flex items-center justify-center mr-2 ${rememberMe ? 'bg-[#00B2A9] border-[#00B2A9]' : 'border-slate-300 bg-white group-hover:border-[#00B2A9]'}`}>
+              <div
+                className="flex items-center group cursor-pointer"
+                onClick={() => setRememberMe(!rememberMe)}
+              >
+                <div
+                  className={`w-4 h-4 rounded border transition-colors flex items-center justify-center mr-2 ${rememberMe ? 'bg-[#00B2A9] border-[#00B2A9]' : 'border-slate-300 bg-white group-hover:border-[#00B2A9]'}`}
+                >
                   {rememberMe && <CheckCircle2 size={12} className="text-white" />}
                 </div>
-                <span className="text-xs text-slate-500 font-medium group-hover:text-slate-700 transition-colors select-none">Recordarme</span>
+                <span className="text-xs text-slate-500 font-medium group-hover:text-slate-700 transition-colors select-none">
+                  Recordarme
+                </span>
               </div>
 
               {/* Forgot Link */}
@@ -280,8 +304,14 @@ export const LoginView = () => {
                 onChange={(e) => setTermsAccepted(e.target.checked)}
                 className="h-4 w-4 text-[#EC008C] focus:ring-[#EC008C] border-slate-300 rounded-lg cursor-pointer"
               />
-              <label htmlFor="terms" className="ml-2 block text-xs text-slate-500 font-medium select-none">
-                Acepto los <span className="font-bold text-slate-700 cursor-pointer hover:text-[#EC008C]">Términos de Uso</span>
+              <label
+                htmlFor="terms"
+                className="ml-2 block text-xs text-slate-500 font-medium select-none"
+              >
+                Acepto los{' '}
+                <span className="font-bold text-slate-700 cursor-pointer hover:text-[#EC008C]">
+                  Términos de Uso
+                </span>
               </label>
             </div>
           )}
@@ -292,9 +322,10 @@ export const LoginView = () => {
               type="submit"
               disabled={loading}
               className={`relative w-full flex justify-center py-4 px-4 border border-transparent text-sm font-bold rounded-2xl text-white shadow-lg transition-all duration-200 transform overflow-hidden group
-                ${loading
-                  ? 'bg-slate-300 cursor-not-allowed scale-[0.99] shadow-inner'
-                  : 'bg-gradient-to-r from-[#EC008C] to-pink-600 hover:to-pink-500 hover:shadow-[0_8px_25px_-5px_rgba(236,0,140,0.5)] hover:-translate-y-0.5 active:scale-[0.98] active:translate-y-0'
+                ${
+                  loading
+                    ? 'bg-slate-300 cursor-not-allowed scale-[0.99] shadow-inner'
+                    : 'bg-gradient-to-r from-[#EC008C] to-pink-600 hover:to-pink-500 hover:shadow-[0_8px_25px_-5px_rgba(236,0,140,0.5)] hover:-translate-y-0.5 active:scale-[0.98] active:translate-y-0'
                 }
               `}
             >
@@ -327,10 +358,22 @@ export const LoginView = () => {
               className="w-full flex items-center justify-center gap-3 px-4 py-3.5 border-2 border-slate-100 rounded-2xl shadow-sm bg-white text-sm font-bold text-slate-600 hover:bg-slate-50 hover:border-slate-200 hover:text-slate-800 focus:outline-none focus:ring-4 focus:ring-slate-50 transition-all active:scale-[0.98]"
             >
               <svg className="h-5 w-5" viewBox="0 0 24 24">
-                <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
-                <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
-                <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" />
-                <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
+                <path
+                  d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                  fill="#4285F4"
+                />
+                <path
+                  d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                  fill="#34A853"
+                />
+                <path
+                  d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+                  fill="#FBBC05"
+                />
+                <path
+                  d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                  fill="#EA4335"
+                />
               </svg>
               Google
             </button>
@@ -347,9 +390,7 @@ export const LoginView = () => {
             }}
             className="text-sm font-bold text-slate-400 hover:text-slate-600 hover:underline transition-all uppercase tracking-wide"
           >
-            {isRegistering
-              ? '← Volver al Login'
-              : '¿No tienes cuenta? Crear una'}
+            {isRegistering ? '← Volver al Login' : '¿No tienes cuenta? Crear una'}
           </button>
         </div>
 
@@ -357,10 +398,11 @@ export const LoginView = () => {
         <div className="flex justify-center pt-4 opacity-50 hover:opacity-100 transition-opacity">
           <div className="flex items-center gap-1.5">
             <ShieldCheck size={11} className="text-slate-400" />
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Secured by Google Cloud</span>
+            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+              Secured by Google Cloud
+            </span>
           </div>
         </div>
-
       </div>
     </div>
   );

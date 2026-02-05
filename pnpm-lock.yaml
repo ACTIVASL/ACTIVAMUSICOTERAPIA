@@ -392,6 +392,9 @@ importers:
       '@monorepo/shared':
         specifier: workspace:^
         version: link:../shared
+      '@tanstack/react-query':
+        specifier: 5.90.20
+        version: 5.90.20(react@18.3.1)
       clsx:
         specifier: ^2.1.1
         version: 2.1.1

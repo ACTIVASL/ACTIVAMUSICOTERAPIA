@@ -12,7 +12,11 @@ interface EditProfileModalProps {
   initialData?: Partial<Patient>;
 }
 
-export const EditProfileModal: React.FC<EditProfileModalProps> = ({ onClose, onSave, initialData }) => {
+export const EditProfileModal: React.FC<EditProfileModalProps> = ({
+  onClose,
+  onSave,
+  initialData,
+}) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -21,20 +25,22 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({ onClose, onS
   const [diagnosisType, setDiagnosisType] = useState(initialData?.pathologyType || '');
   const [pathologyType, setPathologyType] = useState(initialData?.pathologyType || '');
   const [date, setDate] = useState(
-    initialData?.joinedDate ? new Date(initialData.joinedDate).toISOString().split('T')[0] : new Date().toISOString().split('T')[0]
+    initialData?.joinedDate
+      ? new Date(initialData.joinedDate).toISOString().split('T')[0]
+      : new Date().toISOString().split('T')[0],
   );
   const [hasConsent, setHasConsent] = useState(initialData?.hasConsent || false);
   const [reference] = useState(initialData?.reference || '');
   const [age, setAge] = useState<string | number>(initialData?.age || '');
   const [birthDate, setBirthDate] = useState(initialData?.birthDate || '');
 
-
   // TITANIUM UPLOAD HOOK
   const { uploadImage } = useImageUpload();
 
   const handlePhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0];
-    if (f && initialData?.id) { // Solo si hay ID (paciente ya creado o en edición)
+    if (f && initialData?.id) {
+      // Solo si hay ID (paciente ya creado o en edición)
       try {
         // 1. Upload to Storage
         const path = `patients/${initialData.id}/profile-${Date.now()}.jpg`;
@@ -73,7 +79,6 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({ onClose, onS
 
       {/* Main Container */}
       <div className="bg-white w-full md:w-full md:max-w-3xl h-[100dvh] md:h-auto md:max-h-[90vh] md:rounded-2xl shadow-3d overflow-hidden flex flex-col pointer-events-auto transform transition-transform duration-300 animate-in slide-in-from-bottom-full md:zoom-in-95">
-
         {/* Header */}
         <div className="px-4 py-3 md:px-6 md:py-4 border-b border-slate-100 flex justify-between items-center bg-white sticky top-0 z-20 shrink-0 safe-pt shadow-sm md:shadow-none min-h-[60px]">
           {/* Mobile Cancel - Left */}
@@ -127,15 +132,15 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({ onClose, onS
 
               // TITANIUM STRICT VALIDATION
               if (!d.name?.trim()) {
-                alert("El Nombre Completo es obligatorio.");
+                alert('El Nombre Completo es obligatorio.');
                 return;
               }
               if (!d.age || Number(d.age) < 0) {
-                alert("La Edad debe ser un número válido mayor o igual a 0.");
+                alert('La Edad debe ser un número válido mayor o igual a 0.');
                 return;
               }
               if (!diagnosisType) {
-                alert("Seleccione una patología o motivo.");
+                alert('Seleccione una patología o motivo.');
                 return;
               }
 
@@ -145,7 +150,7 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({ onClose, onS
 
               if (photoPreview) d.photo = photoPreview;
 
-              const selectedOption = COMMON_PATHOLOGIES.find(p => p.value === diagnosisType);
+              const selectedOption = COMMON_PATHOLOGIES.find((p) => p.value === diagnosisType);
 
               if (diagnosisType === 'other' || !diagnosisType) {
                 d.diagnosis = d.customDiagnosis || 'Sin especificar';
@@ -173,7 +178,11 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({ onClose, onS
                     className="w-32 h-32 rounded-full bg-slate-100 border-4 border-white shadow-lg flex items-center justify-center cursor-pointer overflow-hidden hover:scale-105 transition-transform group-hover:shadow-xl"
                   >
                     {photoPreview ? (
-                      <img src={photoPreview} alt="Profile" className="w-full h-full object-cover" />
+                      <img
+                        src={photoPreview}
+                        alt="Profile"
+                        className="w-full h-full object-cover"
+                      />
                     ) : (
                       <Users size={48} className="text-slate-300" />
                     )}
@@ -488,7 +497,11 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({ onClose, onS
           <Button onClick={onClose} variant="secondary" className="justify-center">
             Cancelar
           </Button>
-          <Button icon={Save} onClick={() => formRef.current?.requestSubmit()} className="justify-center">
+          <Button
+            icon={Save}
+            onClick={() => formRef.current?.requestSubmit()}
+            className="justify-center"
+          >
             Guardar Cambios
           </Button>
         </div>

@@ -36,11 +36,7 @@ interface InvoiceGeneratorProps {
   onClose: () => void;
 }
 
-export const InvoiceGenerator = ({
-  data,
-  onClose,
-  clinicSettings,
-}: InvoiceGeneratorProps) => {
+export const InvoiceGenerator = ({ data, onClose, clinicSettings }: InvoiceGeneratorProps) => {
   const [invoiceNumber, setInvoiceNumber] = useState(
     () => data.invoiceNumber || `FACT-${Date.now().toString().slice(-6)}`,
   );

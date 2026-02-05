@@ -40,7 +40,16 @@ export interface Patient extends SharedPatient {
 }
 
 // Re-exporting for local usage
-export type { Session, ClinicalFormulation, CognitiveScores, ClinicalSafetyProfile, MusicalIdentity, PsychosocialContext, ForensicMetadata, GroupSession };
+export type {
+  Session,
+  ClinicalFormulation,
+  CognitiveScores,
+  ClinicalSafetyProfile,
+  MusicalIdentity,
+  PsychosocialContext,
+  ForensicMetadata,
+  GroupSession,
+};
 export { DocumentCategoryEnum };
 
 // TITANIUM NAVIGATION
@@ -86,7 +95,7 @@ export interface FormulationData {
 }
 
 // LEGACY ADAPTERS (To be phased out)
-// Some components might still expect specific structures not fully covered by Zod yet, 
+// Some components might still expect specific structures not fully covered by Zod yet,
 // or Zod is stricter. We keep these compatible.
 
 export interface SessionSelfReflection {

@@ -37,7 +37,7 @@ export const SessionsManager: React.FC<SessionsManagerProps> = ({
   const displaySessions: DisplaySession[] = React.useMemo(() => {
     if (filterMode === 'group') {
       // Use Master Group Sessions
-      return groupSessions.map(g => ({
+      return groupSessions.map((g) => ({
         ...g,
         type: 'group' as const,
         patientName: g.groupName || 'Grupo',
@@ -49,28 +49,27 @@ export const SessionsManager: React.FC<SessionsManagerProps> = ({
           ...s,
           patientName: p.name,
           patient: p,
-          type: 'individual' as const
+          type: 'individual' as const,
         })),
       );
     }
   }, [filterMode, groupSessions, patients]);
 
-
   const filteredSessions = displaySessions
     .filter((s) => s.type === (filterMode === 'group' ? 'group' : 'individual'))
-    .filter(
-      (s) => {
-        // Strict property access based on discriminated union
-        const notes = (s.type === 'individual' ? s.notes : s.observations) || '';
+    .filter((s) => {
+      // Strict property access based on discriminated union
+      const notes = (s.type === 'individual' ? s.notes : s.observations) || '';
 
-        const matchesSearch = s.patientName.toLowerCase().includes(search.toLowerCase()) ||
-          notes.toLowerCase().includes(search.toLowerCase());
+      const matchesSearch =
+        s.patientName.toLowerCase().includes(search.toLowerCase()) ||
+        notes.toLowerCase().includes(search.toLowerCase());
 
-        const matchesGroup = s.type === 'group' && s.groupName?.toLowerCase().includes(search.toLowerCase());
+      const matchesGroup =
+        s.type === 'group' && s.groupName?.toLowerCase().includes(search.toLowerCase());
 
-        return matchesSearch || matchesGroup;
-      }
-    )
+      return matchesSearch || matchesGroup;
+    })
     .sort((a, b) => {
       // Robust Date Parsing
       const parse = (d: string) => {
@@ -103,7 +102,7 @@ export const SessionsManager: React.FC<SessionsManagerProps> = ({
   const handleSaveGroupSession = (newSession: GroupSession) => {
     if (newSession.participants) {
       patients.forEach((p) => {
-        if (newSession.participants?.some(part => part.name === p.name)) {
+        if (newSession.participants?.some((part) => part.name === p.name)) {
           const currentSessions = p.sessions || [];
           const adapterSession: Session = {
             id: newSession.id,
@@ -115,7 +114,7 @@ export const SessionsManager: React.FC<SessionsManagerProps> = ({
             paid: newSession.paid,
             billable: true,
             isAbsent: false,
-            activities: newSession.activities
+            activities: newSession.activities,
           };
           onUpdatePatient({ ...p, sessions: [...currentSessions, adapterSession] });
         }
@@ -160,14 +159,12 @@ export const SessionsManager: React.FC<SessionsManagerProps> = ({
             <div className="flex gap-4 items-center">
               <div className="w-14 h-14 bg-slate-100 rounded-xl flex flex-col items-center justify-center text-slate-600 font-bold leading-tight">
                 <span className="text-xl">{s.date.split(/[-/]/)[0] || '??'}</span>
-                <span className="text-[9px] uppercase">
-                  SESIÓN
-                </span>
+                <span className="text-[9px] uppercase">SESIÓN</span>
               </div>
               <div>
                 <h4 className="font-bold text-slate-900 text-lg">
                   {/* Strict access */}
-                  {s.type === 'group' ? (s.groupName || 'Sesión Grupal') : s.patientName}
+                  {s.type === 'group' ? s.groupName || 'Sesión Grupal' : s.patientName}
                 </h4>
                 <div className="flex items-center gap-2 text-sm text-slate-500">
                   {s.type === 'group' && (
@@ -197,8 +194,8 @@ export const SessionsManager: React.FC<SessionsManagerProps> = ({
             title="Sin resultados en la búsqueda"
             description="No se han encontrado sesiones que coincidan con los criterios de búsqueda actuales. Intenta modificar los filtros."
             action={{
-              label: "Limpiar búsqueda",
-              onClick: () => setSearch('')
+              label: 'Limpiar búsqueda',
+              onClick: () => setSearch(''),
             }}
           />
         )}

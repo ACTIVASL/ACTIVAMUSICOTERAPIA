@@ -5,6 +5,7 @@
 This package contains all shared UI components, hooks, and utilities used across the Activa ecosystem (`crm-client`, `landing-web`).
 
 ## Philosophy
+
 - **Titanium Standard**: Components must be robust, typed, and visually premium.
 - **Zero Logic**: Components should not contain business logic. They receive data via props.
 - **Tailwind Native**: Styled exclusively with Tailwind CSS.
@@ -24,10 +25,12 @@ export const MyComponent = () => (
 ```
 
 ## Key Components
+
 - **Layout**: `Card`, `Modal`, `PageTransition`
 - **Forms**: `Button`, `Input` (coming soon), `SignaturePad`
 - **Feedback**: `Toast`, `Loader`, `EmptyState`
 - **Domain**: `PatientAvatar`, `SessionTimer`
 
 ## Development
+
 Run `pnpm lint` to ensure code quality.

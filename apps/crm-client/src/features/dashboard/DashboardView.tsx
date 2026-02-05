@@ -39,12 +39,11 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ patients, onViewCh
 
   // Aggregate all sessions for the Widget (just for dots if needed)
   const allSessions = useMemo(() => {
-    return patients.flatMap(p => (p.sessions || []).map(s => ({ ...s, patientId: p.id })));
+    return patients.flatMap((p) => (p.sessions || []).map((s) => ({ ...s, patientId: p.id })));
   }, [patients]);
 
   return (
     <div className="md:h-[calc(100vh-100px)] min-h-[600px] animate-in fade-in max-w-[1800px] mx-auto pb-4 flex flex-col gap-6">
-
       {/* COMPACT HEADER */}
       {/* COMPACT HEADER (RESPONSIVE) */}
       <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 md:gap-0 shrink-0">
@@ -69,7 +68,8 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ patients, onViewCh
               onClick={() => login(role === 'admin' ? 'therapist' : 'admin')}
               className="flex items-center gap-2 px-3 py-2 bg-slate-100 rounded-lg text-xs font-bold text-slate-600 hover:bg-slate-200 transition-colors"
             >
-              <Shield size={14} /> <span className="hidden sm:inline">{role === 'admin' ? 'ADMIN' : 'TERAPEUTA'}</span>
+              <Shield size={14} />{' '}
+              <span className="hidden sm:inline">{role === 'admin' ? 'ADMIN' : 'TERAPEUTA'}</span>
             </button>
             <Button
               icon={PlusCircle}
@@ -88,7 +88,6 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ patients, onViewCh
       <PullToRefresh onRefresh={handleRefresh}>
         {/* RADICAL LAYOUT: DAILY AGENDA + ACTIVITY + NOTES */}
         <div className="flex-1 grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 overflow-hidden">
-
           {/* LEFT: DAILY VISUAL AGENDA (2 COLS) */}
           <div className="xl:col-span-2 h-full overflow-hidden">
             <DailyAgendaWidget
@@ -105,7 +104,6 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ patients, onViewCh
 
           {/* RIGHT: ACTIVITY LOG + DAILY NOTES (1 COL STACKED) */}
           <div className="h-full flex flex-col gap-6 overflow-hidden">
-
             {/* Daily Post-it Note (TOP PRIORITY) */}
             <div className="shrink-0 h-[300px] border border-transparent">
               <PostItWidget date={selectedDate} />
@@ -115,7 +113,6 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ patients, onViewCh
             <div className="flex-1 min-h-[300px] overflow-hidden">
               <TitaniumActivityFeed activities={latestActivities} isLoading={isLogLoading} />
             </div>
-
           </div>
         </div>
       </PullToRefresh>

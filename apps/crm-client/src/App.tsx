@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-// Loader2 removed
 import { useNavigate, useLocation } from 'react-router-dom';
 
 // LAYOUT & THEME
@@ -8,7 +7,6 @@ import { AppLayout } from '@/layout/AppLayout';
 import { ErrorBoundary, CommandMenu, OfflineIndicator } from '@monorepo/ui-system';
 
 // AUTH
-// TITANIUM ANIMATION removed from here (moved to AppRouter)
 import { LoginView } from '@monorepo/engine-auth';
 import { useAuth } from './context/AuthContext';
 
@@ -26,9 +24,6 @@ import { useUIStore } from './stores/useUIStore';
 
 // API & TYPES
 import { Patient, GroupSession, CalendarEvent, NavigationPayload, Session } from './lib/types';
-
-// Loading Spinner logic moved to AppRouter or unused in App
-// PageLoader definition removed
 
 // Main App Component
 import { usePatients, useCreatePatient, useUpdatePatient } from './api/queries';
@@ -112,12 +107,12 @@ function App() {
   // Handles Create, Update, and Delete with instant UI Updates (No Reloads)
 
   const handleSaveGroupSession = async (data: GroupSession) => {
-    const isEdit = groupSessions.some(g => g.id === data.id);
+    const isEdit = groupSessions.some((g) => g.id === data.id);
 
     // 1. Optimistic UI Update
-    setGroupSessions(prev => {
+    setGroupSessions((prev) => {
       if (isEdit) {
-        return prev.map(g => g.id === data.id ? data : g);
+        return prev.map((g) => (g.id === data.id ? data : g));
       }
       return [...prev, data];
     });
@@ -131,7 +126,6 @@ function App() {
       if (isEdit) {
         await GroupSessionRepository.update(String(data.id), data);
         logActivity('session', `Sesión Grupal actualizada: ${data.groupName}`);
-
       } else {
         await GroupSessionRepository.create(data);
 
@@ -159,19 +153,22 @@ function App() {
             queryClient.invalidateQueries({ queryKey: queryKeys.patients.all });
           }
         }
-        logActivity('session', `Sesión Grupal creada: ${data.date} (${data.participants?.length || 0} pax)`);
+        logActivity(
+          'session',
+          `Sesión Grupal creada: ${data.date} (${data.participants?.length || 0} pax)`,
+        );
       }
     } catch (e) {
-      console.error("Failed to save group session", e);
+      console.error('Failed to save group session', e);
       // Soft Rollback: Re-fetch data to sync with server truth
-      alert("Error de sincronización. Restaurando datos...");
+      alert('Error de sincronización. Restaurando datos...');
       fetchGroupSessions();
     }
   };
 
   const handleDeleteGroupSession = async (sessionId: string) => {
     // 1. Optimistic UI
-    setGroupSessions(prev => prev.filter(g => g.id !== sessionId));
+    setGroupSessions((prev) => prev.filter((g) => g.id !== sessionId));
     groupSession.close();
 
     // 2. Persist
@@ -181,7 +178,7 @@ function App() {
       logActivity('delete', 'Sesión Grupal eliminada');
     } catch (e) {
       console.error(e);
-      alert("Error al eliminar. Restaurando datos...");
+      alert('Error al eliminar. Restaurando datos...');
       fetchGroupSessions();
     }
   };
@@ -221,9 +218,9 @@ function App() {
           navigate('/dashboard');
           break;
         case 'patients':
-          // Check if data has mode 'new' 
+          // Check if data has mode 'new'
           if (data && typeof data === 'object' && 'mode' in data && data.mode === 'new') {
-            // Logic to open new patient modal handled by route param ?action=new if desired, 
+            // Logic to open new patient modal handled by route param ?action=new if desired,
             // but for now likely handled by internal state or query param.
             // Using query param is cleaner:
             navigate('/patients?action=new');
@@ -292,7 +289,7 @@ function App() {
       onSuccess: () => {
         logActivity('patient', `Paciente actualizado: ${updatedPatient.name}`);
       },
-      onError: (err) => console.error('Failed to sync update:', err)
+      onError: (err) => console.error('Failed to sync update:', err),
     });
   };
 
@@ -316,12 +313,18 @@ function App() {
       onSuccess: () => {
         logActivity('patient', `Nuevo paciente registrado: ${newPatientData.name}`);
       },
-      onError: (err) => console.error('Failed to create:', err)
+      onError: (err) => console.error('Failed to create:', err),
     });
   };
 
   /* TITANIUM UPGRADE: Syncs Quick Appointments with Subcollection & Legacy Array */
-  const handleQuickAppointment = async (data: { date: string; time: string; name: string; mode: 'new' | 'existing'; patientId?: string | number }) => {
+  const handleQuickAppointment = async (data: {
+    date: string;
+    time: string;
+    name: string;
+    mode: 'new' | 'existing';
+    patientId?: string | number;
+  }) => {
     // 1. ISO DATE STANDARD (YYYY-MM-DD)
     const isoDate = data.date; // Input is already ISO from <input type="date">
 
@@ -364,14 +367,13 @@ function App() {
           logActivity('session', 'Cita rápida creada (Nuevo Paciente + Sesión Inicial)');
         },
         onError: (err) => {
-          console.error("QuickAppointment Error:", err);
-          alert("Error al crear la cita y el paciente. Verifique los datos.");
-        }
+          console.error('QuickAppointment Error:', err);
+          alert('Error al crear la cita y el paciente. Verifique los datos.');
+        },
       });
     } else {
       const patient = patients.find((p) => String(p.id) === String(data.patientId));
       if (patient && patient.id) {
-
         // 1. Write to Subcollection (Source of Truth) via Repository
         // This ensures ID consistency and DB write BEFORE UI update logic if we wanted strictly.
         // But we use Optimistic UI in mutation.
@@ -395,15 +397,13 @@ function App() {
 
           logActivity('session', `Cita rápida creada para ${patient.name}`);
         } catch (err) {
-          console.error("Titanium Sync Error:", err);
-          alert("Error al agendar la cita. Inténtelo de nuevo.");
+          console.error('Titanium Sync Error:', err);
+          alert('Error al agendar la cita. Inténtelo de nuevo.');
         }
       }
     }
     quickAppointment.close();
   };
-
-
 
   const events: CalendarEvent[] = React.useMemo(() => {
     const individualEvents = patients.flatMap((p) =>
@@ -418,7 +418,7 @@ function App() {
       date: s.date,
       time: s.time || '00:00',
       type: 'group' as const,
-      patientName: 'Grupo'
+      patientName: 'Grupo',
     }));
     return [...individualEvents, ...groupEventsList];
   }, [patients, groupSessions]);
@@ -436,7 +436,6 @@ function App() {
 
   return (
     <ErrorBoundary>
-
       <AppLayout
         userEmail={user?.email || 'demo@activa.com'}
         currentView={currentView}
@@ -474,5 +473,3 @@ function App() {
 }
 
 export default App;
-
-

@@ -31,9 +31,8 @@ interface ClinicSettings {
   legalText?: string;
   billing?: {
     logoUrl?: string;
-  }
+  };
 }
-
 
 interface InvoiceGeneratorProps {
   data: {
@@ -67,11 +66,15 @@ export const InvoiceGenerator: React.FC<InvoiceGeneratorProps> = ({ data, settin
               <button
                 onClick={() => setIsQuote(false)}
                 className={`px-3 py-1 text-xs font-bold rounded-md transition-all ${!isQuote ? 'bg-white shadow text-slate-800' : 'text-slate-500'}`}
-              >Factura</button>
+              >
+                Factura
+              </button>
               <button
                 onClick={() => setIsQuote(true)}
                 className={`px-3 py-1 text-xs font-bold rounded-md transition-all ${isQuote ? 'bg-white shadow text-amber-700' : 'text-slate-500'}`}
-              >Presupuesto</button>
+              >
+                Presupuesto
+              </button>
             </div>
           </div>
           <div className="flex gap-3">
@@ -104,7 +107,9 @@ export const InvoiceGenerator: React.FC<InvoiceGeneratorProps> = ({ data, settin
                 <p className="text-sm font-bold text-slate-400 uppercase tracking-widest">
                   {isQuote ? 'Presupuesto N°' : 'Factura N°'}
                 </p>
-                <p className={`text-2xl font-mono font-bold ${isQuote ? 'text-amber-600' : 'text-pink-600'}`}>
+                <p
+                  className={`text-2xl font-mono font-bold ${isQuote ? 'text-amber-600' : 'text-pink-600'}`}
+                >
                   {isQuote ? `PRE-${data.invoiceNo}` : data.invoiceNo}
                 </p>
                 <p className="text-sm text-slate-500 mt-1">{formatDateForDisplay(data.date)}</p>

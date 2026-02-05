@@ -8,7 +8,13 @@ import { SessionRepository } from '../../../data/repositories/SessionRepository'
 interface QuickAppointmentModalProps {
   onClose: () => void;
   patients: Patient[];
-  onSave: (data: { date: string; time: string; name: string; mode: 'new' | 'existing'; patientId?: string | number }) => void;
+  onSave: (data: {
+    date: string;
+    time: string;
+    name: string;
+    mode: 'new' | 'existing';
+    patientId?: string | number;
+  }) => void;
   mode?: 'existing' | 'new';
   initialPatientId?: string; // TITANIUM: Allow pre-selecting patient
 }
@@ -18,7 +24,7 @@ export const QuickAppointmentModal: React.FC<QuickAppointmentModalProps> = ({
   patients,
   onSave,
   mode = 'existing',
-  initialPatientId = ''
+  initialPatientId = '',
 }) => {
   // Mode prop added to auto-select tab
   const [currentMode, setCurrentMode] = useState(mode);
@@ -37,11 +43,11 @@ export const QuickAppointmentModal: React.FC<QuickAppointmentModalProps> = ({
 
     try {
       if (currentMode === 'existing' && !selectedPatientId) {
-        alert("Selecciona un paciente");
+        alert('Selecciona un paciente');
         return;
       }
       if (currentMode === 'new' && !newPatientName) {
-        alert("Escribe el nombre del paciente");
+        alert('Escribe el nombre del paciente');
         return;
       }
 
@@ -60,13 +66,13 @@ export const QuickAppointmentModal: React.FC<QuickAppointmentModalProps> = ({
         // Generate FUTURE dates (excluding current one which is handled above)
         const rule = {
           frequency: recurrenceFreq,
-          occurrences: recurrenceCount
+          occurrences: recurrenceCount,
         };
         const futureDates = generateRecurringDates(date, rule);
 
         if (futureDates.length > 0) {
           // Build Session Objects
-          const sessionsPayload = futureDates.map(futureDate => ({
+          const sessionsPayload = futureDates.map((futureDate) => ({
             id: '', // Will be generated
             date: futureDate,
             time: time,
@@ -76,7 +82,7 @@ export const QuickAppointmentModal: React.FC<QuickAppointmentModalProps> = ({
             paid: false,
             billable: true,
             isAbsent: false,
-            activities: []
+            activities: [],
           }));
 
           // Atomic Batch Write
@@ -85,10 +91,9 @@ export const QuickAppointmentModal: React.FC<QuickAppointmentModalProps> = ({
           alert(`Se han generado ${sessionsPayload.length} sesiones futuras automáticamente.`);
         }
       }
-
     } catch (err) {
-      console.error("ERROR CITA:", err);
-      alert("Error al procesar la cita");
+      console.error('ERROR CITA:', err);
+      alert('Error al procesar la cita');
     }
   };
 
@@ -98,10 +103,7 @@ export const QuickAppointmentModal: React.FC<QuickAppointmentModalProps> = ({
         <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
           <Clock className="text-pink-600" /> Agendar Cita
         </h2>
-        <form
-          className="space-y-6"
-          onSubmit={handleSubmit}
-        >
+        <form className="space-y-6" onSubmit={handleSubmit}>
           <div className="flex bg-slate-50 p-1.5 rounded-xl">
             <button
               type="button"

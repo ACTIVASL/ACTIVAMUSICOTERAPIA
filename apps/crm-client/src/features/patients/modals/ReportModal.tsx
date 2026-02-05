@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { X, FileText, Printer, Wand2, Cloud } from 'lucide-react';
 import { Button } from '@monorepo/ui-system';
@@ -32,7 +31,9 @@ export const ReportModal: React.FC<ReportModalProps> = ({
   const [showContext, setShowContext] = useState(false); // Mobile Toggle State
 
   const { logActivity } = useActivityLog();
-  const { createReport, isCreating } = useReportController(patient.id ? String(patient.id) : undefined);
+  const { createReport, isCreating } = useReportController(
+    patient.id ? String(patient.id) : undefined,
+  );
 
   // PRINT REF
   const reportRef = useRef<HTMLDivElement>(null);
@@ -53,7 +54,7 @@ export const ReportModal: React.FC<ReportModalProps> = ({
         date: new Date().toISOString(),
         content: reportText,
         status: 'final',
-        generatedBy: user?.email || 'Sistema'
+        generatedBy: user?.email || 'Sistema',
       });
       setToast({ msg: 'Informe guardado correctamente en la Historia Clínica', type: 'success' });
       logActivity('report', `Informe guardado: ${patient.name}`);
@@ -73,14 +74,25 @@ export const ReportModal: React.FC<ReportModalProps> = ({
       const labels = isChild ? EVALUATION_AREAS_CHILD : EVALUATION_AREAS_ADULT;
       const scores = patient.currentEval || [];
 
-      const functionalText = scores.length > 0
-        ? labels.map((label: string, idx: number) => {
-          const score = scores[idx] || 0;
-          const level = score === 0 ? 'Nulo/No Evaluado' : score === 1 ? 'Bajo/Emergente' : score === 2 ? 'Medio/En Proceso' : 'Alto/Consolidado';
-          if (score === 0) return null; // Skip empty
-          return `- ${label}: ${level}`;
-        }).filter(Boolean).join('\n')
-        : 'Sin registro funcional detallado.';
+      const functionalText =
+        scores.length > 0
+          ? labels
+              .map((label: string, idx: number) => {
+                const score = scores[idx] || 0;
+                const level =
+                  score === 0
+                    ? 'Nulo/No Evaluado'
+                    : score === 1
+                      ? 'Bajo/Emergente'
+                      : score === 2
+                        ? 'Medio/En Proceso'
+                        : 'Alto/Consolidado';
+                if (score === 0) return null; // Skip empty
+                return `- ${label}: ${level}`;
+              })
+              .filter(Boolean)
+              .join('\n')
+          : 'Sin registro funcional detallado.';
 
       const today = new Date().toLocaleDateString('es-ES', {
         day: 'numeric',
@@ -92,9 +104,10 @@ export const ReportModal: React.FC<ReportModalProps> = ({
       const mocaScore = lastEval.moca || 'Pendiente';
       const gdsScore = lastEval.gds || 'No registrado';
 
-      const synthesisText = typeof patient.clinicalFormulation?.synthesis === 'string'
-        ? patient.clinicalFormulation.synthesis
-        : patient.clinicalFormulation?.synthesis?.text;
+      const synthesisText =
+        typeof patient.clinicalFormulation?.synthesis === 'string'
+          ? patient.clinicalFormulation.synthesis
+          : patient.clinicalFormulation?.synthesis?.text;
 
       const draft = `INFORME CLÍNICO DE MUSICOTERAPIA
 Fecha de emisión: ${today}
@@ -120,17 +133,18 @@ PERFIL FUNCIONAL Y MUSICAL:
 ${functionalText}
 
 EVOLUCIÓN RECIENTE (Últimas 5 Sesiones):
-${patient.sessions
-          ?.slice(0, 5)
-          .map(s => {
-            const status = s.isAbsent ? '[AUSENCIA]' : '';
-            return `- ${s.date} ${status}: ${s.notes || (s.computedPhase ? 'Fase ' + s.computedPhase : 'Sesión Estándar')}`;
-          })
-          .join('\n') || 'Sin sesiones recientes.'
-        }
+${
+  patient.sessions
+    ?.slice(0, 5)
+    .map((s) => {
+      const status = s.isAbsent ? '[AUSENCIA]' : '';
+      return `- ${s.date} ${status}: ${s.notes || (s.computedPhase ? 'Fase ' + s.computedPhase : 'Sesión Estándar')}`;
+    })
+    .join('\n') || 'Sin sesiones recientes.'
+}
 
 Observaciones cualitativas:
-${synthesisText || ((patient.cognitiveScores as unknown as { childObs?: string })?.childObs || 'No se han registrado observaciones específicas.')}
+${synthesisText || (patient.cognitiveScores as unknown as { childObs?: string })?.childObs || 'No se han registrado observaciones específicas.'}
 
 4. OBJETIVOS TRABAJADOS
 - Estimulación de la memoria autobiográfica a través de la reminiscencia musical.
@@ -147,7 +161,6 @@ Se recomienda la continuidad del tratamiento con una frecuencia de...`;
       setIsGenerating(false);
     }
   }, [isOpen, patient, reportText]);
-
 
   if (!isOpen) return null;
 
@@ -172,10 +185,17 @@ Se recomienda la continuidad del tratamiento con una frecuencia de...`;
 
         <div className="flex-1 flex flex-col md:flex-row h-full overflow-hidden">
           {/* Left Panel: Context & Template (Collapsible on Mobile) */}
-          <div className={`w-full md:w-1/3 bg-slate-50 border-r border-slate-200 p-6 overflow-y-auto ${!showContext ? 'hidden md:block' : 'block absolute inset-0 z-20'}`}>
+          <div
+            className={`w-full md:w-1/3 bg-slate-50 border-r border-slate-200 p-6 overflow-y-auto ${!showContext ? 'hidden md:block' : 'block absolute inset-0 z-20'}`}
+          >
             <div className="md:hidden flex justify-between items-center mb-4">
               <h3 className="font-bold text-slate-800">Contexto Clínico</h3>
-              <button onClick={() => setShowContext(false)} className="p-1 bg-white rounded-full shadow-sm text-slate-500"><X size={16} /></button>
+              <button
+                onClick={() => setShowContext(false)}
+                className="p-1 bg-white rounded-full shadow-sm text-slate-500"
+              >
+                <X size={16} />
+              </button>
             </div>
 
             <div className="bg-pink-50 border border-pink-100 rounded-xl p-4 mb-6">
@@ -184,8 +204,8 @@ Se recomienda la continuidad del tratamiento con una frecuencia de...`;
               </h4>
               <p className="text-xs text-pink-600 leading-relaxed">
                 El sistema ha detectado {patient.sessions?.length || 0} sesiones y una evaluación
-                reciente. Se ha generado un borrador basado en la fase "{PATHOLOGY_MAP[patient.pathologyType] || patient.pathologyType}" del
-                paciente.
+                reciente. Se ha generado un borrador basado en la fase "
+                {PATHOLOGY_MAP[patient.pathologyType] || patient.pathologyType}" del paciente.
               </p>
             </div>
 
@@ -214,7 +234,10 @@ Se recomienda la continuidad del tratamiento con una frecuencia de...`;
           <div className="flex-1 flex flex-col relative">
             {/* Mobile Context Toggle */}
             <div className="md:hidden p-2 bg-slate-50 border-b border-slate-100 flex justify-end">
-              <button onClick={() => setShowContext(!showContext)} className="text-xs font-bold text-pink-600 flex items-center gap-1">
+              <button
+                onClick={() => setShowContext(!showContext)}
+                className="text-xs font-bold text-pink-600 flex items-center gap-1"
+              >
                 <Wand2 size={12} /> {showContext ? 'Ocultar Datos' : 'Ver Datos Paciente'}
               </button>
             </div>
@@ -255,31 +278,61 @@ Se recomienda la continuidad del tratamiento con una frecuencia de...`;
 
       {/* HIDDEN PRINT TEMPLATE - RENDERED IN DOM BUT HIDDEN */}
       <div style={{ display: 'none' }}>
-        <div ref={reportRef} className="print-container p-10 font-serif text-slate-800 leading-relaxed" style={{ padding: '40px', fontFamily: '"Times New Roman", serif', color: '#333' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '2px solid #EC008C', paddingBottom: '20px', marginBottom: '40px' }}>
+        <div
+          ref={reportRef}
+          className="print-container p-10 font-serif text-slate-800 leading-relaxed"
+          style={{ padding: '40px', fontFamily: '"Times New Roman", serif', color: '#333' }}
+        >
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              borderBottom: '2px solid #EC008C',
+              paddingBottom: '20px',
+              marginBottom: '40px',
+            }}
+          >
             <img src={logoCircular} style={{ height: '60px' }} alt="Logo" />
             <div style={{ textAlign: 'right', fontSize: '12px', color: '#666' }}>
-              <strong>{clinicSettings.name || 'Clínica Método Activa'}</strong><br />
-              {clinicSettings.address || ''}<br />
+              <strong>{clinicSettings.name || 'Clínica Método Activa'}</strong>
+              <br />
+              {clinicSettings.address || ''}
+              <br />
               {clinicSettings.email || ''} | {clinicSettings.phone || ''}
             </div>
           </div>
 
-          <pre style={{ whiteSpace: 'pre-wrap', fontFamily: 'inherit', fontSize: '14px' }}>{reportText}</pre>
+          <pre style={{ whiteSpace: 'pre-wrap', fontFamily: 'inherit', fontSize: '14px' }}>
+            {reportText}
+          </pre>
 
           <div style={{ marginTop: '60px', display: 'flex', justifyContent: 'space-between' }}>
             <div style={{ textAlign: 'center' }}>
-              <div style={{ width: '200px', borderTop: '1px solid #000', marginBottom: '5px' }}></div>
+              <div
+                style={{ width: '200px', borderTop: '1px solid #000', marginBottom: '5px' }}
+              ></div>
               Fdo. El Terapeuta
             </div>
             <div style={{ textAlign: 'center' }}>
-              <div style={{ width: '200px', borderTop: '1px solid #000', marginBottom: '5px' }}></div>
+              <div
+                style={{ width: '200px', borderTop: '1px solid #000', marginBottom: '5px' }}
+              ></div>
               VºBº Dirección
             </div>
           </div>
 
-          <div style={{ marginTop: '50px', borderTop: '1px solid #ccc', paddingTop: '20px', textAlign: 'center', fontSize: '10px', color: '#999' }}>
-            Documento generado automáticamente por Método Activa Clinical OS v5.0<br />
+          <div
+            style={{
+              marginTop: '50px',
+              borderTop: '1px solid #ccc',
+              paddingTop: '20px',
+              textAlign: 'center',
+              fontSize: '10px',
+              color: '#999',
+            }}
+          >
+            Documento generado automáticamente por Método Activa Clinical OS v5.0
+            <br />
             {clinicSettings.legalText || ''}
           </div>
         </div>

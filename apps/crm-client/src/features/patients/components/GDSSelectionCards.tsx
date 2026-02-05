@@ -1,6 +1,5 @@
 import React from 'react';
 
-
 const GDS_STAGES = [
   {
     id: 1,
@@ -60,10 +59,11 @@ export const GDSSelectionCards: React.FC<GDSSelectionCardsProps> = ({ selected, 
           onClick={() => onSelect(stage.id)}
           className={`
                         cursor-pointer relative overflow-hidden rounded-xl border-2 p-4 transition-all duration-300
-                        ${selected === stage.id
-              ? 'border-pink-500 shadow-3d scale-[1.02] bg-white ring-2 ring-pink-200'
-              : 'border-slate-100 bg-white hover:border-slate-300 hover:shadow-md'
-            }
+                        ${
+                          selected === stage.id
+                            ? 'border-pink-500 shadow-3d scale-[1.02] bg-white ring-2 ring-pink-200'
+                            : 'border-slate-100 bg-white hover:border-slate-300 hover:shadow-md'
+                        }
                     `}
         >
           <div

@@ -43,7 +43,9 @@ export const Button = ({
       className={`rounded-xl font-bold flex items-center justify-center gap-2 transition-all duration-200 active:scale-95 ${sizes[size]} ${variants[variant]} ${className}`}
       {...props}
     >
-      {isLoading && <div className="animate-spin rounded-full h-4 w-4 border-2 border-current border-t-transparent mr-2" />}
+      {isLoading && (
+        <div className="animate-spin rounded-full h-4 w-4 border-2 border-current border-t-transparent mr-2" />
+      )}
       {!isLoading && Icon && <Icon size={size === 'sm' ? 14 : 18} strokeWidth={2.5} />}
       {children}
     </button>

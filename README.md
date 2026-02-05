@@ -28,19 +28,23 @@ No utilizamos software de terceros. Creamos nuestra propia tecnología para cont
 El sello **Titanium** certifica que este software cumple con los estándares más rigurosos de la industria del desarrollo de software clínico:
 
 ### 1. 👁️ Auditoría Forense ("God Mode")
+
 Cada interacción en el sistema deja una huella inmutable y trazable.
+
 - **Sesiones & Citas**: Registro exacto de creación, modificación y cancelación.
 - **Historia Clínica**: Control de versiones de informes y evolutivos.
 - **Facturación**: Trazabilidad financiera completa (Emisión, Cobro, Anulación).
 - **Ciclo de Vida del Paciente**: Registro de altas, bajas y reingresos.
 
 ### 2. 🛡️ Seguridad Zero-Trust
+
 - Arquitectura **Serverless** sobre Google Cloud (Firebase).
 - Reglas de seguridad estrictas a nivel de base de datos.
 - **Content Security Policy (CSP)** de grado militar anti-XSS.
 - Encriptación en tránsito y en reposo.
 
 ### 3. 🎨 Experiencia de Usuario "Premium"
+
 - Interfaz **Glassmorphism** propietaria diseñada para reducir la fatiga cognitiva clínica.
 - **Mobile First**: Aplicación Web Progresiva (PWA) instalable como nativa en iOS y Android.
 - Tiempos de carga < 100ms (Optimizaciones Titanium).
@@ -69,14 +73,14 @@ ACTIVA-SL-CORE/
 
 Utilizamos una pila tecnológica de vanguardia para garantizar estabilidad a largo plazo:
 
-| Capa | Tecnología | Propósito |
-| :--- | :--- | :--- |
-| **Frontend** | React 18 + Vite | Rendimiento extremo y reactividad. |
-| **Lenguaje** | TypeScript 5.6 | Seguridad de tipos y mantenibilidad. |
-| **Database** | Cloud Firestore | Base de datos NoSQL en tiempo real. |
-| **Auth** | Identity Platform | Gestión de identidad segura. |
-| **Hosting** | Firebase Global CDN | Entrega de contenido milimétrica. |
-| **Audit** | Titanium Logger | Sistema de registro forense propietario. |
+| Capa         | Tecnología          | Propósito                                |
+| :----------- | :------------------ | :--------------------------------------- |
+| **Frontend** | React 18 + Vite     | Rendimiento extremo y reactividad.       |
+| **Lenguaje** | TypeScript 5.6      | Seguridad de tipos y mantenibilidad.     |
+| **Database** | Cloud Firestore     | Base de datos NoSQL en tiempo real.      |
+| **Auth**     | Identity Platform   | Gestión de identidad segura.             |
+| **Hosting**  | Firebase Global CDN | Entrega de contenido milimétrica.        |
+| **Audit**    | Titanium Logger     | Sistema de registro forense propietario. |
 
 ---
 
@@ -108,4 +112,4 @@ firebase deploy
 
 El código fuente contenido en este repositorio es **PROPIEDAD INTELECTUAL PRIVADA** de ACTIVA S.L. Queda estrictamente prohibida su copia, distribución, modificación o uso no autorizado sin el consentimiento expreso y por escrito de la dirección de la empresa.
 
-*Desarrollado por la división de tecnología de Activa S.L.*
+_Desarrollado por la división de tecnología de Activa S.L._

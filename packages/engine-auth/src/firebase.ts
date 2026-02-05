@@ -4,7 +4,7 @@ import { getAuth } from 'firebase/auth';
 import {
   initializeFirestore,
   persistentLocalCache,
-  persistentMultipleTabManager
+  persistentMultipleTabManager,
 } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 import { getPerformance } from 'firebase/performance'; // TITANIUM OBSERVABILITY
@@ -32,8 +32,6 @@ export const perf = getPerformance(app); // EXPORT PERFORMANCE
 // Initialize Firestore with modern persistence settings
 export const db = initializeFirestore(app, {
   localCache: persistentLocalCache({
-    tabManager: persistentMultipleTabManager()
-  })
+    tabManager: persistentMultipleTabManager(),
+  }),
 });
-
-

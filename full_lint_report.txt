@@ -1,0 +1,48 @@
+
+> monorepo-crm-activa@1.0.0 lint
+> turbo run lint
+
+ÔÇó turbo 2.7.6
+ÔÇó Packages in scope: @monorepo/engine-auth, @monorepo/engine-billing, @monorepo/engine-calendar, @monorepo/shared, @monorepo/ui-system, crm-client, landing-web
+ÔÇó Running lint in 7 packages
+ÔÇó Remote caching disabled
+@monorepo/ui-system:lint: cache hit, replaying logs 26c504c2c6e229bf
+@monorepo/ui-system:lint: 
+@monorepo/ui-system:lint: > @monorepo/ui-system@1.0.0 lint C:\Users\Usuario\.gemini\antigravity\scratch\monorepo-crm-activa\packages\ui-system
+@monorepo/ui-system:lint: > eslint src --ext ts,tsx --max-warnings 0
+@monorepo/ui-system:lint: 
+crm-client:lint: cache hit, replaying logs e63ed95b807199a3
+@monorepo/engine-calendar:lint: cache hit, replaying logs fd3ca60b714f0144
+crm-client:lint: 
+crm-client:lint: > crm-client@5.2.0 lint C:\Users\Usuario\.gemini\antigravity\scratch\monorepo-crm-activa\apps\crm-client
+crm-client:lint: > eslint . --ext ts,tsx --max-warnings 0
+crm-client:lint: 
+@monorepo/engine-calendar:lint: 
+@monorepo/engine-calendar:lint: > @monorepo/engine-calendar@1.0.0 lint C:\Users\Usuario\.gemini\antigravity\scratch\monorepo-crm-activa\packages\engine-calendar
+@monorepo/engine-calendar:lint: > eslint src --ext ts,tsx --max-warnings 0
+@monorepo/engine-calendar:lint: 
+@monorepo/engine-auth:lint: cache hit, replaying logs 74e82414d0c86d7e
+@monorepo/engine-auth:lint: 
+@monorepo/engine-auth:lint: > @monorepo/engine-auth@1.0.0 lint C:\Users\Usuario\.gemini\antigravity\scratch\monorepo-crm-activa\packages\engine-auth
+@monorepo/engine-auth:lint: > eslint src --ext ts,tsx --max-warnings 0
+@monorepo/engine-auth:lint: 
+@monorepo/engine-billing:lint: cache hit, replaying logs 79b8803095895970
+@monorepo/engine-billing:lint: 
+@monorepo/engine-billing:lint: > @monorepo/engine-billing@1.0.0 lint C:\Users\Usuario\.gemini\antigravity\scratch\monorepo-crm-activa\packages\engine-billing
+@monorepo/engine-billing:lint: > eslint src --ext ts,tsx --max-warnings 0
+@monorepo/engine-billing:lint: 
+landing-web:lint: cache hit, replaying logs a6f3e9901dbb545f
+@monorepo/shared:lint: cache hit, replaying logs bc7cce5378b47dda
+@monorepo/shared:lint: 
+@monorepo/shared:lint: > @monorepo/shared@1.0.0 lint C:\Users\Usuario\.gemini\antigravity\scratch\monorepo-crm-activa\packages\shared
+@monorepo/shared:lint: > eslint "src/**/*.ts"
+@monorepo/shared:lint: 
+landing-web:lint: 
+landing-web:lint: > landing-web@1.0.0 lint C:\Users\Usuario\.gemini\antigravity\scratch\monorepo-crm-activa\apps\landing-web
+landing-web:lint: > eslint . --ext ts,tsx --max-warnings 0
+landing-web:lint: 
+
+ Tasks:    7 successful, 7 total
+Cached:    7 cached, 7 total
+  Time:    1.326s >>> FULL TURBO
+

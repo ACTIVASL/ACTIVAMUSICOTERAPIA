@@ -1,10 +1,10 @@
 import { InvoiceData } from '../types';
 
 export const generateInvoiceHTML = (data: InvoiceData): string => {
-    const total = data.sessions.reduce((sum, s) => sum + (s.price || 0), 0);
-    const date = new Date().toLocaleDateString('es-ES');
+  const total = data.sessions.reduce((sum, s) => sum + (s.price || 0), 0);
+  const date = new Date().toLocaleDateString('es-ES');
 
-    return `
+  return `
         <html>
         <head>
             <style>
@@ -42,16 +42,16 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
                 </thead>
                 <tbody>
                     ${data.sessions
-            .map(
-                (s) => `
+                      .map(
+                        (s) => `
                         <tr>
                             <td>${s.date}</td>
                             <td>Sesión de Musicoterapia (${s.type === 'individual' ? 'Individual' : 'Grupal'})</td>
                             <td style="text-align: right;">${s.price || 0}€</td>
                         </tr>
                     `,
-            )
-            .join('')}
+                      )
+                      .join('')}
                 </tbody>
             </table>
             <div class="total">

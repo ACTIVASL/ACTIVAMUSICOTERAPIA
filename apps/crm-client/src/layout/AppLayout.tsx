@@ -1,4 +1,3 @@
-
 import React, { ReactNode, useState } from 'react';
 import { Sidebar } from './Sidebar';
 import dashboardBg from '../assets/dashboard-bg-metallic.png';
@@ -66,20 +65,27 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
       <PwaInstallPrompt />
 
       {/* Main Content Area */}
-      <main id="main-content" className="flex-1 relative z-10 transition-all duration-300 h-screen overflow-y-auto flex flex-col no-select">
-
-
+      <main
+        id="main-content"
+        className="flex-1 relative z-10 transition-all duration-300 h-screen overflow-y-auto flex flex-col no-select"
+      >
         {/* MOBILE HEADER (Visible only on small screens) */}
         <header className="md:hidden w-full px-6 py-4 flex items-center justify-between z-20 sticky top-0 bg-slate-100/80 backdrop-blur-md border-b border-white/20">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-gradient-to-br from-white to-slate-200 p-0.5 shadow-sm ring-1 ring-white">
-              <img src={logoCircular} alt="Activa Logo" className="w-full h-full object-cover rounded-full" />
+              <img
+                src={logoCircular}
+                alt="Activa Logo"
+                className="w-full h-full object-cover rounded-full"
+              />
             </div>
             <div>
               <h1 className="text-lg font-black tracking-tight text-[#EC008C] leading-none">
                 ACTIVA
               </h1>
-              <p className="text-[9px] font-bold text-slate-400 tracking-[0.2em] uppercase">CLINICAL SAAS</p>
+              <p className="text-[9px] font-bold text-slate-400 tracking-[0.2em] uppercase">
+                CLINICAL SAAS
+              </p>
             </div>
           </div>
           {/* User Avatar or Settings could go here */}
