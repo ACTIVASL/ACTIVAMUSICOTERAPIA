@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { BookOpen, HeartPulse, GraduationCap, X } from 'lucide-react';
 import { Navigation } from '../components/layout/Navigation';
 import { Hero } from '../components/landing/Hero';
+import { TrustBar } from '../components/landing/TrustBar';
 import Services from '../components/landing/Services';
 import { Professionals } from '../components/landing/Professionals';
 import { FAQ } from '../components/landing/FAQ';
@@ -140,7 +141,8 @@ export const Home = () => {
 
           <main className="relative flex flex-col justify-center min-h-screen overflow-hidden">
             <Hero onOpenModal={openModal} />
-            <Services onOpenModal={openModal} />
+            <TrustBar />
+            <Services />
             <Professionals onOpenModal={openModal} />
             <FAQ />
             <Testimonials />

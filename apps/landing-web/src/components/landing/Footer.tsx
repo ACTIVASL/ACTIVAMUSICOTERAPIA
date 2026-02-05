@@ -52,6 +52,20 @@ export const Footer = ({
           </div>
         </div>
 
+        {/* LEAD MAGNET / COMMERCIAL CTA */}
+        <div className="w-full bg-gradient-to-r from-brand-primary/20 to-purple-900/30 rounded-3xl p-8 mb-12 border border-brand-primary/20 flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="text-left">
+            <h4 className="text-2xl font-display font-bold text-white mb-2">¿Dudas sobre qué programa elegir?</h4>
+            <p className="text-slate-400">Habla gratis con un especialista clínico (no un comercial).</p>
+          </div>
+          <button
+            onClick={() => onOpenModal?.('lead-magnet', { interest: 'general' })}
+            className="whitespace-nowrap px-8 py-3 bg-white text-brand-dark font-bold rounded-full hover:bg-brand-primary hover:text-white transition-all shadow-lg"
+          >
+            Solicitar Orientación 5'
+          </button>
+        </div>
+
         {/* Mobile Description (Visible only on small screens below stacks) */}
         <p className="md:hidden text-slate-400 text-lg font-body max-w-lg mx-auto font-light leading-relaxed">
           Activa Musicoterapia combina la ciencia, la música y la tecnología para mejorar la

@@ -4,7 +4,7 @@ import groupImage from '../../assets/images/group-session-aurora.jpg';
 import groupSessionGif from '../../assets/images/group-session.gif';
 import { NeonIcon } from '../ui/NeonIcon';
 
-const Services = ({ onOpenModal }: { onOpenModal: (type: string, data?: unknown) => void }) => {
+const Services = () => {
   return (
     <section className="relative py-32 bg-white overflow-hidden" id="clinic">
       {/* Background Nuance - Subtle Clinical Gradient */}
@@ -112,10 +112,10 @@ const Services = ({ onOpenModal }: { onOpenModal: (type: string, data?: unknown)
               </div>
 
               <button
-                onClick={() => onOpenModal('lead-magnet', { interest: 'individual' })}
+                onClick={() => window.location.href = '/programas'}
                 className="group flex items-center gap-3 px-8 py-4 bg-[#0A0F1D] text-white rounded-full font-['Outfit'] font-bold tracking-widest hover:bg-[#EC008C] hover:shadow-lg transition-all duration-300"
               >
-                SOLICITAR EVALUACIÓN
+                CONSULTAR TARIFAS 1:1
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </button>
             </div>
@@ -133,8 +133,8 @@ const Services = ({ onOpenModal }: { onOpenModal: (type: string, data?: unknown)
                   Sesiones <span className="text-cyan-600">Grupales</span>
                 </h4>
                 <p className="text-slate-600 text-lg leading-relaxed mb-6">
-                  El poder de la música como conector social. Grupos reducidos y homogéneos donde la
-                  interacción potencia los resultados terapéuticos.
+                  Musicoterapia social para reducir el aislamiento y potenciar funciones cognitivas.
+                  Más económico, mismo rigor clínico.
                 </p>
               </div>
 
@@ -150,10 +150,10 @@ const Services = ({ onOpenModal }: { onOpenModal: (type: string, data?: unknown)
                     />
                   </div>
                   <h5 className="text-slate-900 font-['Outfit'] font-bold mb-2 text-center">
-                    Para Mayores
+                    Adultos y Mayores
                   </h5>
                   <p className="text-sm text-slate-500 text-center">
-                    Estimulación cognitiva y mantenimiento de la memoria a través de la música.
+                    Estimulación cognitiva y mantenimiento de la memoria.
                   </p>
                 </div>
 
@@ -168,11 +168,10 @@ const Services = ({ onOpenModal }: { onOpenModal: (type: string, data?: unknown)
                     />
                   </div>
                   <h5 className="text-slate-900 font-['Outfit'] font-bold mb-2 text-center">
-                    Para Niños
+                    Infancia y TEA
                   </h5>
                   <p className="text-sm text-slate-500 text-center">
-                    Desarrollo de habilidades sociales y mejora de la comunicación en un entorno
-                    lúdico.
+                    Habilidades sociales en entorno lúdico.
                   </p>
                 </div>
               </div>
@@ -195,10 +194,10 @@ const Services = ({ onOpenModal }: { onOpenModal: (type: string, data?: unknown)
               </div>
 
               <button
-                onClick={() => onOpenModal('lead-magnet', { interest: 'grupal' })}
+                onClick={() => window.location.href = '/programas'}
                 className="group flex items-center gap-3 px-8 py-4 bg-transparent border-2 border-slate-900 text-slate-900 rounded-full font-['Outfit'] font-bold tracking-widest hover:bg-slate-900 hover:text-white transition-all duration-300"
               >
-                VER HORARIOS GRUPALES
+                VER PROGRAMAS GRUPALES
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </button>
             </div>

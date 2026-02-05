@@ -49,34 +49,34 @@ export const Hero = ({ onOpenModal }: HeroProps) => {
           </div>
 
           {/* MASSIVE HEADLINE (UPDATED SLOGAN) */}
-          <h1 className="text-6xl sm:text-7xl lg:text-9xl font-display font-black tracking-tighter text-white leading-[0.9] mb-8 drop-shadow-2xl">
-            EL ARTE <br />
+          <h1 className="text-5xl sm:text-6xl lg:text-8xl font-display font-black tracking-tighter text-white leading-[0.9] mb-8 drop-shadow-2xl">
+            RESULTADOS <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-accent via-white to-brand-primary animate-pulse-slow">
-              ES SALUD.
+              CLÍNICOS REALES.
             </span>
           </h1>
 
           <p className="text-lg sm:text-xl lg:text-2xl text-slate-400 font-body font-light max-w-3xl mx-auto mb-16 leading-relaxed text-balance">
-            Activa Musicoterapia aplica un método probado que utiliza el arte como herramienta de
-            rehabilitación, conectando a las personas consigo mismas y con sus pacientes.
+            Intervenciones musicoterapéuticas basadas en la evidencia. <br />
+            Especialistas en <strong>Neurodesarrollo, Salud Mental y Bienestar Corporativo</strong>.
           </p>
 
           {/* MAGNETIC ACTION BUTTONS - Updated Palette */}
           <div className="flex flex-col sm:flex-row gap-6 items-center justify-center w-full">
-            <button
-              onClick={() => onOpenModal('clinic')}
-              className="group relative h-16 sm:h-20 px-12 rounded-full bg-slate-800 text-white text-lg font-display font-bold tracking-wide shadow-[0_0_40px_-10px_rgba(255,255,255,0.1)] hover:shadow-[0_0_60px_-10px_rgba(255,255,255,0.2)] transition-all duration-300 hover:scale-105 active:scale-95 flex items-center gap-4 overflow-hidden border border-white/20 hover:bg-slate-700"
+            <a
+              href="/programas"
+              className="group relative h-16 sm:h-20 px-12 rounded-full bg-brand-primary text-white text-lg font-display font-bold tracking-wide shadow-[0_0_40px_-10px_rgba(236,0,140,0.3)] hover:shadow-[0_0_60px_-10px_rgba(236,0,140,0.5)] transition-all duration-300 hover:scale-105 active:scale-95 flex items-center gap-4 overflow-hidden border border-white/20"
             >
               <span className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 ease-in-out"></span>
-              <span className="relative z-10">Soy Paciente</span>
+              <span className="relative z-10">VER PROGRAMAS Y TARIFAS</span>
               <HeartPulse className="w-6 h-6 relative z-10 group-hover:animate-pulse" />
-            </button>
+            </a>
 
             <button
               onClick={() => onOpenModal('course')}
               className="group relative h-16 sm:h-20 px-12 rounded-full bg-white/5 backdrop-blur-md border border-white/10 text-white text-lg font-display font-bold tracking-wide shadow-2xl hover:bg-white/10 transition-all duration-300 hover:scale-105 active:scale-95 flex items-center gap-4"
             >
-              <span>Soy Profesional</span>
+              <span>Consultoría Pro</span>
               <Stethoscope className="w-6 h-6 text-brand-accent group-hover:rotate-12 transition-transform" />
             </button>
           </div>
