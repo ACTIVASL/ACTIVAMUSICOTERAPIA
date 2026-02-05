@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
+import { useLocation } from 'react-router-dom';
 import { Navigation } from '../components/layout/Navigation';
 import { Footer } from '../components/landing/Footer';
 import { RevealSection } from '../components/ui/RevealSection';
@@ -16,7 +17,17 @@ import {
 import { Link } from 'react-router-dom';
 
 export const Programs = () => {
+    const location = useLocation();
     const [activeTab, setActiveTab] = useState<'infancia' | 'adultos' | 'colegios' | 'profesionales' | 'consultoria'>('infancia');
+
+    useEffect(() => {
+        const searchParams = new URLSearchParams(location.search);
+        const tab = searchParams.get('tab');
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        if (tab && tab !== activeTab && ['infancia', 'adultos', 'colegios', 'profesionales', 'consultoria'].includes(tab)) {
+            setActiveTab(tab as 'infancia' | 'adultos' | 'colegios' | 'profesionales' | 'consultoria');
+        }
+    }, [location, activeTab]);
 
     const tabs = [
         { id: 'infancia', label: 'Infancia y Familia', icon: Baby },
@@ -134,9 +145,17 @@ export const Programs = () => {
             ]
         },
         profesionales: {
-            title: "Academia Activa",
-            subtitle: "Eleva tu práctica clínica con la metodología líder en el sector.",
+            title: "Academia y Tecnología",
+            subtitle: "Herramientas digitales y formación clínica para impulsar tu carrera.",
             items: [
+                {
+                    title: "Software de Gestión Clínica",
+                    target: "Centros / Autónomos",
+                    duration: "Licencia + Personalización",
+                    price: "299€ Licencia + 3000€ Personalización",
+                    features: ["Historia Clínica Digital", "Facturación Automatizada", "RGPD Integrado", "Marca Blanca"],
+                    tag: "Activa Titanium"
+                },
                 {
                     title: "Formación Método ACTIVA",
                     target: "Musicoterapeutas",
@@ -152,28 +171,20 @@ export const Programs = () => {
                     price: "50–80 €",
                     features: ["Análisis clínico", "Seguridad profesional", "Online / Presencial"],
                     tag: "Mentoría"
-                },
-                {
-                    title: "Supervisión de Casos",
-                    target: "Mentoría",
-                    duration: "1 hora",
-                    price: "50–80 €",
-                    features: ["Análisis clínico", "Seguridad profesional", "Online / Presencial"],
-                    tag: "Mentoría"
                 }
             ]
         },
         consultoria: {
             title: "Soluciones Corporativas e Institucionales",
-            subtitle: "Asesoramiento estratégico para implantar programas de musicoterapia de alto impacto.",
+            subtitle: "Proyectos de alto impacto social para la administración pública y grandes entidades.",
             items: [
                 {
-                    title: "Diseño de Proyectos y Licitaciones",
-                    target: "Ayuntamientos / ONGs",
+                    title: "Proyectos de Salud Social",
+                    target: "Ayuntamientos / Instituciones",
                     duration: "Por proyecto",
-                    price: "60–100 € / hora",
-                    features: ["Estructura técnica", "Viabilidad económica", "Justificación clínica"],
-                    tag: "Estratégico"
+                    price: "Consultar",
+                    features: ["Soledad no deseada", "Refuerzo Salud Mental", "Justificación Técnica"],
+                    tag: "Institucional"
                 },
                 {
                     title: "Auditoría de Entornos",
@@ -196,7 +207,7 @@ export const Programs = () => {
     };
 
     return (
-        <div className="bg-slate-950 min-h-screen font-sans text-slate-300 selection:bg-brand-primary selection:text-white">
+        <div className="bg-slate-50 min-h-screen font-sans text-slate-800 selection:bg-brand-primary selection:text-white">
             <Helmet>
                 <title>Programas y Tarifas | Activa Musicoterapia</title>
                 <meta name="description" content="Consulta nuestros programas clínicos, talleres educativos y formación profesional. Método Activa." />
@@ -208,30 +219,30 @@ export const Programs = () => {
                 {/* HERO SECTION - STRATEGIC POSITIONING */}
                 <div className="max-w-7xl mx-auto px-6 lg:px-12 mb-20 text-center">
                     <RevealSection>
-                        <h1 className="text-4xl md:text-6xl font-display font-black text-white leading-tight mb-6">
+                        <h1 className="text-4xl md:text-6xl font-display font-black text-slate-900 leading-tight mb-6">
                             Más que Sesiones, <br />
-                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-primary to-cyan-400">
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-primary to-purple-600">
                                 Programas de Vida
                             </span>
                         </h1>
-                        <p className="text-xl text-slate-400 max-w-3xl mx-auto leading-relaxed">
+                        <p className="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
                             No vendemos tiempo, generamos <strong>Prevención, Bienestar e Inclusión</strong>.
-                            Nuestra intervención clínica está basada en el <span className="text-white font-bold">Método ACTIVA©</span>,
+                            Nuestra intervención clínica está basada en el <span className="text-brand-primary font-bold">Método ACTIVA©</span>,
                             garantizando impacto emocional y social medible.
                         </p>
                     </RevealSection>
                 </div>
                 {/* TABS NAVIGATION */}
-                <div className="sticky top-24 z-50 bg-slate-950/80 backdrop-blur-xl border-y border-white/5 py-4 mb-16">
+                <div className="sticky top-24 z-50 bg-slate-50/90 backdrop-blur-xl border-y border-slate-200 py-4 mb-16 shadow-sm">
                     <div className="max-w-7xl mx-auto px-6 lg:px-12">
                         <div className="flex overflow-x-auto gap-4 md:justify-center pb-2 md:pb-0 scrollbar-hide">
                             {tabs.map((tab) => (
                                 <button
                                     key={tab.id}
                                     onClick={() => setActiveTab(tab.id as 'infancia' | 'adultos' | 'colegios' | 'profesionales' | 'consultoria')}
-                                    className={`flex items-center gap-2 px-6 py-3 rounded-full text-sm font-bold uppercase tracking-wider transition-all whitespace-nowrap ${activeTab === tab.id
-                                        ? 'bg-brand-primary text-white shadow-lg shadow-brand-primary/25'
-                                        : 'bg-white/5 text-slate-400 hover:bg-white/10 hover:text-white'
+                                    className={`flex items-center gap-2 px-6 py-3 rounded-full text-sm font-bold uppercase tracking-wider transition-all whitespace-nowrap border ${activeTab === tab.id
+                                        ? 'bg-brand-primary text-white border-brand-primary shadow-lg shadow-brand-primary/25'
+                                        : 'bg-white text-slate-500 border-slate-200 hover:border-brand-primary/30 hover:text-brand-primary'
                                         }`}
                                 >
                                     <tab.icon className="w-4 h-4" />
@@ -245,50 +256,50 @@ export const Programs = () => {
                 {/* CONTENT GRID */}
                 <div className="max-w-7xl mx-auto px-6 lg:px-12 min-h-[600px]">
                     <RevealSection key={activeTab}>
-                        <div className="mb-12">
-                            <h2 className="text-3xl font-display font-bold text-white mb-2">{content[activeTab].title}</h2>
-                            <p className="text-lg text-slate-400">{content[activeTab].subtitle}</p>
+                        <div className="mb-12 text-center md:text-left">
+                            <h2 className="text-3xl font-display font-bold text-slate-900 mb-2">{content[activeTab].title}</h2>
+                            <p className="text-lg text-slate-600">{content[activeTab].subtitle}</p>
                         </div>
 
                         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                             {content[activeTab].items.map((item, idx) => (
-                                <div key={idx} className="group relative bg-[#1A2035] rounded-3xl p-8 border border-white/5 hover:border-brand-primary/30 transition-all duration-300 hover:shadow-2xl hover:shadow-brand-primary/10 flex flex-col">
+                                <div key={idx} className="group relative bg-white rounded-3xl p-8 border border-slate-200 hover:border-brand-primary/30 transition-all duration-300 hover:shadow-xl hover:shadow-brand-primary/5 flex flex-col">
                                     {/* Tag */}
                                     <div className="absolute top-6 right-6">
-                                        <span className="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-[#EC008C] text-xs font-bold uppercase tracking-wider">
+                                        <span className="px-3 py-1 rounded-full bg-brand-primary/5 border border-brand-primary/10 text-brand-primary text-xs font-bold uppercase tracking-wider">
                                             {item.tag}
                                         </span>
                                     </div>
 
-                                    <h3 className="text-2xl font-display font-bold text-white mb-2 pr-8">{item.title}</h3>
-                                    <div className="flex items-center gap-2 text-sm text-cyan-400 font-medium mb-6">
-                                        <Users className="w-4 h-4" /> {item.target}
+                                    <h3 className="text-2xl font-display font-bold text-slate-900 mb-2 pr-8">{item.title}</h3>
+                                    <div className="flex items-center gap-2 text-sm text-slate-500 font-medium mb-6">
+                                        <Users className="w-4 h-4 text-brand-secondary" /> {item.target}
                                     </div>
 
                                     <div className="space-y-4 mb-8 flex-grow">
                                         {item.features.map((feature, fIdx) => (
                                             <div key={fIdx} className="flex items-start gap-3">
-                                                <Check className="w-5 h-5 text-green-400 shrink-0" />
-                                                <span className="text-slate-300 text-sm">{feature}</span>
+                                                <div className="mt-1 w-1.5 h-1.5 rounded-full bg-brand-primary shrink-0" />
+                                                <span className="text-slate-600 text-sm">{feature}</span>
                                             </div>
                                         ))}
                                     </div>
 
-                                    <div className="pt-6 border-t border-white/10">
+                                    <div className="pt-6 border-t border-slate-100">
                                         <div className="flex justify-between items-end mb-4">
                                             <div>
-                                                <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Inversión</p>
-                                                <p className="text-xl font-bold text-white">{item.price}</p>
+                                                <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">Inversión</p>
+                                                <p className="text-xl font-bold text-slate-900">{item.price}</p>
                                             </div>
                                             <div className="text-right">
-                                                <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Duración</p>
-                                                <p className="text-sm font-medium text-slate-300">{item.duration}</p>
+                                                <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">Duración</p>
+                                                <p className="text-sm font-medium text-slate-600">{item.duration}</p>
                                             </div>
                                         </div>
 
                                         <Link
-                                            to="/#contact" // Ideally opens a modal
-                                            className="flex items-center justify-center w-full py-3 rounded-xl bg-white/5 hover:bg-brand-primary text-white font-bold transition-all group-hover:scale-105"
+                                            to="/#contact"
+                                            className="flex items-center justify-center w-full py-3 rounded-xl bg-slate-900 hover:bg-brand-primary text-white font-bold transition-all group-hover:scale-[1.02] shadow-sm"
                                         >
                                             Más Información
                                         </Link>
@@ -298,20 +309,20 @@ export const Programs = () => {
                         </div>
 
                         {/* STRATEGIC CONSIDERATIONS SECTION */}
-                        <div className="mt-16 p-8 rounded-3xl bg-gradient-to-r from-brand-primary/20 to-purple-900/40 border border-brand-primary/20 text-center relative overflow-hidden">
+                        <div className="mt-16 p-8 rounded-3xl bg-slate-100 border border-slate-200 text-center relative overflow-hidden">
                             <div className="relative z-10">
-                                <Music className="w-12 h-12 text-white mx-auto mb-4 opacity-80" />
-                                <h3 className="text-2xl font-bold text-white mb-2">¿Buscas estabilidad y resultados?</h3>
-                                <p className="text-slate-300 max-w-2xl mx-auto mb-6">
+                                <Music className="w-12 h-12 text-slate-300 mx-auto mb-4" />
+                                <h3 className="text-2xl font-bold text-slate-900 mb-2">¿Buscas estabilidad y resultados?</h3>
+                                <p className="text-slate-600 max-w-2xl mx-auto mb-6">
                                     Recomendamos nuestros <strong>Bonos Trimestrales</strong> para asegurar la adherencia al tratamiento y maximizar los resultados neuro-cognitivos.
                                 </p>
-                                <div className="flex flex-wrap justify-center gap-4 text-xs text-slate-400 uppercase tracking-widest mt-4">
-                                    <span className="flex items-center gap-1"><Check className="w-3 h-3 text-cyan-400" /> Desplazamiento incluido</span>
-                                    <span className="flex items-center gap-1"><Check className="w-3 h-3 text-cyan-400" /> Material clínico propio</span>
-                                    <span className="flex items-center gap-1"><Check className="w-3 h-3 text-cyan-400" /> Seguro RC Sanitario</span>
+                                <div className="flex flex-wrap justify-center gap-4 text-xs text-slate-500 uppercase tracking-widest mt-4">
+                                    <span className="flex items-center gap-1"><Check className="w-3 h-3 text-brand-primary" /> Desplazamiento incluido</span>
+                                    <span className="flex items-center gap-1"><Check className="w-3 h-3 text-brand-primary" /> Material clínico propio</span>
+                                    <span className="flex items-center gap-1"><Check className="w-3 h-3 text-brand-primary" /> Seguro RC Sanitario</span>
                                 </div>
                                 <div className="mt-8">
-                                    <a href="mailto:hola@activamusicoterapia.com" className="inline-flex items-center gap-2 px-8 py-3 bg-white text-brand-dark font-bold rounded-full hover:bg-cyan-400 transition-colors">
+                                    <a href="mailto:hola@activamusicoterapia.com" className="inline-flex items-center gap-2 px-8 py-3 bg-slate-900 text-white font-bold rounded-full hover:bg-brand-primary transition-colors shadow-lg">
                                         Solicitar Propuesta Personalizada
                                         <ArrowRight className="w-4 h-4" />
                                     </a>
@@ -319,15 +330,14 @@ export const Programs = () => {
                             </div>
                         </div>
                         {/* STRATEGIC BANNER */}
-                        <div className="mt-16 p-8 rounded-3xl bg-gradient-to-r from-brand-primary/20 to-purple-900/40 border border-brand-primary/20 text-center relative overflow-hidden">
+                        <div className="mt-16 p-8 rounded-3xl bg-white border-2 border-slate-200 text-center relative overflow-hidden shadow-xl">
                             <div className="relative z-10">
-                                <Music className="w-12 h-12 text-white mx-auto mb-4 opacity-80" />
-                                <h3 className="text-2xl font-bold text-white mb-2">¿Buscas un Proyecto a Medida?</h3>
-                                <p className="text-slate-300 max-w-2xl mx-auto mb-6">
+                                <h3 className="text-2xl font-bold text-slate-900 mb-2">¿Buscas un Proyecto a Medida?</h3>
+                                <p className="text-slate-600 max-w-2xl mx-auto mb-6">
                                     Diseñamos intervenciones específicas para ayuntamientos, hospitales y grandes colectivos.
                                     El Método ACTIVA es escalable y adaptable.
                                 </p>
-                                <a href="mailto:hola@activamusicoterapia.com" className="inline-flex items-center gap-2 px-8 py-3 bg-white text-brand-dark font-bold rounded-full hover:bg-cyan-400 transition-colors">
+                                <a href="mailto:hola@activamusicoterapia.com" className="inline-flex items-center gap-2 px-8 py-3 bg-brand-primary text-white font-bold rounded-full hover:bg-brand-dark transition-colors shadow-md">
                                     Contactar Coordinación
                                     <ArrowRight className="w-4 h-4" />
                                 </a>
