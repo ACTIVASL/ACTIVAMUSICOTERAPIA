@@ -55,3 +55,4 @@ dist
 node_modules
 full_lint_report.txt
 full_lint_report_forced.txt
+github-actions-key.json

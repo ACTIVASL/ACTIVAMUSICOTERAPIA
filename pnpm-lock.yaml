@@ -74,6 +74,9 @@ importers:
       prettier:
         specifier: latest
         version: 3.8.1
+      sharp:
+        specifier: ^0.34.5
+        version: 0.34.5
       ts-jest:
         specifier: ^29.4.6
         version: 29.4.6(@babel/core@7.28.6)(jest@30.2.0)(typescript@5.9.3)

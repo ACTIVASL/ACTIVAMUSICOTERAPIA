@@ -7,6 +7,8 @@
   "private": true,
   "scripts": {
     "build": "turbo run build",
+    "clean": "turbo run clean && rm -rf node_modules",
+    "generate:assets": "node scripts/generate-assets.js",
     "dev": "turbo run dev",
     "web": "pnpm --filter landing-web dev",
     "crm": "pnpm --filter crm-client dev",
@@ -35,6 +37,7 @@
     "husky": "^9.1.7",
     "jest": "^30.2.0",
     "prettier": "latest",
+    "sharp": "^0.34.5",
     "ts-jest": "^29.4.6",
     "tsx": "^4.6.2",
     "turbo": "latest",

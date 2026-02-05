@@ -27,7 +27,7 @@ import { ClinicSettings } from '../../lib/types';
 
 export const BillingView = () => {
   const { t } = useTranslation();
-  const { invoices, updateStatus, deleteInvoice, isLoading } = useInvoiceController();
+  const { invoices, updateStatus, deleteInvoice, isLoading, error } = useInvoiceController();
   const { settings } = useSettingsController(); // TITANIUM SETTINGS
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<InvoiceStatus | 'ALL'>('ALL');
@@ -160,11 +160,10 @@ export const BillingView = () => {
               <button
                 key={status}
                 onClick={() => setStatusFilter(status)}
-                className={`px-4 py-2 text-xs font-bold rounded-full transition-all whitespace-nowrap active:scale-95 ${
-                  statusFilter === status
-                    ? 'bg-slate-900 text-white shadow-md'
-                    : 'bg-white text-slate-500 border border-slate-200'
-                }`}
+                className={`px-4 py-2 text-xs font-bold rounded-full transition-all whitespace-nowrap active:scale-95 ${statusFilter === status
+                  ? 'bg-slate-900 text-white shadow-md'
+                  : 'bg-white text-slate-500 border border-slate-200'
+                  }`}
               >
                 {status === 'ALL'
                   ? t('sidebar.billing.filters.all')
@@ -178,7 +177,20 @@ export const BillingView = () => {
           </div>
         </div>
 
-        {isLoading ? (
+        {error ? (
+          <div className="p-6 border border-red-100 rounded-xl bg-red-50 flex items-start gap-4 text-red-700 mb-6">
+            <AlertCircle className="shrink-0 mt-0.5" />
+            <div>
+              <h3 className="font-bold text-lg mb-1">Error cargando facturas</h3>
+              <p className="text-sm opacity-90 mb-2">
+                {error instanceof Error ? error.message : 'Error desconocido'}
+              </p>
+              <p className="text-xs font-mono bg-red-100 p-2 rounded">
+                Possible Missing Index: Run 'firebase deploy --only firestore:indexes'
+              </p>
+            </div>
+          </div>
+        ) : isLoading ? (
           <div className="space-y-4">
             {[1, 2, 3].map((i) => (
               <div
@@ -279,13 +291,12 @@ const BillingListVirtualizer = ({
                 </div>
                 <div className="text-right">
                   <span
-                    className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-[11px] font-bold uppercase tracking-wider border ${
-                      inv.status === 'PAID'
-                        ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                        : inv.status === 'PENDING'
-                          ? 'bg-amber-50 text-amber-700 border-amber-200'
-                          : 'bg-slate-100 text-slate-600 border-slate-200'
-                    }`}
+                    className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-[11px] font-bold uppercase tracking-wider border ${inv.status === 'PAID'
+                      ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                      : inv.status === 'PENDING'
+                        ? 'bg-amber-50 text-amber-700 border-amber-200'
+                        : 'bg-slate-100 text-slate-600 border-slate-200'
+                      }`}
                   >
                     {inv.status === 'PAID' && <CheckCircle size={10} />}
                     {inv.status === 'PENDING' && <Clock size={10} />}
@@ -363,13 +374,12 @@ const BillingListVirtualizer = ({
                 >
                   <td className="px-6 py-4 w-32">
                     <span
-                      className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wide shadow-sm ${
-                        inv.status === 'PAID'
-                          ? 'bg-emerald-500 text-white border border-emerald-600'
-                          : inv.status === 'PENDING'
-                            ? 'bg-amber-400 text-amber-900 border border-amber-500'
-                            : 'bg-slate-200 text-slate-600 border border-slate-300'
-                      }`}
+                      className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wide shadow-sm ${inv.status === 'PAID'
+                        ? 'bg-emerald-500 text-white border border-emerald-600'
+                        : inv.status === 'PENDING'
+                          ? 'bg-amber-400 text-amber-900 border border-amber-500'
+                          : 'bg-slate-200 text-slate-600 border border-slate-300'
+                        }`}
                     >
                       {inv.status === 'PAID'
                         ? 'PAGADO'
