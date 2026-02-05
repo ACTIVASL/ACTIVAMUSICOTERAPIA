@@ -209,8 +209,8 @@ export const Programs = () => {
                     title: "Auditoría de Entornos",
                     target: "Residencias / Hospitales",
                     duration: "Consultoría",
-                    price: "Consultar",
-                    period: "Presupuesto",
+                    price: "Desde 500 €",
+                    period: "Presupuesto Base",
                     features: ["Análisis acústico", "Diseño de espacios", "Humanización de cuidados"],
                     tag: "Infraestructura",
                     highlight: false
@@ -219,8 +219,8 @@ export const Programs = () => {
                     title: "Proyectos Salud Social",
                     target: "Instituciones Públicas",
                     duration: "Licitación / Contrato",
-                    price: "A Medida",
-                    period: "Proyecto",
+                    price: "Desde 3.000 €",
+                    period: "Proyecto Piloto",
                     features: ["Soledad no deseada", "Salud Mental Comunitaria", "Justificación Técnica", "Impacto Social Medible"],
                     tag: "Institucional",
                     highlight: true,
@@ -275,7 +275,7 @@ export const Programs = () => {
                                     key={tab.id}
                                     onClick={() => setSearchParams({ tab: tab.id }, { replace: true })}
                                     className={`flex items-center gap-2 px-6 py-3 rounded-full text-sm font-bold uppercase tracking-wider transition-all whitespace-nowrap border ${activeTab === tab.id
-                                        ? 'bg-slate-900 text-white border-slate-900 shadow-lg transform scale-105'
+                                        ? 'bg-gradient-to-r from-brand-primary to-purple-600 text-white border-transparent shadow-lg shadow-brand-primary/25 transform scale-105'
                                         : 'bg-white text-slate-500 border-slate-200 hover:border-brand-primary/30 hover:text-brand-primary'
                                         }`}
                                 >
@@ -354,8 +354,8 @@ export const Programs = () => {
                                         to="/#contact"
                                         className={`flex items-center justify-center w-full py-4 rounded-xl font-bold transition-all group-hover:scale-[1.02] shadow-sm
                                             ${item.highlight
-                                                ? 'bg-brand-primary text-white hover:bg-brand-dark shadow-brand-primary/25'
-                                                : 'bg-slate-900 text-white hover:bg-slate-800'
+                                                ? 'bg-gradient-to-r from-brand-primary to-purple-600 text-white hover:shadow-xl hover:shadow-brand-primary/20'
+                                                : 'bg-white text-brand-primary border-2 border-brand-primary hover:bg-brand-primary hover:text-white'
                                             }`}
                                     >
                                         Solicitar Plaza
@@ -366,14 +366,13 @@ export const Programs = () => {
                         </div>
 
                         {/* TRUST & AUTHORITY BANNER */}
-                        <div className="mt-20 p-10 rounded-3xl bg-slate-900 text-center relative overflow-hidden shadow-2xl">
-                            <div className="absolute inset-0 bg-gradient-to-r from-brand-primary/20 to-purple-900/40"></div>
-                            <div className="relative z-10 text-white">
-                                <h3 className="text-2xl font-bold font-display mb-4">¿Necesitas una propuesta personalizada?</h3>
-                                <p className="text-slate-300 max-w-2xl mx-auto mb-8 text-lg">
+                        <div className="mt-20 p-10 rounded-3xl bg-gradient-to-br from-indigo-50 to-purple-50 border border-indigo-100 text-center relative overflow-hidden">
+                            <div className="relative z-10">
+                                <h3 className="text-2xl font-bold font-display mb-4 text-slate-900">¿Necesitas una propuesta personalizada?</h3>
+                                <p className="text-slate-600 max-w-2xl mx-auto mb-8 text-lg">
                                     Analizamos tu caso clínico o institucional y diseñamos un plan de intervención a medida con objetivos medibles.
                                 </p>
-                                <a href="mailto:hola@activamusicoterapia.com" className="inline-flex items-center gap-2 px-8 py-3 bg-white text-slate-900 font-bold rounded-full hover:bg-slate-100 transition-colors">
+                                <a href="mailto:hola@activamusicoterapia.com" className="inline-flex items-center gap-2 px-8 py-3 bg-brand-primary text-white font-bold rounded-full hover:bg-brand-dark transition-all shadow-lg shadow-brand-primary/25">
                                     Contactar con Dirección Clínica
                                 </a>
                             </div>
