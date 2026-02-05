@@ -4,7 +4,8 @@ import { Footer } from '../../components/landing/Footer';
 import { RevealSection } from '../../components/ui/RevealSection';
 import { Calendar, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import blogHeader from '../../assets/images/blog_header.png';
+import crmImage from '../../assets/images/crm-demo-dashboard.jpg';
+import sessionImage from '../../assets/images/individual-session-child.png';
 
 export const BlogIndex = () => {
     const posts = [
@@ -13,7 +14,7 @@ export const BlogIndex = () => {
             excerpt: 'Descubre por qué las hojas de cálculo son un riesgo de seguridad para tu clínica y cómo la tecnología Titanium blinda tus datos.',
             date: '5 febrero, 2026',
             category: 'Tecnología Clínica',
-            image: blogHeader, // Reusing header for tech post
+            image: crmImage,
             slug: '/blog/gestion-clinica-digital',
             featured: true
         },
@@ -22,16 +23,11 @@ export const BlogIndex = () => {
             excerpt: 'Análisis profundo sobre los beneficios clínicos de la musicoterapia en trastornos neurológicos, emocionales y del desarrollo.',
             date: '4 junio, 2021',
             category: 'Divulgación',
-            image: 'https://webycrm-activa.web.app/assets/blog-musicoterapia.jpg', // URL from BenefitsPost fallback
+            image: sessionImage,
             slug: '/blog/beneficios-musicoterapia',
             featured: false
         }
     ];
-
-    // Using the same header image for the second post if the URL is external/broken? 
-    // BenefitsPost used a hardcoded URL: 'https://webycrm-activa.web.app/assets/blog-musicoterapia.jpg' in schema, 
-    // but the visual image was `blogHeader` imported locally.
-    // I will use `blogHeader` for both for now to ensure no broken images, but ideally they differ.
 
     return (
         <div className="bg-slate-950 min-h-screen font-sans text-slate-300 selection:bg-brand-primary selection:text-white">
@@ -60,7 +56,7 @@ export const BlogIndex = () => {
                                     <div className="aspect-video overflow-hidden relative">
                                         <div className="absolute inset-0 bg-brand-primary/10 group-hover:bg-transparent transition-colors z-10"></div>
                                         <img
-                                            src={blogHeader} // Using the local asset for safety
+                                            src={post.image}
                                             alt={post.title}
                                             className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
                                         />
