@@ -35,16 +35,7 @@ export const Hero = () => {
 
       <div className="relative z-20 max-w-[1600px] mx-auto px-6 flex flex-col items-center text-center mt-20">
         <RevealSection>
-          {/* SUPER-BADGE: MUSICOTERAPIA */}
-          <div className="inline-flex items-center gap-3 px-6 py-2.5 rounded-full bg-white/5 border border-white/10 backdrop-blur-md mb-10 group hover:bg-white/10 transition-all duration-500 cursor-default shadow-lg">
-            <span className="relative flex h-2.5 w-2.5">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-primary opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-brand-primary"></span>
-            </span>
-            <span className="text-slate-300 text-xs font-display font-bold tracking-[0.3em] uppercase group-hover:text-white transition-colors">
-              CIENCIA + ARTE
-            </span>
-          </div>
+
 
           {/* SUPER-BADGE: MUSICOTERAPIA */}
           <div className="inline-flex items-center gap-3 px-6 py-2.5 rounded-full bg-white/5 border border-white/10 backdrop-blur-md mb-10 group hover:bg-white/10 transition-all duration-500 cursor-default shadow-lg">

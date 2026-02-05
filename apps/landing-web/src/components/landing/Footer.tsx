@@ -60,7 +60,7 @@ export const Footer = ({
           </div>
           <button
             onClick={() => onOpenModal?.('lead-magnet', { interest: 'general' })}
-            className="whitespace-nowrap px-8 py-3 bg-white text-brand-dark font-bold rounded-full hover:bg-brand-primary hover:text-white transition-all shadow-lg"
+            className="whitespace-nowrap px-8 py-3 bg-gradient-to-r from-brand-primary to-purple-600 text-white font-bold rounded-full hover:shadow-lg hover:shadow-brand-primary/20 transition-all shadow-md border border-white/10"
           >
             Solicitar Orientación 5'
           </button>

@@ -75,11 +75,11 @@ export const Navigation = () => {
               {/* INICIAR SESION CTA */}
               <a
                 href={CRM_URL}
-                className="hidden lg:flex items-center gap-3 px-6 py-2.5 rounded-full bg-slate-900 text-white shadow-lg hover:bg-brand-primary transition-all transform hover:scale-105 active:scale-95 group relative overflow-hidden border border-slate-800"
+                className="hidden lg:flex items-center gap-3 px-6 py-2.5 rounded-full bg-gradient-to-r from-brand-primary to-purple-600 text-white shadow-lg hover:shadow-brand-primary/25 transition-all transform hover:scale-105 active:scale-95 group relative overflow-hidden border border-transparent"
               >
                 <UserPlus className="w-4 h-4 text-white relative z-10" />
                 <span className="text-xs font-display font-bold uppercase tracking-widest relative z-10">
-                  LOGIN
+                  INICIAR SESIÓN
                 </span>
               </a>
 
@@ -127,7 +127,7 @@ export const Navigation = () => {
               <div className="pt-8 border-t border-slate-200 space-y-4">
                 <a
                   href={CRM_URL}
-                  className="flex items-center justify-center gap-3 w-full py-4 rounded-xl bg-slate-900 text-white font-bold uppercase tracking-wider shadow-lg"
+                  className="flex items-center justify-center gap-3 w-full py-4 rounded-xl bg-gradient-to-r from-brand-primary to-purple-600 text-white font-bold uppercase tracking-wider shadow-lg"
                 >
                   <UserPlus className="w-5 h-5" />
                   INICIAR SESIÓN
