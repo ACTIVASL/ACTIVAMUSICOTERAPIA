@@ -11,10 +11,21 @@ import {
     GraduationCap,
     Check,
     ArrowRight,
-    Brain,
-    Music
+    Brain
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+
+interface ProgramItem {
+    title: string;
+    target: string;
+    duration: string;
+    price: string;
+    period?: string;
+    features: string[];
+    tag: string;
+    highlight?: boolean;
+    badge?: string;
+}
 
 export const Programs = () => {
     const location = useLocation();
@@ -46,33 +57,42 @@ export const Programs = () => {
                     title: "Estimulación Musical Temprana",
                     target: "0–3 años",
                     duration: "45–50 min",
-                    price: "70–80 € / sesión",
-                    features: ["Enfoque neurodesarrollo", "Juego sensorial", "Regulación emocional"],
-                    tag: "Prevención"
-                },
-                {
-                    title: "Musicoterapia en Familia",
-                    target: "Padres + Hijos",
-                    duration: "50–60 min",
-                    price: "80–100 € / sesión",
-                    features: ["Refuerzo del vínculo afectivo", "Comunicación no verbal", "Continuidad en casa"],
-                    tag: "Vínculo"
+                    price: "70–80 €",
+                    period: "/ sesión",
+                    features: ["Neurodesarrollo infantil", "Juego sensorial", "Regulación emocional"],
+                    tag: "Prevención",
+                    highlight: false
                 },
                 {
                     title: "Musicoterapia Clínica TEA",
                     target: "Grupos 4–6 niños",
                     duration: "45–60 min",
-                    price: "90–120 € / sesión",
-                    features: ["Alta especialización", "Atención conjunta", "Gestión de turnos"],
-                    tag: "Clínico"
+                    price: "90–120 €",
+                    period: "/ sesión",
+                    features: ["Alta especialización", "Atención conjunta", "Gestión de turnos", "Informes trimestrales"],
+                    tag: "Alta Demanda",
+                    highlight: true,
+                    badge: "Más Solicitado"
                 },
                 {
-                    title: "Terapia Individual Infantil",
+                    title: "Musicoterapia en Familia",
+                    target: "Padres + Hijos",
+                    duration: "50–60 min",
+                    price: "80–100 €",
+                    period: "/ sesión",
+                    features: ["Vínculo afectivo", "Comunicación no verbal", "Continuidad en casa"],
+                    tag: "Vínculo",
+                    highlight: false
+                },
+                {
+                    title: "Terapia Individual",
                     target: "1 niño",
                     duration: "45–50 min",
-                    price: "50–60 € / sesión",
+                    price: "50–60 €",
+                    period: "/ sesión",
                     features: ["Adaptación total", "Enfoque preventivo", "Desarrollo del lenguaje"],
-                    tag: "Personalizado"
+                    tag: "Personalizado",
+                    highlight: false
                 }
             ]
         },
@@ -81,36 +101,35 @@ export const Programs = () => {
             subtitle: "Intervenciones para mantener la vitalidad cognitiva y emocional.",
             items: [
                 {
-                    title: "Estimulación Cognitiva (Memoria)",
-                    target: "Centros de día / Asociaciones",
-                    duration: "60 min",
-                    price: "60–80 € / sesión",
-                    features: ["Recuperación de memoria musical", "Ritmo y coordinación", "Prevención deterioro"],
-                    tag: "Alzheimer"
-                },
-                {
                     title: "Coro Terapéutico",
                     target: "Grupo Vocal",
-                    duration: "60–90 min",
-                    price: "70–100 € / sesión",
+                    duration: "90 min",
+                    price: "70–100 €",
+                    period: "/ sesión",
                     features: ["Beneficios respiratorios", "Cohesión social", "Sin experiencia previa"],
-                    tag: "Comunidad"
+                    tag: "Comunidad",
+                    highlight: false
+                },
+                {
+                    title: "Estimulación Cognitiva",
+                    target: "Alzheimer / Demencias",
+                    duration: "60 min",
+                    price: "60–80 €",
+                    period: "/ sesión",
+                    features: ["Memoria musical", "Ritmo y coordinación", "Prevención deterioro", "Apoyo a familias"],
+                    tag: "Clínico",
+                    highlight: true,
+                    badge: "Especialidad"
                 },
                 {
                     title: "Musicoterapia y Movimiento",
                     target: "Movilidad reducida",
                     duration: "60 min",
-                    price: "60–80 € / sesión",
+                    price: "60–80 €",
+                    period: "/ sesión",
                     features: ["Equilibrio y coordinación", "Prevención de caídas", "Adaptable sentado"],
-                    tag: "Salud Física"
-                },
-                {
-                    title: "Terapia Individual Adulto",
-                    target: "1 persona",
-                    duration: "45–50 min",
-                    price: "60 € / sesión",
-                    features: ["Bienestar emocional", "Gestión de estrés", "Expresión profunda"],
-                    tag: "Clínico"
+                    tag: "Salud Física",
+                    highlight: false
                 }
             ]
         },
@@ -119,28 +138,35 @@ export const Programs = () => {
             subtitle: "Llevamos el Método Activa a las aulas para transformar la convivencia.",
             items: [
                 {
-                    title: "Prevención Emocional",
+                    title: "Talleres de Prevención",
                     target: "Aula completa",
                     duration: "45–60 min",
-                    price: "120–150 € / sesión",
+                    price: "120–150 €",
+                    period: "/ sesión",
                     features: ["Regulación emocional", "Mejora de convivencia", "Prevención bullying"],
-                    tag: "Educativo"
+                    tag: "Puntual",
+                    highlight: false
                 },
                 {
                     title: "Aula de Musicoterapia",
                     target: "Proyecto Estable",
-                    duration: "Semanal",
-                    price: "400–600 € / mes",
-                    features: ["Atención a la diversidad", "Recurso fijo en centro", "Coordinación docente"],
-                    tag: "Integral"
+                    duration: "Curso Escolar",
+                    price: "400–600 €",
+                    period: "/ mes",
+                    features: ["Atención a la diversidad", "Recurso fijo en centro", "Coordinación docente", "Marca de Centro Innovador"],
+                    tag: "Integral",
+                    highlight: true,
+                    badge: "Recomendado"
                 },
                 {
                     title: "Formación a Docentes",
                     target: "Claustro / AMPA",
                     duration: "Seminario",
-                    price: "150–250 € / formación",
+                    price: "250 €",
+                    period: "/ taller",
                     features: ["Música como herramienta", "Gestión de aula", "Recursos prácticos"],
-                    tag: "Formación"
+                    tag: "Formación",
+                    highlight: false
                 }
             ]
         },
@@ -149,58 +175,72 @@ export const Programs = () => {
             subtitle: "Herramientas digitales y formación clínica para impulsar tu carrera.",
             items: [
                 {
-                    title: "Software de Gestión Clínica",
+                    title: "Supervisión de Casos",
+                    target: "Mentoría",
+                    duration: "1 hora",
+                    price: "50–80 €",
+                    period: "/ hora",
+                    features: ["Análisis clínico", "Seguridad profesional", "Online / Presencial"],
+                    tag: "Mentoría",
+                    highlight: false
+                },
+                {
+                    title: "Software Gestión Clínica",
                     target: "Centros / Autónomos",
-                    duration: "Licencia + Personalización",
-                    price: "299€ Licencia + 3000€ Personalización",
-                    features: ["Historia Clínica Digital", "Facturación Automatizada", "RGPD Integrado", "Marca Blanca"],
-                    tag: "Activa Titanium"
+                    duration: "Licencia Vitalicia",
+                    price: "299 €",
+                    period: "+ 3k Personalización",
+                    features: ["Historia Clínica Digital", "Facturación Automatizada", "RGPD Integrado", "Marca Blanca Total"],
+                    tag: "Activa Titanium",
+                    highlight: true,
+                    badge: "Bestseller Tech"
                 },
                 {
                     title: "Formación Método ACTIVA",
                     target: "Musicoterapeutas",
                     duration: "Taller Intensivo",
-                    price: "180–300 €",
+                    price: "180 €",
+                    period: "/ curso",
                     features: ["Metodología propia", "Casos reales", "Diferenciación de marca"],
-                    tag: "Certificación"
-                },
-                {
-                    title: "Supervisión de Casos",
-                    target: "Mentoría",
-                    duration: "1 hora",
-                    price: "50–80 €",
-                    features: ["Análisis clínico", "Seguridad profesional", "Online / Presencial"],
-                    tag: "Mentoría"
+                    tag: "Certificación",
+                    highlight: false
                 }
             ]
         },
         consultoria: {
-            title: "Soluciones Corporativas e Institucionales",
-            subtitle: "Proyectos de alto impacto social para la administración pública y grandes entidades.",
+            title: "Soluciones Corporativas",
+            subtitle: "Proyectos de alto impacto social para administración pública y privacidad.",
             items: [
-                {
-                    title: "Proyectos de Salud Social",
-                    target: "Ayuntamientos / Instituciones",
-                    duration: "Por proyecto",
-                    price: "Consultar",
-                    features: ["Soledad no deseada", "Refuerzo Salud Mental", "Justificación Técnica"],
-                    tag: "Institucional"
-                },
                 {
                     title: "Auditoría de Entornos",
                     target: "Residencias / Hospitales",
                     duration: "Consultoría",
-                    price: "Bajo Presupuesto",
-                    features: ["Análisis acústico", "Diseño de espacios", "Recomendación de material"],
-                    tag: "Infraestructura"
+                    price: "Consultar",
+                    period: "Presupuesto",
+                    features: ["Análisis acústico", "Diseño de espacios", "Humanización de cuidados"],
+                    tag: "Infraestructura",
+                    highlight: false
                 },
                 {
-                    title: "Conferencias y Divulgación",
+                    title: "Proyectos Salud Social",
+                    target: "Instituciones Públicas",
+                    duration: "Licitación / Contrato",
+                    price: "A Medida",
+                    period: "Proyecto",
+                    features: ["Soledad no deseada", "Salud Mental Comunitaria", "Justificación Técnica", "Impacto Social Medible"],
+                    tag: "Institucional",
+                    highlight: true,
+                    badge: "Alto Impacto"
+                },
+                {
+                    title: "Conferencias",
                     target: "Eventos / Congresos",
                     duration: "45–90 min",
                     price: "Desde 300 €",
-                    features: ["Neurociencia musical", "Impacto social", "Speaker especializado"],
-                    tag: "Visibilidad"
+                    period: "/ evento",
+                    features: ["Neurociencia musical", "Divulgación científica", "Speaker especializado"],
+                    tag: "Visibilidad",
+                    highlight: false
                 }
             ]
         }
@@ -217,21 +257,21 @@ export const Programs = () => {
 
             <main className="pt-32 pb-24">
                 {/* HERO SECTION - STRATEGIC POSITIONING */}
-                <div className="max-w-7xl mx-auto px-6 lg:px-12 mb-20 text-center">
+                <div className="max-w-7xl mx-auto px-6 lg:px-12 mb-16 text-center">
                     <RevealSection>
                         <h1 className="text-4xl md:text-6xl font-display font-black text-slate-900 leading-tight mb-6">
-                            Más que Sesiones, <br />
+                            Invierte en <br />
                             <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-primary to-purple-600">
-                                Programas de Vida
+                                Resultados Clínicos
                             </span>
                         </h1>
                         <p className="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
-                            No vendemos tiempo, generamos <strong>Prevención, Bienestar e Inclusión</strong>.
-                            Nuestra intervención clínica está basada en el <span className="text-brand-primary font-bold">Método ACTIVA©</span>,
-                            garantizando impacto emocional y social medible.
+                            Intervenciones basadas en el <span className="text-brand-primary font-bold">Método ACTIVA©</span>.
+                            Diseñamos programas que transforman vidas, no solo sesiones sueltas.
                         </p>
                     </RevealSection>
                 </div>
+
                 {/* TABS NAVIGATION */}
                 <div className="sticky top-24 z-50 bg-slate-50/90 backdrop-blur-xl border-y border-slate-200 py-4 mb-16 shadow-sm">
                     <div className="max-w-7xl mx-auto px-6 lg:px-12">
@@ -241,7 +281,7 @@ export const Programs = () => {
                                     key={tab.id}
                                     onClick={() => setActiveTab(tab.id as 'infancia' | 'adultos' | 'colegios' | 'profesionales' | 'consultoria')}
                                     className={`flex items-center gap-2 px-6 py-3 rounded-full text-sm font-bold uppercase tracking-wider transition-all whitespace-nowrap border ${activeTab === tab.id
-                                        ? 'bg-brand-primary text-white border-brand-primary shadow-lg shadow-brand-primary/25'
+                                        ? 'bg-slate-900 text-white border-slate-900 shadow-lg transform scale-105'
                                         : 'bg-white text-slate-500 border-slate-200 hover:border-brand-primary/30 hover:text-brand-primary'
                                         }`}
                                 >
@@ -256,97 +296,97 @@ export const Programs = () => {
                 {/* CONTENT GRID */}
                 <div className="max-w-7xl mx-auto px-6 lg:px-12 min-h-[600px]">
                     <RevealSection key={activeTab}>
-                        <div className="mb-12 text-center md:text-left">
+                        <div className="mb-16 text-center">
                             <h2 className="text-3xl font-display font-bold text-slate-900 mb-2">{content[activeTab].title}</h2>
-                            <p className="text-lg text-slate-600">{content[activeTab].subtitle}</p>
+                            <p className="text-lg text-slate-600 max-w-2xl mx-auto">{content[activeTab].subtitle}</p>
                         </div>
 
-                        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {content[activeTab].items.map((item, idx) => (
-                                <div key={idx} className="group relative bg-white rounded-3xl p-8 border border-slate-200 hover:border-brand-primary/30 transition-all duration-300 hover:shadow-xl hover:shadow-brand-primary/5 flex flex-col">
-                                    {/* Tag */}
-                                    <div className="absolute top-6 right-6">
-                                        <span className="px-3 py-1 rounded-full bg-brand-primary/5 border border-brand-primary/10 text-brand-primary text-xs font-bold uppercase tracking-wider">
-                                            {item.tag}
-                                        </span>
+                        <div className="grid md:grid-cols-3 gap-8 items-start">
+                            {(content[activeTab].items as ProgramItem[]).map((item, idx) => (
+                                <div
+                                    key={idx}
+                                    className={`relative bg-white rounded-[2rem] p-8 border transition-all duration-300 flex flex-col h-full
+                                        ${item.highlight
+                                            ? 'border-brand-primary/20 shadow-2xl shadow-brand-primary/10 scale-105 z-10'
+                                            : 'border-slate-200 shadow-xl shadow-slate-200/50 hover:border-slate-300'
+                                        }`}
+                                >
+                                    {/* PSYCHOLOGICAL BADGE */}
+                                    {item.highlight && (
+                                        <div className="absolute -top-5 left-1/2 -translate-x-1/2 bg-gradient-to-r from-brand-primary to-purple-600 text-white px-6 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest shadow-lg">
+                                            {item.badge}
+                                        </div>
+                                    )}
+
+                                    <div className="mb-8">
+                                        <div className="flex justify-between items-start mb-4">
+                                            <span className="px-3 py-1 rounded-full bg-slate-100 text-slate-500 text-[10px] font-bold uppercase tracking-wider">
+                                                {item.tag}
+                                            </span>
+                                        </div>
+                                        <h3 className="text-2xl font-display font-bold text-slate-900 leading-tight mb-2">
+                                            {item.title}
+                                        </h3>
+                                        <div className="flex items-center gap-2 text-sm font-medium text-slate-500">
+                                            <Users className="w-4 h-4 text-brand-secondary" />
+                                            {item.target}
+                                        </div>
                                     </div>
 
-                                    <h3 className="text-2xl font-display font-bold text-slate-900 mb-2 pr-8">{item.title}</h3>
-                                    <div className="flex items-center gap-2 text-sm text-slate-500 font-medium mb-6">
-                                        <Users className="w-4 h-4 text-brand-secondary" /> {item.target}
+                                    {/* PRICE ANCHORING */}
+                                    <div className="mb-8 p-6 bg-slate-50 rounded-2xl text-center">
+                                        <p className="text-3xl font-bold text-slate-900 tracking-tight">
+                                            {item.price}
+                                        </p>
+                                        <p className="text-sm font-medium text-slate-400 mt-1 uppercase tracking-wide">
+                                            {item.period}
+                                        </p>
                                     </div>
 
+                                    {/* FEATURES LIST */}
                                     <div className="space-y-4 mb-8 flex-grow">
-                                        {item.features.map((feature, fIdx) => (
+                                        {item.features.map((feature: string, fIdx: number) => (
                                             <div key={fIdx} className="flex items-start gap-3">
-                                                <div className="mt-1 w-1.5 h-1.5 rounded-full bg-brand-primary shrink-0" />
-                                                <span className="text-slate-600 text-sm">{feature}</span>
+                                                <div className="mt-1 w-5 h-5 rounded-full bg-green-100 flex items-center justify-center shrink-0">
+                                                    <Check className="w-3 h-3 text-green-600" />
+                                                </div>
+                                                <span className="text-slate-600 text-sm font-medium">{feature}</span>
                                             </div>
                                         ))}
                                     </div>
 
-                                    <div className="pt-6 border-t border-slate-100">
-                                        <div className="flex justify-between items-end mb-4">
-                                            <div>
-                                                <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">Inversión</p>
-                                                <p className="text-xl font-bold text-slate-900">{item.price}</p>
-                                            </div>
-                                            <div className="text-right">
-                                                <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">Duración</p>
-                                                <p className="text-sm font-medium text-slate-600">{item.duration}</p>
-                                            </div>
-                                        </div>
-
-                                        <Link
-                                            to="/#contact"
-                                            className="flex items-center justify-center w-full py-3 rounded-xl bg-slate-900 hover:bg-brand-primary text-white font-bold transition-all group-hover:scale-[1.02] shadow-sm"
-                                        >
-                                            Más Información
-                                        </Link>
-                                    </div>
+                                    {/* CTA BUTTON */}
+                                    <Link
+                                        to="/#contact"
+                                        className={`flex items-center justify-center w-full py-4 rounded-xl font-bold transition-all group-hover:scale-[1.02] shadow-sm
+                                            ${item.highlight
+                                                ? 'bg-brand-primary text-white hover:bg-brand-dark shadow-brand-primary/25'
+                                                : 'bg-slate-900 text-white hover:bg-slate-800'
+                                            }`}
+                                    >
+                                        Solicitar Plaza
+                                        <ArrowRight className="w-4 h-4 ml-2" />
+                                    </Link>
                                 </div>
                             ))}
                         </div>
 
-                        {/* STRATEGIC CONSIDERATIONS SECTION */}
-                        <div className="mt-16 p-8 rounded-3xl bg-slate-100 border border-slate-200 text-center relative overflow-hidden">
-                            <div className="relative z-10">
-                                <Music className="w-12 h-12 text-slate-300 mx-auto mb-4" />
-                                <h3 className="text-2xl font-bold text-slate-900 mb-2">¿Buscas estabilidad y resultados?</h3>
-                                <p className="text-slate-600 max-w-2xl mx-auto mb-6">
-                                    Recomendamos nuestros <strong>Bonos Trimestrales</strong> para asegurar la adherencia al tratamiento y maximizar los resultados neuro-cognitivos.
+                        {/* TRUST & AUTHORITY BANNER */}
+                        <div className="mt-20 p-10 rounded-3xl bg-slate-900 text-center relative overflow-hidden shadow-2xl">
+                            <div className="absolute inset-0 bg-gradient-to-r from-brand-primary/20 to-purple-900/40"></div>
+                            <div className="relative z-10 text-white">
+                                <h3 className="text-2xl font-bold font-display mb-4">¿Necesitas una propuesta personalizada?</h3>
+                                <p className="text-slate-300 max-w-2xl mx-auto mb-8 text-lg">
+                                    Analizamos tu caso clínico o institucional y diseñamos un plan de intervención a medida con objetivos medibles.
                                 </p>
-                                <div className="flex flex-wrap justify-center gap-4 text-xs text-slate-500 uppercase tracking-widest mt-4">
-                                    <span className="flex items-center gap-1"><Check className="w-3 h-3 text-brand-primary" /> Desplazamiento incluido</span>
-                                    <span className="flex items-center gap-1"><Check className="w-3 h-3 text-brand-primary" /> Material clínico propio</span>
-                                    <span className="flex items-center gap-1"><Check className="w-3 h-3 text-brand-primary" /> Seguro RC Sanitario</span>
-                                </div>
-                                <div className="mt-8">
-                                    <a href="mailto:hola@activamusicoterapia.com" className="inline-flex items-center gap-2 px-8 py-3 bg-slate-900 text-white font-bold rounded-full hover:bg-brand-primary transition-colors shadow-lg">
-                                        Solicitar Propuesta Personalizada
-                                        <ArrowRight className="w-4 h-4" />
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                        {/* STRATEGIC BANNER */}
-                        <div className="mt-16 p-8 rounded-3xl bg-white border-2 border-slate-200 text-center relative overflow-hidden shadow-xl">
-                            <div className="relative z-10">
-                                <h3 className="text-2xl font-bold text-slate-900 mb-2">¿Buscas un Proyecto a Medida?</h3>
-                                <p className="text-slate-600 max-w-2xl mx-auto mb-6">
-                                    Diseñamos intervenciones específicas para ayuntamientos, hospitales y grandes colectivos.
-                                    El Método ACTIVA es escalable y adaptable.
-                                </p>
-                                <a href="mailto:hola@activamusicoterapia.com" className="inline-flex items-center gap-2 px-8 py-3 bg-brand-primary text-white font-bold rounded-full hover:bg-brand-dark transition-colors shadow-md">
-                                    Contactar Coordinación
-                                    <ArrowRight className="w-4 h-4" />
+                                <a href="mailto:hola@activamusicoterapia.com" className="inline-flex items-center gap-2 px-8 py-3 bg-white text-slate-900 font-bold rounded-full hover:bg-slate-100 transition-colors">
+                                    Contactar con Dirección Clínica
                                 </a>
                             </div>
                         </div>
 
                     </RevealSection>
                 </div>
-
             </main>
 
             <Footer />
