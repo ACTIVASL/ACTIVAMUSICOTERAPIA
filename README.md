@@ -9,7 +9,7 @@
 [![Security](https://img.shields.io/badge/security-FORENSIC_AUDIT-blue?style=for-the-badge)](./docs/SECURITY.md)
 [![Compliance](https://img.shields.io/badge/legal-GDPR%20%2F%20LOPD-lightgrey?style=for-the-badge)](./docs/LEGAL.md)
 
-**[🌐 Portal Corporativo](https://www.activamusicoterapia.com)** • **[🔐 Acceso Clínico](https://app-activamusicoterapia.web.app)** • **[📄 Documentación Técnica](./docs)**
+**[🌐 Portal Corporativo](https://activamusicoterapia.com)** • **[🔐 Acceso Clínico](https://app-activamusicoterapia.web.app)** • **[📄 Documentación Técnica](./docs)**
 
 </div>
 
