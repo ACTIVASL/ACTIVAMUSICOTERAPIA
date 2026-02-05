@@ -1,6 +1,7 @@
 import { Instagram, Facebook, Mail } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import logoPremium from '../../assets/images/logo-footer.jpg';
+import qrFooter from '../../assets/images/qr-footer.jpg';
 
 export const Footer = ({
   onOpenModal,
@@ -83,6 +84,21 @@ export const Footer = ({
             <Mail size={24} />
           </button>
         </div>
+
+        {/* QR Code Section */}
+        <div className="flex flex-col items-center gap-4 mt-8 opacity-80 hover:opacity-100 transition-opacity">
+          <div className="p-3 bg-white rounded-xl shadow-lg border-4 border-white/10 group hover:scale-105 transition-transform duration-300">
+            <img
+              src={qrFooter}
+              alt="Escanea para contactar"
+              className="w-32 h-32 object-contain rounded-lg"
+            />
+          </div>
+          <p className="text-xs text-slate-500 font-medium uppercase tracking-widest">
+            Escanea para contacto directo
+          </p>
+        </div>
+
         <div className="text-slate-500 text-sm font-body w-full mt-4">
           <p>© 2026 Activa Musicoterapia. Todos los derechos reservados.</p>
         </div>

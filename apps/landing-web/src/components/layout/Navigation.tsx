@@ -127,7 +127,7 @@ export const Navigation = () => {
                 <div className="w-[1px] h-4 bg-slate-300 mx-2"></div>
 
                 <Link
-                  to="/blog/beneficios-musicoterapia"
+                  to="/blog"
                   viewTransition
                   className="px-5 py-2 text-sm font-display font-medium text-slate-600 hover:text-brand-primary transition-colors relative group"
                 >

@@ -10,6 +10,12 @@ const Home = lazy(() => import('./pages/Home'));
 const BenefitsPost = lazy(() =>
   import('./pages/blog/BenefitsPost').then((module) => ({ default: module.BenefitsPost })),
 );
+const ClinicalTechPost = lazy(() =>
+  import('./pages/blog/ClinicalTechPost').then((module) => ({ default: module.ClinicalTechPost })),
+);
+const BlogIndex = lazy(() =>
+  import('./pages/blog/BlogIndex').then((module) => ({ default: module.BlogIndex })),
+);
 
 function App() {
   return (
@@ -30,10 +36,26 @@ function App() {
 
           {/* Blog Routes */}
           <Route
+            path="/blog"
+            element={
+              <Suspense fallback={<div className="min-h-screen bg-[#020617]" />}>
+                <BlogIndex />
+              </Suspense>
+            }
+          />
+          <Route
             path="/blog/beneficios-musicoterapia"
             element={
               <Suspense fallback={<div className="min-h-screen bg-[#020617]" />}>
                 <BenefitsPost />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/blog/gestion-clinica-digital"
+            element={
+              <Suspense fallback={<div className="min-h-screen bg-[#020617]" />}>
+                <ClinicalTechPost />
               </Suspense>
             }
           />
