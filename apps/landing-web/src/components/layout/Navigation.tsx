@@ -88,8 +88,8 @@ export const Navigation = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const clinicaItems = [
-    { label: 'Individual', href: '#individual', icon: Activity },
-    { label: 'Grupal', href: '#grupal', icon: Users },
+    { label: 'Programas y Tarifas', href: '/programas', icon: Activity },
+    { label: 'Individual', href: '/programas', icon: Users }, // Redirect to programs tab logic? For now simple link
   ];
 
   const profesionalesItems = [

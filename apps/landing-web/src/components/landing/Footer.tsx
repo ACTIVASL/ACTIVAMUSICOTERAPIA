@@ -17,22 +17,46 @@ export const Footer = ({
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-brand-primary/5 blur-[100px] rounded-full pointer-events-none"></div>
 
       <div className="max-w-[960px] mx-auto flex flex-col gap-12 relative z-10">
-        <div className="flex flex-col items-center gap-8">
-          <div className="w-24 h-24 rounded-full bg-brand-dark flex items-center justify-center shadow-[0_0_30px_rgba(236,0,140,0.15)] ring-1 ring-white/10 relative overflow-hidden group">
-            <img
-              src={logoPremium}
-              alt="Logotipo Oficial Activa Musicoterapia - Ciencia y Salud"
-              className="w-[180%] h-auto object-cover drop-shadow-sm group-hover:scale-110 transition-transform duration-500"
-              loading="lazy"
-              decoding="async"
-            />
-            <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent translate-x-[-100%] group-hover:animate-shine"></div>
+        <div className="flex flex-col md:flex-row items-center justify-center gap-12">
+          {/* Logo Section */}
+          <div className="flex flex-col items-center gap-8">
+            <div className="w-24 h-24 rounded-full bg-brand-dark flex items-center justify-center shadow-[0_0_30px_rgba(236,0,140,0.15)] ring-1 ring-white/10 relative overflow-hidden group">
+              <img
+                src={logoPremium}
+                alt="Logotipo Oficial Activa Musicoterapia - Ciencia y Salud"
+                className="w-[180%] h-auto object-cover drop-shadow-sm group-hover:scale-110 transition-transform duration-500"
+                loading="lazy"
+                decoding="async"
+              />
+              <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent translate-x-[-100%] group-hover:animate-shine"></div>
+            </div>
+            <p className="text-slate-400 text-lg font-body max-w-lg mx-auto font-light leading-relaxed hidden md:block">
+              Activa Musicoterapia combina la ciencia, la música y la tecnología para mejorar la
+              calidad de vida.
+            </p>
           </div>
-          <p className="text-slate-400 text-lg font-body max-w-lg mx-auto font-light leading-relaxed">
-            Activa Musicoterapia combina la ciencia, la música y la tecnología para mejorar la
-            calidad de vida.
-          </p>
+
+          {/* QR Code Section - Premium Frame Side-by-Side */}
+          <div className="flex flex-col items-center gap-3">
+            <div className="p-3 bg-white/5 backdrop-blur-md rounded-2xl shadow-2xl border border-white/10 hover:border-brand-primary/30 transition-all duration-500 group relative overflow-hidden">
+              <div className="absolute inset-0 bg-brand-primary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              <img
+                src={qrFooter}
+                alt="Escanea para contacto directo"
+                className="w-32 h-32 md:w-40 md:h-40 object-contain rounded-xl relative z-10"
+              />
+            </div>
+            <p className="text-[10px] text-slate-500 font-bold uppercase tracking-[0.2em] opacity-60">
+              Escanea para contacto
+            </p>
+          </div>
         </div>
+
+        {/* Mobile Description (Visible only on small screens below stacks) */}
+        <p className="md:hidden text-slate-400 text-lg font-body max-w-lg mx-auto font-light leading-relaxed">
+          Activa Musicoterapia combina la ciencia, la música y la tecnología para mejorar la
+          calidad de vida.
+        </p>
 
         <div className="flex flex-wrap items-center justify-center gap-8 md:gap-16 border-y border-white/5 py-10">
           <Link
@@ -85,19 +109,7 @@ export const Footer = ({
           </button>
         </div>
 
-        {/* QR Code Section */}
-        <div className="flex flex-col items-center gap-4 mt-8 opacity-80 hover:opacity-100 transition-opacity">
-          <div className="p-3 bg-white rounded-xl shadow-lg border-4 border-white/10 group hover:scale-105 transition-transform duration-300">
-            <img
-              src={qrFooter}
-              alt="Escanea para contactar"
-              className="w-32 h-32 object-contain rounded-lg"
-            />
-          </div>
-          <p className="text-xs text-slate-500 font-medium uppercase tracking-widest">
-            Escanea para contacto directo
-          </p>
-        </div>
+
 
         <div className="text-slate-500 text-sm font-body w-full mt-4">
           <p>© 2026 Activa Musicoterapia. Todos los derechos reservados.</p>

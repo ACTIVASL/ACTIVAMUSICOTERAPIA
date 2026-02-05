@@ -16,6 +16,9 @@ const ClinicalTechPost = lazy(() =>
 const BlogIndex = lazy(() =>
   import('./pages/blog/BlogIndex').then((module) => ({ default: module.BlogIndex })),
 );
+const Programs = lazy(() =>
+  import('./pages/Programs').then((module) => ({ default: module.Programs })),
+);
 
 function App() {
   return (
@@ -35,6 +38,14 @@ function App() {
           <Route path="/legal/data-deletion" element={<DataDeletion />} />
 
           {/* Blog Routes */}
+          <Route
+            path="/programas"
+            element={
+              <Suspense fallback={<div className="min-h-screen bg-[#020617]" />}>
+                <Programs />
+              </Suspense>
+            }
+          />
           <Route
             path="/blog"
             element={
