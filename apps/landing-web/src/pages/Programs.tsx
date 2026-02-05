@@ -1,6 +1,5 @@
-import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { useLocation } from 'react-router-dom';
+import { useSearchParams, Link } from 'react-router-dom';
 import { Navigation } from '../components/layout/Navigation';
 import { Footer } from '../components/landing/Footer';
 import { RevealSection } from '../components/ui/RevealSection';
@@ -13,7 +12,6 @@ import {
     ArrowRight,
     Brain
 } from 'lucide-react';
-import { Link } from 'react-router-dom';
 
 interface ProgramItem {
     title: string;
@@ -28,17 +26,13 @@ interface ProgramItem {
 }
 
 export const Programs = () => {
-    const location = useLocation();
-    const [activeTab, setActiveTab] = useState<'infancia' | 'adultos' | 'colegios' | 'profesionales' | 'consultoria'>('infancia');
+    const [searchParams, setSearchParams] = useSearchParams();
+    const currentTab = searchParams.get('tab');
 
-    useEffect(() => {
-        const searchParams = new URLSearchParams(location.search);
-        const tab = searchParams.get('tab');
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        if (tab && tab !== activeTab && ['infancia', 'adultos', 'colegios', 'profesionales', 'consultoria'].includes(tab)) {
-            setActiveTab(tab as 'infancia' | 'adultos' | 'colegios' | 'profesionales' | 'consultoria');
-        }
-    }, [location, activeTab]);
+    // Validate tab or default to 'infancia'
+    const activeTab = (currentTab && ['infancia', 'adultos', 'colegios', 'profesionales', 'consultoria'].includes(currentTab))
+        ? (currentTab as 'infancia' | 'adultos' | 'colegios' | 'profesionales' | 'consultoria')
+        : 'infancia';
 
     const tabs = [
         { id: 'infancia', label: 'Infancia y Familia', icon: Baby },
@@ -279,7 +273,7 @@ export const Programs = () => {
                             {tabs.map((tab) => (
                                 <button
                                     key={tab.id}
-                                    onClick={() => setActiveTab(tab.id as 'infancia' | 'adultos' | 'colegios' | 'profesionales' | 'consultoria')}
+                                    onClick={() => setSearchParams({ tab: tab.id }, { replace: true })}
                                     className={`flex items-center gap-2 px-6 py-3 rounded-full text-sm font-bold uppercase tracking-wider transition-all whitespace-nowrap border ${activeTab === tab.id
                                         ? 'bg-slate-900 text-white border-slate-900 shadow-lg transform scale-105'
                                         : 'bg-white text-slate-500 border-slate-200 hover:border-brand-primary/30 hover:text-brand-primary'
