@@ -48,7 +48,7 @@ export const Hero = () => {
             </span>
           </div>
 
-          {/* MASSIVE HEADLINE (REVERTED SLOGAN) */}
+          {/* MASSIVE HEADLINE (ORIGINAL SLOGAN) */}
           <h1 className="text-6xl sm:text-7xl lg:text-9xl font-display font-black tracking-tighter text-white leading-[0.9] mb-8 drop-shadow-2xl">
             EL ARTE <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-accent via-white to-brand-primary animate-pulse-slow">
@@ -57,8 +57,8 @@ export const Hero = () => {
           </h1>
 
           <p className="text-lg sm:text-xl lg:text-2xl text-slate-400 font-body font-light max-w-3xl mx-auto mb-16 leading-relaxed text-balance">
-            Activa Musicoterapia aplica un método probado que utiliza el arte como herramienta de
-            rehabilitación, conectando a las personas consigo mismas y con sus pacientes.
+            Activa Musicoterapia utiliza el poder del arte y la música como vehículo profesional para la
+            rehabilitación. Resultados medibles, enfoque clínico.
           </p>
 
           {/* MAGNETIC ACTION BUTTONS - SEGMENTED ROUTING */}
