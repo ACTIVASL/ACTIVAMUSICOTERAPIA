@@ -57,8 +57,8 @@ export const Hero = () => {
           </h1>
 
           <p className="text-lg sm:text-xl lg:text-2xl text-slate-400 font-body font-light max-w-3xl mx-auto mb-16 leading-relaxed text-balance">
-            Activa Musicoterapia utiliza el poder del arte y la música como vehículo profesional para la
-            rehabilitación. Resultados medibles, enfoque clínico.
+            Donde la <span className="font-medium text-slate-300">evidencia científica</span> se une a la <span className="font-medium text-slate-300">emoción</span>. Tratamientos personalizados
+            para la rehabilitación física, cognitiva y el bienestar emocional.
           </p>
 
           {/* MAGNETIC ACTION BUTTONS - SEGMENTED ROUTING */}
